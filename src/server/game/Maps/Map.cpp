@@ -22,6 +22,7 @@
 #include "VMapFactory.h"
 #include "MapInstanced.h"
 #include "CellImpl.h"
+#include "AccountMgr.h"
 #include "GridNotifiers.h"
 #include "GridNotifiersImpl.h"
 #include "Transport.h"
@@ -32,6 +33,7 @@
 #include "Group.h"
 #include "LFGMgr.h"
 #include "DynamicTree.h"
+
 
 union u_map_magic
 {

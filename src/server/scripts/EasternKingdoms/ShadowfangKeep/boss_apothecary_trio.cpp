@@ -299,7 +299,7 @@ class npc_apothecary_hummel : public CreatureScript
                     else
                         _aggroTimer -= diff;
 
-                    if (me->HasUnitState(UNIT_STAT_CASTING))
+                    if (me->HasUnitState(UNIT_STATE_CASTING))
                         return;
 
                     if (_chainReactionTimer <= diff)
