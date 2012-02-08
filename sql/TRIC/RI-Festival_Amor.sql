@@ -47,9 +47,10 @@ UPDATE quest_template SET PrevQuestId='24657' WHERE id IN (24849);
 
 
 #boticarios
-UPDATE `creature_template` SET `faction_A` = 16, `faction_H` = 16, `Health_mod` = 86.189, `lootid` = 36296, `mechanic_immune_mask` = 650854235, `ScriptName` = 'npc_apothecary_hummel' WHERE `entry` = 36296;
-UPDATE `creature_template` SET `faction_A` = 16, `faction_H` = 16, `Health_mod` = 86.189, `lootid` = 36296, `mechanic_immune_mask` = 650854235, `ScriptName` = 'npc_apothecary_baxter' WHERE `entry` = 36565;
-UPDATE `creature_template` SET `faction_A` = 16, `faction_H` = 16, `Health_mod` = 86.189, `lootid` = 36296, `equipment_id` = 128, `mechanic_immune_mask` = 536870917, `flags_extra` = 256, `ScriptName` = 'npc_apothecary_frye' WHERE `entry` = 36272;
+UPDATE achievement_criteria_data SET TYPE='11' WHERE criteria_id IN (12992);
+UPDATE `creature_template` SET  `Health_mod` = 86.189, `mechanic_immune_mask` = 650854235, `ScriptName` = 'npc_apothecary_hummel' WHERE `entry` = 36296;
+UPDATE `creature_template` SET  `Health_mod` = 86.189, `mechanic_immune_mask` = 650854235, `ScriptName` = 'npc_apothecary_baxter' WHERE `entry` = 36565;
+UPDATE `creature_template` SET  `Health_mod` = 86.189, `equipment_id` = 128, `mechanic_immune_mask` = 536870917, `flags_extra` = 256, `ScriptName` = 'npc_apothecary_frye' WHERE `entry` = 36272;
  
 DELETE FROM `creature_loot_template` WHERE entry = 36296;
 INSERT INTO `creature_loot_template` VALUES
@@ -104,9 +105,9 @@ INSERT INTO `game_event_creature` (`guid`,`event`) VALUES
 (650001, 8),
 (650002, 8);
 
-UPDATE `creature_template` SET `faction_A` = 16, `faction_H` = 16, `Health_mod` = 86.189, `lootid` = 36296, `mechanic_immune_mask` = 650854235, `ScriptName` = 'npc_apothecary_hummel' WHERE `entry` = 36296;
-UPDATE `creature_template` SET `faction_A` = 16, `faction_H` = 16, `Health_mod` = 86.189, `lootid` = 36296, `mechanic_immune_mask` = 650854235, `ScriptName` = 'npc_apothecary_baxter' WHERE `entry` = 36565;
-UPDATE `creature_template` SET `faction_A` = 16, `faction_H` = 16, `Health_mod` = 86.189, `lootid` = 36296, `equipment_id` = 128, `mechanic_immune_mask` = 536870917, `flags_extra` = 256, `ScriptName` = 'npc_apothecary_frye' WHERE `entry` = 36272;
+UPDATE `creature_template` SET `faction_A` = 35, `faction_H` = 35, `Health_mod` = 86.189, `lootid` = 36296, `mechanic_immune_mask` = 650854235, `ScriptName` = 'npc_apothecary_hummel' WHERE `entry` = 36296;
+UPDATE `creature_template` SET `faction_A` = 35, `faction_H` = 35, `Health_mod` = 86.189, `mechanic_immune_mask` = 650854235, `ScriptName` = 'npc_apothecary_baxter' WHERE `entry` = 36565;
+UPDATE `creature_template` SET `faction_A` = 35, `faction_H` = 35, `Health_mod` = 86.189, `equipment_id` = 128, `mechanic_immune_mask` = 536870917, `flags_extra` = 256, `ScriptName` = 'npc_apothecary_frye' WHERE `entry` = 36272;
 
 DELETE FROM `creature_loot_template` WHERE entry = 36296;
 INSERT INTO `creature_loot_template` VALUES 
@@ -124,3 +125,14 @@ INSERT INTO `reference_loot_template` VALUES
 (36296, 50741, 0, 1, 1, 1, 1),
 (36296, 49715, 0, 1, 1, 1, 1),
 (36296, 50446, 0, 1, 1, 1, 1);
+
+insert into `script_texts` (`npc_entry`, `entry`, `content_default`, `content_loc1`, `content_loc2`, `content_loc3`, `content_loc4`, `content_loc5`, `content_loc6`, `content_loc7`, `content_loc8`, `sound`, `type`, `language`, `emote`, `comment`) values('0','-1033020','No nos importa que lo hayáis descubierto... ya es demasiado tarde...',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'0','0','0','0',NULL);
+insert into `script_texts` (`npc_entry`, `entry`, `content_default`, `content_loc1`, `content_loc2`, `content_loc3`, `content_loc4`, `content_loc5`, `content_loc6`, `content_loc7`, `content_loc8`, `sound`, `type`, `language`, `emote`, `comment`) values('0','-1033021','Simplemente tenéis que morir y así mantener la boca cerrada...',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'0','0','0','0',NULL);
+insert into `script_texts` (`npc_entry`, `entry`, `content_default`, `content_loc1`, `content_loc2`, `content_loc3`, `content_loc4`, `content_loc5`, `content_loc6`, `content_loc7`, `content_loc8`, `sound`, `type`, `language`, `emote`, `comment`) values('0','-1033022','Os intoxicaréis con nuestro aroma.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'0','0','0','0',NULL);
+insert into `script_texts` (`npc_entry`, `entry`, `content_default`, `content_loc1`, `content_loc2`, `content_loc3`, `content_loc4`, `content_loc5`, `content_loc6`, `content_loc7`, `content_loc8`, `sound`, `type`, `language`, `emote`, `comment`) values('0','-1033023','¡Vamos Baxter! ¡Acaba con estos intrusos!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'0','1','0','0',NULL);
+insert into `script_texts` (`npc_entry`, `entry`, `content_default`, `content_loc1`, `content_loc2`, `content_loc3`, `content_loc4`, `content_loc5`, `content_loc6`, `content_loc7`, `content_loc8`, `sound`, `type`, `language`, `emote`, `comment`) values('0','-1033024','¡Frye, disuélvelos a todos!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'0','1','0','0',NULL);
+insert into `script_texts` (`npc_entry`, `entry`, `content_default`, `content_loc1`, `content_loc2`, `content_loc3`, `content_loc4`, `content_loc5`, `content_loc6`, `content_loc7`, `content_loc8`, `sound`, `type`, `language`, `emote`, `comment`) values('0','-1033025','¡Destruirlos! ¡Machacarlos!',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'0','1','0','0',NULL);
+insert into `script_texts` (`npc_entry`, `entry`, `content_default`, `content_loc1`, `content_loc2`, `content_loc3`, `content_loc4`, `content_loc5`, `content_loc6`, `content_loc7`, `content_loc8`, `sound`, `type`, `language`, `emote`, `comment`) values('0','-1033026','Este aroma... es el... aroma de la muerte...',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'0','0','0','0',NULL);
+insert into `spell_linked_spell` (`spell_trigger`, `spell_effect`, `type`, `comment`) values('68529','-68530','0','Amor en el Aire -Colonias');
+insert into `spell_linked_spell` (`spell_trigger`, `spell_effect`, `type`, `comment`) values('68530','-68529','0','Amor en el Aire - Colonias');
+

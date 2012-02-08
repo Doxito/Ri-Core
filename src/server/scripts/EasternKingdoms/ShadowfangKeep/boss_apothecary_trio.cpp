@@ -71,7 +71,7 @@ static Position Loc[]=
     {-228.251511f, 2187.282471f, 79.762840f, 0.0f}
 };
 
-#define GOSSIP_ITEM_START "Comienza la batalla."
+#define GOSSIP_ITEM_START "Arreglemos esto de una vez por todas."
 
 void SetInCombat(Creature* self)
 {
@@ -88,10 +88,12 @@ class npc_apothecary_hummel : public CreatureScript
 
         bool OnGossipHello(Player* player, Creature* creature)
         {
-            if (creature->isQuestGiver())
-                player->PrepareQuestMenu(creature->GetGUID());
+            //if (creature->isQuestGiver())
+            //    player->PrepareQuestMenu(creature->GetGUID());
 
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_START, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+            if(player->GetQuestStatus(14488) == QUEST_STATUS_INCOMPLETE && player->HasItemCount(49635,1))
+			player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_START, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+
             player->SEND_GOSSIP_MENU(player->GetGossipTextId(creature), creature->GetGUID());
             return true;
         }
@@ -99,7 +101,13 @@ class npc_apothecary_hummel : public CreatureScript
         bool OnGossipSelect(Player* player, Creature* creature, uint32 /*sender*/, uint32 action)
         {
             if (action == GOSSIP_ACTION_INFO_DEF + 1)
-                creature->AI()->DoAction(START_INTRO);
+			{
+				player->DestroyItemCount(49635, 1, true);
+                 player->CompleteQuest(14488);
+				
+					
+				creature->AI()->DoAction(START_INTRO);
+			}
 
             player->CLOSE_GOSSIP_MENU();
             return true;
@@ -192,15 +200,25 @@ class npc_apothecary_hummel : public CreatureScript
                             _instance->SetData(TYPE_CROWN, DONE);
                             me->SetFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_LOOTABLE);
 
+
+				AchievementEntry const* AchievOnTheRocks = GetAchievementStore()->LookupEntry(4624);
+     
+
                             Map* map = me->GetMap();
                             if (map && map->IsDungeon())
                             {
                                 Map::PlayerList const& players = map->GetPlayers();
-                                if (!players.isEmpty())
+								
+								if (!players.isEmpty())
+                           for (Map::PlayerList::const_iterator itr = players.begin(); itr != players.end(); ++itr)
+                            itr->getSource()->CompletedAchievement(AchievOnTheRocks);                               
+								
+								if (!players.isEmpty())
                                     for (Map::PlayerList::const_iterator i = players.begin(); i != players.end(); ++i)
                                         if (Player* player = i->getSource())
                                             if (player->GetDistance(me) < 120.0f)
                                                 sLFGMgr->RewardDungeonDoneFor(288, player);
+
                             }
                         }
                         else
