@@ -278,6 +278,53 @@ void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
         return;
     }
 
+
+	// Teletransporte a la arena en caso de que un player se caiga por una textura
+	// Circulo de Valor
+	if (_player->GetMapId() == 618)
+	{	
+		bool inCage = false;
+			
+		if (movementInfo.pos.GetPositionZ() < 28.2765)			
+		{
+
+			{
+			// Posicion de la caja de salida - Verde
+			if (movementInfo.pos.GetPositionX() > 755 && movementInfo.pos.GetPositionX() < 771 && movementInfo.pos.GetPositionY() < -265 && movementInfo.pos.GetPositionY() > -282 && _player->HasAura(32727))
+				inCage = true;
+			
+		// Posicion de la caja de salida - Dorado
+			else if (movementInfo.pos.GetPositionX() > 755 && movementInfo.pos.GetPositionX() < 771 && movementInfo.pos.GetPositionY() < -286 && movementInfo.pos.GetPositionY() > -302 && _player->HasAura(32727))
+				inCage = true;
+			
+			// Ascensor de salida - Verde
+			else if (movementInfo.pos.GetPositionX() > 755 && movementInfo.pos.GetPositionX() < 771 && movementInfo.pos.GetPositionY() < -265 && movementInfo.pos.GetPositionY() > -282 && movementInfo.pos.GetPositionZ() > 2.78)
+				inCage = true;
+			
+			// Ascensor de salida - Dorado
+			else if (movementInfo.pos.GetPositionX() > 755 && movementInfo.pos.GetPositionX() < 771 && movementInfo.pos.GetPositionY() < -286 && movementInfo.pos.GetPositionY() > -302 && movementInfo.pos.GetPositionZ() > 2.78)
+				inCage = true;
+			
+			else if (movementInfo.pos.GetPositionZ() > 28.25)
+				inCage = true;
+
+			else
+				inCage = false;
+			}
+			
+			if (inCage == false)
+			_player->TeleportTo(_player->GetMapId(), 763, -284, 28.277, 3, 0);
+			
+			
+		}
+	}
+	// Arenas de Dalaran
+	if (_player->GetMapId() == 617)
+	{
+		if (movementInfo.pos.GetPositionZ() < 3)
+			_player->TeleportTo(_player->GetMapId(), 1291, 790, 7.12, 3, 0);
+	}
+
     /* handle special cases */
     if (movementInfo.flags & MOVEMENTFLAG_ONTRANSPORT)
     {
