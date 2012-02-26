@@ -417,15 +417,21 @@ public:
 
     bool OnGossipHello(Player* player, GameObject* go)
     {
-        if (GameObject* trigger = go->FindNearestGameObject(190375, 500)) // Wintergrasp Fortress Gate
-        {
+     if (Unit* trigger = go->FindNearestCreature(90013, 500))
+   {                         
+       //if (GameObject* trigger = go->FindNearestGameObject(190375, 500)) // Wintergrasp Fortress Gate
+     //  {
             if (Vehicle* vehicle = player->GetVehicle())
             {
                 Position triggerPos;
                 trigger->GetPosition(&triggerPos);
-                triggerPos.m_positionX -= 30;
-                vehicle->Relocate(triggerPos);
+            
+               //triggerPos.m_positionX -= 30;
+    
+          vehicle->Relocate(triggerPos);
+          vehicle->InstallAllAccessories(false);
             }
+
         }
         return true;
     }
