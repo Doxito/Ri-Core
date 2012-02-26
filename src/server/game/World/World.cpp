@@ -1180,6 +1180,9 @@ void World::LoadConfigSettings(bool reload)
     m_int_configs[CONFIG_WARDEN_NUM_MEM_CHECKS]        = ConfigMgr::GetIntDefault("Warden.NumMemChecks", 3);
     m_int_configs[CONFIG_WARDEN_NUM_OTHER_CHECKS]      = ConfigMgr::GetIntDefault("Warden.NumOtherChecks", 7);
     m_int_configs[CONFIG_WARDEN_CLIENT_BAN_DURATION]   = ConfigMgr::GetIntDefault("Warden.BanDuration", 86400);
+	m_int_configs[CONFIG_WARDEN_CLIENT_BAN_DURATION_A] = ConfigMgr::GetIntDefault("Warden.BanDurationA", 259200);
+    m_int_configs[CONFIG_WARDEN_CLIENT_BAN_DURATION_B] = ConfigMgr::GetIntDefault("Warden.BanDurationB", 777600);
+    m_int_configs[CONFIG_WARDEN_CLIENT_BAN_DURATION_C] = ConfigMgr::GetIntDefault("Warden.BanDurationC", 0);
     m_int_configs[CONFIG_WARDEN_CLIENT_CHECK_HOLDOFF]  = ConfigMgr::GetIntDefault("Warden.ClientCheckHoldOff", 30);
     m_int_configs[CONFIG_WARDEN_CLIENT_FAIL_ACTION]    = ConfigMgr::GetIntDefault("Warden.ClientCheckFailAction", 0);
     m_int_configs[CONFIG_WARDEN_CLIENT_RESPONSE_DELAY] = ConfigMgr::GetIntDefault("Warden.ClientResponseDelay", 600);

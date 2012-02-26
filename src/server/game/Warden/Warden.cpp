@@ -183,15 +183,54 @@ std::string Warden::Penalty(WardenCheck* check /*= NULL*/)
         break;
     case WARDEN_ACTION_BAN:
         {
-            std::stringstream duration;
-            duration << sWorld->getIntConfig(CONFIG_WARDEN_CLIENT_BAN_DURATION) << "s";
-            std::string accountName;
-            AccountMgr::GetName(_session->GetAccountId(), accountName);
-            sWorld->BanAccount(BAN_ACCOUNT, accountName, duration.str(), "Warden Anticheat violation","Server");
+           // std::string accountName;
+         //  AccountMgr::GetName(_session->GetAccountId(), accountName);
+  QueryResult resultSS = CharacterDatabase.PQuery("SELECT detectnum FROM ri_antihack WHERE nameacc=%u;", _session->GetAccountId());
+          if (resultSS) {
+			   
+			         Field* fields = resultSS->Fetch();
 
+                    uint32 Positic       = fields[0].GetUInt32();
+            
+ if(Positic == 1)
+     {    std::string accountName;     
+		  AccountMgr::GetName(_session->GetAccountId(), accountName);
+		 CharacterDatabase.PExecute("REPLACE ri_antihack (nameacc,detectnum) VALUES (%u, '2');", _session->GetAccountId());
+		           std::stringstream duration;
+            duration << sWorld->getIntConfig(CONFIG_WARDEN_CLIENT_BAN_DURATION_A) << "s";  
+			            
+       sWorld->BanAccount(BAN_ACCOUNT, accountName, duration.str(), "Segundo Baneo - Warden","Server"); }
+            
+ if(Positic == 2)
+  {  std::string accountName;       
+	    AccountMgr::GetName(_session->GetAccountId(), accountName);
+ CharacterDatabase.PExecute("REPLACE ri_antihack (nameacc,detectnum) VALUES (%u, '3');", _session->GetAccountId());
+		           std::stringstream duration;
+            duration << sWorld->getIntConfig(CONFIG_WARDEN_CLIENT_BAN_DURATION_B) << "s";             
+
+   sWorld->BanAccount(BAN_ACCOUNT, accountName, duration.str(), "Tercer Baneo - Warden","Server");}
+  
+ if(Positic == 3)
+ {   std::string accountName;      
+	   AccountMgr::GetName(_session->GetAccountId(), accountName);
+CharacterDatabase.PExecute("REPLACE ri_antihack (nameacc,detectnum) VALUES (%u, '4');", _session->GetAccountId());
+            
+		           std::stringstream duration;
+            duration << sWorld->getIntConfig(CONFIG_WARDEN_CLIENT_BAN_DURATION_C) << "s";    
+      sWorld->BanAccount(BAN_ACCOUNT, accountName, duration.str(), "Baneo definitivo - Warden","Server"); }             
+          
+         
+       } else{
+		   std::string accountName;
+ AccountMgr::GetName(_session->GetAccountId(), accountName);
+    CharacterDatabase.PExecute("INSERT INTO ri_antihack (nameacc,detectnum) VALUES (%u, '1');", _session->GetAccountId());
+		           std::stringstream duration;
+            duration << sWorld->getIntConfig(CONFIG_WARDEN_CLIENT_BAN_DURATION) << "s";      
+             sWorld->BanAccount(BAN_ACCOUNT, accountName, duration.str(), "Primer Baneo - Warden","Server");   
+          }
             return "Ban";
             break;
-        }
+		}
     default:
         return "Undefined";
         break;

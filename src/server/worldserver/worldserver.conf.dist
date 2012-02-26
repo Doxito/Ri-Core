@@ -1504,6 +1504,9 @@ Warden.ClientCheckFailAction = 0
 #                     0     - (Permanent ban)
 
 Warden.BanDuration = 86400
+Warden.BanDurationA = 259200
+Warden.BanDurationB = 777600
+Warden.BanDurationC = 0
 
 #
 ###################################################################################################
