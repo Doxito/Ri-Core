@@ -2022,6 +2022,7 @@ void Spell::prepareDataForTriggerSystem(AuraEffect const* /*triggeredByAura*/)
     /* Effects which are result of aura proc from triggered spell cannot proc
         to prevent chain proc of these spells */
 
+
     // Hellfire Effect - trigger as DOT
     if (m_spellInfo->SpellFamilyName == SPELLFAMILY_WARLOCK && m_spellInfo->SpellFamilyFlags[0] & 0x00000040)
     {
@@ -2174,6 +2175,7 @@ void Spell::AddGOTarget(GameObject* go, uint32 effectMask)
                 break;
             default:
                 break;
+
             }
         }
     }
