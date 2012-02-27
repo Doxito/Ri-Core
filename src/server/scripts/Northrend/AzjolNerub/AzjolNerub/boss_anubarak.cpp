@@ -188,7 +188,7 @@ class boss_anub_arak : public CreatureScript
                     case NPC_IMPALE_TARGET:
                         _targetGUID = summon->GetGUID();
                         summon->SetReactState(REACT_PASSIVE);
-                        summon->SetDisplayId(summon->GetCreatureInfo()->Modelid2);
+                        summon->SetDisplayId(summon->GetCreatureTemplate()->Modelid2);
                         summon->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISABLE_MOVE | UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE);
                         summon->CastSpell(summon, SPELL_IMPALE_SHAKEGROUND, true);
                         break;

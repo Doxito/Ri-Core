@@ -638,7 +638,7 @@ class npc_flame_leviathan_seat : public CreatureScript
             {
                 ASSERT(_vehicle);
                 me->SetReactState(REACT_PASSIVE);
-                me->SetDisplayId(me->GetCreatureInfo()->Modelid1);
+                me->SetDisplayId(me->GetCreatureTemplate()->Modelid1);
                 me->setActive(true);
             }
 
@@ -737,7 +737,7 @@ class npc_flame_leviathan_overload_device : public CreatureScript
         {
             npc_flame_leviathan_overload_deviceAI(Creature* creature) : PassiveAI(creature)
             {
-                me->SetDisplayId(me->GetCreatureInfo()->Modelid3);
+                me->SetDisplayId(me->GetCreatureTemplate()->Modelid3);
                 _instance = creature->GetInstanceScript();
                 me->setActive(true);
             }
@@ -962,7 +962,7 @@ class npc_thorims_hammer : public CreatureScript
             npc_thorims_hammerAI(Creature* creature) : Scripted_NoMovementAI(creature)
             {
                 me->setActive(true);
-                me->SetDisplayId(me->GetCreatureInfo()->Modelid2);
+                me->SetDisplayId(me->GetCreatureTemplate()->Modelid2);
                 me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE);
                 me->SetReactState(REACT_PASSIVE);
             }
@@ -987,7 +987,7 @@ class npc_thorims_hammer : public CreatureScript
                         case 2:
                             if (Creature* trigger = DoSummonFlyer(NPC_THORIMS_HAMMER, me, 50.0f, 0, 10*IN_MILLISECONDS, TEMPSUMMON_TIMED_DESPAWN))
                             {
-                                trigger->SetDisplayId(trigger->GetCreatureInfo()->Modelid2);
+                                trigger->SetDisplayId(trigger->GetCreatureTemplate()->Modelid2);
                                 trigger->CastSpell(me, SPELL_THORIMS_HAMMER, true);
                             }
                             ++_action;
@@ -1024,7 +1024,7 @@ class npc_mimirons_inferno : public CreatureScript
             npc_mimirons_infernoAI(Creature* creature) : ScriptedAI(creature)
             {
                 me->setActive(true);
-                me->SetDisplayId(me->GetCreatureInfo()->Modelid2);
+                me->SetDisplayId(me->GetCreatureTemplate()->Modelid2);
                 me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE);
                 me->AddAura(SPELL_RED_SKYBEAM, me);
                 me->SetReactState(REACT_PASSIVE);
@@ -1060,7 +1060,7 @@ class npc_mimirons_inferno : public CreatureScript
                 {
                     if (Creature* trigger = DoSummonFlyer(NPC_MIMIRONS_INFERNO, me, 50.0f, 0, 40*IN_MILLISECONDS, TEMPSUMMON_TIMED_DESPAWN))
                     {
-                        trigger->SetDisplayId(trigger->GetCreatureInfo()->Modelid2);
+                        trigger->SetDisplayId(trigger->GetCreatureTemplate()->Modelid2);
                         trigger->CastSpell(me, SPELL_MIMIRONS_INFERNO, true);
                         _infernoTimer = 2*IN_MILLISECONDS;
                     }
@@ -1091,7 +1091,7 @@ class npc_hodirs_fury : public CreatureScript
             npc_hodirs_furyAI(Creature* creature) : ScriptedAI(creature)
             {
                 me->setActive(true);
-                me->SetDisplayId(me->GetCreatureInfo()->Modelid2);
+                me->SetDisplayId(me->GetCreatureTemplate()->Modelid2);
                 me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE);
                 me->SetReactState(REACT_PASSIVE);
                 me->AddAura(SPELL_BLUE_SKYBEAM, me);
@@ -1131,7 +1131,7 @@ class npc_hodirs_fury : public CreatureScript
                         case 2:
                             if (Creature* trigger = DoSummonFlyer(NPC_HODIRS_FURY, me, 50.0f, 0, 10*IN_MILLISECONDS, TEMPSUMMON_TIMED_DESPAWN))
                             {
-                                trigger->SetDisplayId(trigger->GetCreatureInfo()->Modelid2);
+                                trigger->SetDisplayId(trigger->GetCreatureTemplate()->Modelid2);
                                 trigger->CastSpell(me, SPELL_HODIRS_FURY, true);
                                 ++_action;
                             }
@@ -1174,7 +1174,7 @@ class npc_freyas_ward : public CreatureScript
             npc_freyas_wardAI(Creature* creature) : Scripted_NoMovementAI(creature)
             {
                 me->setActive(true);
-                me->SetDisplayId(me->GetCreatureInfo()->Modelid2);
+                me->SetDisplayId(me->GetCreatureTemplate()->Modelid2);
                 me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE);
                 me->AddAura(SPELL_GREEN_SKYBEAM, me);
                 me->SetReactState(REACT_PASSIVE);
@@ -1191,7 +1191,7 @@ class npc_freyas_ward : public CreatureScript
                 {
                     if (Creature* trigger = DoSummonFlyer(NPC_FREYAS_WARD, me, 50.0f, 0, 10*IN_MILLISECONDS, TEMPSUMMON_TIMED_DESPAWN))
                     {
-                        trigger->SetDisplayId(trigger->GetCreatureInfo()->Modelid2);
+                        trigger->SetDisplayId(trigger->GetCreatureTemplate()->Modelid2);
                         trigger->CastSpell(me, SPELL_FREYAS_WARD, true);
                         _summonTimer = 30*IN_MILLISECONDS;
                     }
