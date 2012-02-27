@@ -80,7 +80,8 @@ public:
             {
                 player->SendUpdateWorldState(WORLD_STATE_CENTRIFUGE_CONSTRUCT_SHOW, 1);
                 player->SendUpdateWorldState(WORLD_STATE_CENTRIFUGE_CONSTRUCT_AMOUNT, centrifugueConstructCounter);
-            } else
+            }
+            else
             {
                 player->SendUpdateWorldState(WORLD_STATE_CENTRIFUGE_CONSTRUCT_SHOW, 0);
                 player->SendUpdateWorldState(WORLD_STATE_CENTRIFUGE_CONSTRUCT_AMOUNT, 0);
@@ -97,7 +98,7 @@ public:
             if (!varos)
                 return;
 
-            if (Creature* drake = varos->SummonCreature(NPC_AZURE_RING_GUARDIAN, varos->GetPositionX(), varos->GetPositionY(), varos->GetPositionZ()+40))
+            if (Creature* drake = varos->SummonCreature(NPC_AZURE_RING_GUARDIAN, varos->GetPositionX(), varos->GetPositionY(), varos->GetPositionZ() + 40))
                 drake->AI()->DoAction(ACTION_CALL_DRAGON_EVENT);
         }
 
@@ -113,9 +114,13 @@ public:
                     break;
                 case NPC_UROM:
                     uromGUID = creature->GetGUID();
+                    if (GetBossState(DATA_VAROS_EVENT) != DONE)
+                        creature->setFaction(35);
                     break;
                 case NPC_EREGOS:
                     eregosGUID = creature->GetGUID();
+                    if (GetBossState(DATA_UROM_EVENT) != DONE)
+                        creature->setFaction(35);
                     break;
                 case NPC_CENTRIFUGE_CONSTRUCT:
                     if (creature->isAlive())
@@ -161,7 +166,20 @@ public:
                     break;
                 case DATA_VAROS_EVENT:
                     if (state == DONE)
+                    {
                         DoUpdateWorldState(WORLD_STATE_CENTRIFUGE_CONSTRUCT_SHOW, 0);
+                        if (Creature* urom = instance->GetCreature(uromGUID))
+                        {
+                            urom->RestoreFaction();
+                            urom->RemoveAllAuras();
+                            urom->AI()->DoCast(SPELL_EVOCATION);
+                        }
+                    }
+                    break;
+                case DATA_UROM_EVENT:
+                    if (state == DONE)
+                        if (Creature* eregos = instance->GetCreature(eregosGUID))
+                            eregos->RestoreFaction();
                     break;
                 case DATA_EREGOS_EVENT:
                     if (state == DONE)
@@ -176,7 +194,7 @@ public:
         {
             switch (type)
             {
-                case DATA_UROM_PLATAFORM:
+                case DATA_UROM_PLATFORM:
                     platformUrom = data;
                     break;
             }
@@ -186,9 +204,9 @@ public:
         {
             switch (type)
             {
-                case DATA_UROM_PLATAFORM:              return platformUrom;
+                case DATA_UROM_PLATFORM:          return platformUrom;
                 // used by condition system
-                case DATA_UROM_EVENT:                  return GetBossState(DATA_UROM_EVENT);
+                case DATA_UROM_EVENT:             return GetBossState(DATA_UROM_EVENT);
             }
 
             return 0;
@@ -261,6 +279,7 @@ public:
 
             OUT_LOAD_INST_DATA_COMPLETE;
         }
+
         private:
             uint64 drakosGUID;
             uint64 varosGUID;
@@ -277,7 +296,6 @@ public:
             std::list<uint64> gameObjectList;
             std::list<uint64> azureDragonsList;
     };
-
 };
 
 void AddSC_instance_oculus()

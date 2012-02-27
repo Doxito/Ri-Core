@@ -90,6 +90,8 @@ public:
             Dalronn_isDead = false;
             Check_Timer = 5000;
 
+            me->RemoveLootMode(1);
+
             ghost = (me->GetEntry() == MOB_SKARVALD_GHOST);
             if (!ghost && instance)
             {
@@ -132,7 +134,8 @@ public:
                     {
                         DoScriptText(YELL_SKARVALD_SKA_DIEDFIRST, me);
 
-                        me->RemoveFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_LOOTABLE);
+                        dalronn->ToCreature()->AddLootMode(1);
+                        //me->RemoveFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_LOOTABLE);
                         //DoCast(me, SPELL_SUMMON_SKARVALD_GHOST, true);
                         Creature* temp = me->SummonCreature(MOB_SKARVALD_GHOST, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), 0, TEMPSUMMON_CORPSE_DESPAWN, 5000);
                         if (temp)
@@ -247,6 +250,8 @@ public:
             Skarvald_isDead = false;
             AggroYell_Timer = 0;
 
+            me->RemoveLootMode(1);
+
             ghost = me->GetEntry() == MOB_DALRONN_GHOST;
             if (!ghost && instance)
             {
@@ -291,7 +296,8 @@ public:
                     {
                         DoScriptText(YELL_DALRONN_DAL_DIEDFIRST, me);
 
-                        me->RemoveFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_LOOTABLE);
+                        skarvald->ToCreature()->AddLootMode(1);
+                        //me->RemoveFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_LOOTABLE);
                         //DoCast(me, SPELL_SUMMON_DALRONN_GHOST, true);
                         Creature* temp = me->SummonCreature(MOB_DALRONN_GHOST, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), 0, TEMPSUMMON_CORPSE_DESPAWN, 5000);
                         if (temp)

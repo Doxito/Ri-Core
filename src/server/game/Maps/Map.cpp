@@ -717,13 +717,13 @@ void Map::PlayerRelocation(Player* player, float x, float y, float z, float orie
 
     if(!area)
     {
-      //player->TeleportTo(player->m_homebindMapId, player->m_homebindX, player->m_homebindY, player->m_homebindZ, player->GetOrientation()); //Teleport a piedra de Hogar
+      player->TeleportTo(player->m_homebindMapId, player->m_homebindX, player->m_homebindY, player->m_homebindZ, player->GetOrientation()); //Teleport a piedra de Hogar
     // En caso de querer banear a la gente que está en un área desonocida - Activar:
-       std::string accountName;   
-       AccountMgr::GetName(player->GetSession()->GetAccountId(), accountName);
-       std::stringstream duration;
-       duration << sWorld->getIntConfig(CONFIG_WARDEN_CLIENT_BAN_DURATION_C) << "s";         
-	   sWorld->BanAccount(BAN_ACCOUNT, accountName, duration.str(), "Situacion del PJ: Desconocido - Intento de tirar el server?","Server");
+     //  std::string accountName;   
+      // AccountMgr::GetName(player->GetSession()->GetAccountId(), accountName);
+       //std::stringstream duration;
+       //duration << sWorld->getIntConfig(CONFIG_WARDEN_CLIENT_BAN_DURATION_C) << "s";         
+	   //sWorld->BanAccount(BAN_ACCOUNT, accountName, duration.str(), "Situacion del PJ: Desconocido - Intento de tirar el server?","Server");
     
      }
     else

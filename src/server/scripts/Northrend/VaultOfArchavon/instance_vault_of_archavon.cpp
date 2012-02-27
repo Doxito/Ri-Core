@@ -47,6 +47,7 @@ class instance_archavon : public InstanceMapScript
                 EmalonDeath = 0;
                 KoralonDeath = 0;
             }
+
             void OnPlayerEnter(Player *player)
             {
                 if (sWorld->getBoolConfig(CONFIG_OUTDOORPVP_WINTERGRASP_ENABLED))

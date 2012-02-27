@@ -15,27 +15,19 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* Script Data Start
-SDName: Boss mal_ganis
-SDAuthor: Tartalo
-SD%Complete: 80
-SDComment: TODO: Intro & outro
-SDCategory:
-Script Data End */
-
 #include "ScriptPCH.h"
 #include "culling_of_stratholme.h"
 
 enum Spells
 {
-    SPELL_CARRION_SWARM                         = 52720, //A cresting wave of chaotic magic splashes over enemies in front of the caster, dealing 3230 to 3570 Shadow damage and 380 to 420 Shadow damage every 3 sec. for 15 sec.
+    SPELL_CARRION_SWARM                         = 52720,
     H_SPELL_CARRION_SWARM                       = 58852,
-    SPELL_MIND_BLAST                            = 52722, //Inflicts 4163 to 4837 Shadow damage to an enemy.
+    SPELL_MIND_BLAST                            = 52722,
     H_SPELL_MIND_BLAST                          = 58850,
-    SPELL_SLEEP                                 = 52721, //Puts an enemy to sleep for up to 10 sec. Any damage caused will awaken the target.
+    SPELL_SLEEP                                 = 52721,
     H_SPELL_SLEEP                               = 58849,
-    SPELL_VAMPIRIC_TOUCH                        = 52723, //Heals the caster for half the damage dealt by a melee attack.
-    SPELL_KILL_CREDIT                           = 58630  // Non-existing spell as encounter credit, created in spell_dbc
+    SPELL_VAMPIRIC_TOUCH                        = 52723,
+    SPELL_KILL_CREDIT                           = 58630  // Serverside
 };
 
 enum Yells
@@ -67,191 +59,191 @@ enum CombatPhases
 
 class boss_mal_ganis : public CreatureScript
 {
-public:
-    boss_mal_ganis() : CreatureScript("boss_mal_ganis") { }
+    public:
+        boss_mal_ganis() : CreatureScript("boss_mal_ganis") { }
 
-    CreatureAI* GetAI(Creature* creature) const
-    {
-        return new boss_mal_ganisAI (creature);
-    }
-
-    struct boss_mal_ganisAI : public ScriptedAI
-    {
-        boss_mal_ganisAI(Creature* c) : ScriptedAI(c)
+        struct boss_mal_ganisAI : public ScriptedAI
         {
-            instance = c->GetInstanceScript();
-        }
-
-        uint32 uiCarrionSwarmTimer;
-        uint32 uiMindBlastTimer;
-        uint32 uiVampiricTouchTimer;
-        uint32 uiSleepTimer;
-
-        uint8 uiOutroStep;
-        uint32 uiOutroTimer;
-
-        bool bYelled;
-        bool bYelled2;
-
-        CombatPhases Phase;
-
-        InstanceScript* instance;
-
-        void Reset()
-        {
-             bYelled = false;
-             bYelled2 = false;
-             Phase = COMBAT;
-             uiCarrionSwarmTimer = 6000;
-             uiMindBlastTimer = 11000;
-             uiVampiricTouchTimer = urand(10000, 15000);
-             uiSleepTimer = urand(15000, 20000);
-             uiOutroTimer = 1000;
-
-             if (instance)
-                 instance->SetData(DATA_MAL_GANIS_EVENT, NOT_STARTED);
-        }
-
-        void EnterCombat(Unit* /*who*/)
-        {
-            DoScriptText(SAY_AGGRO, me);
-            if (instance)
-                instance->SetData(DATA_MAL_GANIS_EVENT, IN_PROGRESS);
-        }
-
-        void DamageTaken(Unit* done_by, uint32 &damage)
-        {
-            if (damage >= me->GetHealth() && done_by != me)
-                damage = me->GetHealth()-1;
-        }
-
-        void UpdateAI(const uint32 diff)
-        {
-            switch (Phase)
+            boss_mal_ganisAI(Creature* creature) : ScriptedAI(creature)
             {
-                case COMBAT:
-                    //Return since we have no target
-                    if (!UpdateVictim())
-                        return;
+                _instance = creature->GetInstanceScript();
+            }
 
-                    if (!bYelled && HealthBelowPct(30))
-                    {
-                        DoScriptText(SAY_30HEALTH, me);
-                        bYelled = true;
-                    }
+            void Reset()
+            {
+                 _isBelow30PctHealth = false;
+                 _isBelow15PctHealth = false;
+                 _phase = COMBAT;
+                 _carrionSwarmTimer = 6000;
+                 _mindBlastTimer = 12500;
+                 _vampiricTouchTimer = urand(10000, 15000);
+                 _sleepTimer = urand(10000, 15000);
+                 _outroTimer = 1000;
 
-                    if (!bYelled2 && HealthBelowPct(15))
-                    {
-                        DoScriptText(SAY_15HEALTH, me);
-                        bYelled2 = true;
-                    }
+                 if (_instance)
+                     _instance->SetData(DATA_MAL_GANIS_EVENT, NOT_STARTED);
+            }
 
-                    if (HealthBelowPct(1))
-                    {
-                        //Handle Escape Event: Don't forget to add Player::RewardPlayerAndGroupAtEvent
-                        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE);
-                        uiOutroStep = 1;
-                        Phase = OUTRO;
-                        return;
-                    }
+            void EnterCombat(Unit* /*who*/)
+            {
+                DoScriptText(SAY_AGGRO, me);
+                if (_instance)
+                    _instance->SetData(DATA_MAL_GANIS_EVENT, IN_PROGRESS);
+            }
 
-                    if (Creature* pArthas = me->GetCreature(*me, instance ? instance->GetData64(DATA_ARTHAS) : 0))
-                        if (pArthas->isDead())
+            void DamageTaken(Unit* /*attacker*/, uint32 &damage)
+            {
+                if (damage >= me->GetHealth())
+                    damage = me->GetHealth() - 1;
+            }
+
+            void KilledUnit(Unit* /*victim*/)
+            {
+                DoScriptText(RAND(SAY_SLAY_1, SAY_SLAY_2, SAY_SLAY_3, SAY_SLAY_4), me);
+            }
+
+            void UpdateAI(uint32 const diff)
+            {
+                switch (_phase)
+                {
+                    case COMBAT:
+                        if (!UpdateVictim())
+                            return;
+
+                        if (me->HasUnitState(UNIT_STATE_CASTING))
+                            return;
+
+                        if (!_isBelow30PctHealth && HealthBelowPct(30))
                         {
-                            EnterEvadeMode();
-                            me->DisappearAndDie();
-                            if (instance)
-                                instance->SetData(DATA_MAL_GANIS_EVENT, FAIL);
+                            DoScriptText(SAY_30HEALTH, me);
+                            _isBelow30PctHealth = true;
                         }
 
-                    if (uiCarrionSwarmTimer < diff)
-                    {
-                        DoCastVictim(SPELL_CARRION_SWARM);
-                        uiCarrionSwarmTimer = 7000;
-                    } else uiCarrionSwarmTimer -= diff;
-
-                    if (uiMindBlastTimer < diff)
-                    {
-                        if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
-                            DoCast(target, SPELL_MIND_BLAST);
-                        uiMindBlastTimer = 6000;
-                    } else uiMindBlastTimer -= diff;
-
-                    if (uiVampiricTouchTimer < diff)
-                    {
-                        DoCast(me, SPELL_VAMPIRIC_TOUCH);
-                        uiVampiricTouchTimer = 32000;
-                    } else uiVampiricTouchTimer -= diff;
-
-                    if (uiSleepTimer < diff)
-                    {
-                        DoScriptText(RAND(SAY_SLEEP_1, SAY_SLEEP_2), me);
-                        if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
-                            DoCast(target, SPELL_SLEEP);
-                        uiSleepTimer = urand(15000, 20000);
-                    } else uiSleepTimer -= diff;
-
-                    DoMeleeAttackIfReady();
-                    break;
-                case OUTRO:
-                    if (uiOutroTimer < diff)
-                    {
-                        switch (uiOutroStep)
+                        if (!_isBelow15PctHealth && HealthBelowPct(15))
                         {
-                            case 1:
-                                DoScriptText(SAY_ESCAPE_SPEECH_1, me);
-                                me->GetMotionMaster()->MoveTargetedHome();
-                                ++uiOutroStep;
-                                uiOutroTimer = 8000;
-                                break;
-                            case 2:
-                                me->SetTarget(instance ? instance->GetData64(DATA_ARTHAS) : 0);
-                                me->HandleEmoteCommand(29);
-                                DoScriptText(SAY_ESCAPE_SPEECH_2, me);
-                                ++uiOutroStep;
-                                uiOutroTimer = 9000;
-                                break;
-                            case 3:
-                                DoScriptText(SAY_OUTRO, me);
-                                ++uiOutroStep;
-                                uiOutroTimer = 16000;
-                                break;
-                            case 4:
-                                me->HandleEmoteCommand(33);
-                                ++uiOutroStep;
-                                uiOutroTimer = 500;
-                                break;
-                            case 5:
-                                me->SetVisible(false);
-                                me->Kill(me);
-                                break;
-
+                            DoScriptText(SAY_15HEALTH, me);
+                            _isBelow15PctHealth = true;
                         }
-                    } else uiOutroTimer -= diff;
-                    break;
+
+                        if (HealthBelowPct(1))
+                        {
+                            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE);
+                            _outroStep = 1;
+                            _phase = OUTRO;
+                            return;
+                        }
+
+                        if (Creature* arthas = me->GetCreature(*me, _instance ? _instance->GetData64(DATA_ARTHAS) : 0))
+                            if (arthas->isDead())
+                            {
+                                EnterEvadeMode();
+                                me->DespawnOrUnsummon();
+                                if (_instance)
+                                    _instance->SetData(DATA_MAL_GANIS_EVENT, FAIL);
+                            }
+
+                        if (_carrionSwarmTimer <= diff)
+                        {
+                            DoCastVictim(DUNGEON_MODE(SPELL_CARRION_SWARM, H_SPELL_CARRION_SWARM));
+                            _carrionSwarmTimer = 7000;
+                        }
+                        else
+                            _carrionSwarmTimer -= diff;
+
+                        if (_mindBlastTimer <= diff)
+                        {
+                            if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
+                                DoCast(target, DUNGEON_MODE(SPELL_MIND_BLAST, H_SPELL_MIND_BLAST));
+                            _mindBlastTimer = 6000;
+                        }
+                        else
+                            _mindBlastTimer -= diff;
+
+                        if (_vampiricTouchTimer <= diff)
+                        {
+                            DoCast(me, SPELL_VAMPIRIC_TOUCH);
+                            _vampiricTouchTimer = 20000;
+                        }
+                        else
+                            _vampiricTouchTimer -= diff;
+
+                        if (_sleepTimer <= diff)
+                        {
+                            DoScriptText(RAND(SAY_SLEEP_1, SAY_SLEEP_2), me);
+                            if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 1, 100, true))
+                                DoCast(target, DUNGEON_MODE(SPELL_SLEEP, H_SPELL_SLEEP));
+                            _sleepTimer = urand(12500, 17500);
+                        }
+                        else
+                            _sleepTimer -= diff;
+
+                        DoMeleeAttackIfReady();
+                        break;
+                    case OUTRO:
+                        if (_outroTimer <= diff)
+                        {
+                            switch (_outroStep)
+                            {
+                                case 1:
+                                    DoScriptText(SAY_ESCAPE_SPEECH_1, me);
+                                    me->GetMotionMaster()->MoveTargetedHome();
+                                    ++_outroStep;
+                                    _outroTimer = 8000;
+                                    break;
+                                case 2:
+                                    me->SetTarget(_instance ? _instance->GetData64(DATA_ARTHAS) : 0);
+                                    me->HandleEmoteCommand(29);
+                                    DoScriptText(SAY_ESCAPE_SPEECH_2, me);
+                                    ++_outroStep;
+                                    _outroTimer = 9000;
+                                    break;
+                                case 3:
+                                    DoScriptText(SAY_OUTRO, me);
+                                    ++_outroStep;
+                                    _outroTimer = 16000;
+                                    break;
+                                case 4:
+                                    me->HandleEmoteCommand(33);
+                                    ++_outroStep;
+                                    _outroTimer = 500;
+                                    break;
+                                case 5:
+                                    me->DespawnOrUnsummon(1000);
+                                    if (_instance)
+                                    {
+                                        _instance->SetData(DATA_MAL_GANIS_EVENT, DONE);
+                                        // give achievement credit and LFG rewards to players.
+                                        DoCast(me, SPELL_KILL_CREDIT, true);
+                                        _instance->UpdateEncounterState(ENCOUNTER_CREDIT_CAST_SPELL, SPELL_KILL_CREDIT, NULL);
+                                    }
+                                    ++_outroStep;
+                                    _outroTimer = 2000;
+                                    break;
+                            }
+                        }
+                        else
+                            _outroTimer -= diff;
+                        break;
+                }
             }
-        }
 
-        void JustDied(Unit* /*killer*/)
+        private:
+            uint32 _carrionSwarmTimer;
+            uint32 _mindBlastTimer;
+            uint32 _vampiricTouchTimer;
+            uint32 _sleepTimer;
+            uint8 _outroStep;
+            uint32 _outroTimer;
+            bool _isBelow30PctHealth;
+            bool _isBelow15PctHealth;
+            CombatPhases _phase;
+            InstanceScript* _instance;
+        };
+
+        CreatureAI* GetAI(Creature* creature) const
         {
-            if (instance)
-            {
-                instance->SetData(DATA_MAL_GANIS_EVENT, DONE);
-
-                // give achievement credit and LFG rewards to players. criteria use spell 58630 which doesn't exist, but it was created in spell_dbc
-                DoCast(me, SPELL_KILL_CREDIT);
-            }
+            return new boss_mal_ganisAI(creature);
         }
-
-        void KilledUnit(Unit* victim)
-        {
-            if (victim == me)
-                return;
-
-            DoScriptText(RAND(SAY_SLAY_1, SAY_SLAY_2, SAY_SLAY_3, SAY_SLAY_4), me);
-        }
-    };
-
 };
 
 void AddSC_boss_mal_ganis()

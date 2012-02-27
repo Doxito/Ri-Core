@@ -27,29 +27,30 @@ EndScriptData */
 
 enum Spells
 {
-
-    SPELL_ARCANE_SHIELD                           = 53813, //Dummy --> Channeled, shields the caster from damage.
     SPELL_EMPOWERED_ARCANE_EXPLOSION              = 51110,
-    SPELL_EMPOWERED_ARCANE_EXPLOSION_2            = 59377,
+    SPELL_EMPOWERED_ARCANE_EXPLOSION_H            = 59377,
     SPELL_FROSTBOMB                               = 51103, //Urom throws a bomb, hitting its target with the highest aggro which inflict directly 650 frost damage and drops a frost zone on the ground. This zone deals 650 frost damage per second and reduce the movement speed by 35%. Lasts 1 minute.
+    SPELL_FROST_BUFFET                            = 58025,
     SPELL_SUMMON_MENAGERIE                        = 50476, //Summons an assortment of creatures and teleports the caster to safety.
     SPELL_SUMMON_MENAGERIE_2                      = 50495,
     SPELL_SUMMON_MENAGERIE_3                      = 50496,
     SPELL_TELEPORT                                = 51112, //Teleports to the center of Oculus
     SPELL_TIME_BOMB                               = 51121, //Deals arcane damage to a random player, and after 6 seconds, deals zone damage to nearby equal to the health missing of the target afflicted by the debuff.
-    SPELL_TIME_BOMB_2                             = 59376
+    SPELL_TIME_BOMB_H                             = 59376
 };
 
 enum Yells
 {
-    SAY_AGGRO_1                                   = -1578000,
-    SAY_AGGRO_2                                   = -1578001,
-    SAY_AGGRO_3                                   = -1578002,
-    SAY_AGGRO_4                                   = -1578003,
-    SAY_TELEPORT                                  = -1578004,
+    SAY_AGGRO       = 1,
+    SAY_SUMMON_1    = 2,
+    SAY_SUMMON_2    = 3,
+    SAY_SUMMON_3    = 4,
+    SAY_KILL        = 5,
+    SAY_EXPLOSION   = 6,
+    SAY_DEATH       = 7
 };
 
-enum eCreature
+enum UromCreature
 {
     NPC_PHANTASMAL_CLOUDSCRAPER                   = 27645,
     NPC_PHANTASMAL_MAMMOTH                        = 27642,
@@ -83,260 +84,293 @@ static uint32 TeleportSpells[]=
 
 static int32 SayAggro[]=
 {
-    SAY_AGGRO_1, SAY_AGGRO_2, SAY_AGGRO_3, SAY_AGGRO_4
+    SAY_SUMMON_1, SAY_SUMMON_2, SAY_SUMMON_3, SAY_AGGRO
 };
 
 class boss_urom : public CreatureScript
 {
-public:
-    boss_urom() : CreatureScript("boss_urom") { }
+    public:
+        boss_urom() : CreatureScript("boss_urom") { }
 
-    CreatureAI* GetAI(Creature* creature) const
-    {
-        return new boss_uromAI (creature);
-    }
-
-    struct boss_uromAI : public BossAI
-    {
-        boss_uromAI(Creature* creature) : BossAI(creature, DATA_UROM_EVENT) {}
-
-        void Reset()
+        struct boss_uromAI : public BossAI
         {
-            if (instance->GetBossState(DATA_VAROS_EVENT) != DONE)
-                DoCast(SPELL_ARCANE_SHIELD);
-
-            _Reset();
-
-            if (instance->GetData(DATA_UROM_PLATAFORM) == 0)
+            boss_uromAI(Creature* creature) : BossAI(creature, DATA_UROM_EVENT)
             {
-                for (uint8 i = 0; i < 3; i++)
-                    group[i] = 0;
+                if (instance->GetBossState(DATA_VAROS_EVENT) != DONE)
+                    DoCast(SPELL_ARCANE_SHIELD);
             }
 
-            x = 0.0f;
-            y = 0.0f;
-            canCast = false;
-            canGoBack = false;
-
-            me->GetMotionMaster()->MoveIdle();
-
-            teleportTimer = urand(30000, 35000);
-            arcaneExplosionTimer = 9000;
-            castArcaneExplosionTimer = 2000;
-            frostBombTimer = urand(5000, 8000);
-            timeBombTimer = urand(20000, 25000);
-        }
-
-        void EnterCombat(Unit* /*who*/)
-        {
-            _EnterCombat();
-
-            SetGroups();
-            SummonGroups();
-            CastTeleport();
-
-            if (instance->GetData(DATA_UROM_PLATAFORM) != 3)
-                instance->SetData(DATA_UROM_PLATAFORM, instance->GetData(DATA_UROM_PLATAFORM)+1);
-        }
-
-        void AttackStart(Unit* who)
-        {
-            if (!who)
-                return;
-
-            if (me->GetPositionZ() > 518.63f)
-                DoStartNoMovement(who);
-
-            if (me->GetPositionZ() < 518.63f)
+            void Reset()
             {
-                if (me->Attack(who, true))
+                _Reset();
+
+                if (instance->GetData(DATA_UROM_PLATFORM) == 0)
                 {
-                    DoScriptText(SayAggro[3], me);
+                    for (uint8 i = 0; i < 3; ++i)
+                        group[i] = 0;
+                }
 
-                    me->SetInCombatWith(who);
-                    who->SetInCombatWith(me);
+                x = 0.0f;
+                y = 0.0f;
+                canCast = false;
+                canGoBack = false;
 
-                    me->GetMotionMaster()->MoveChase(who, 0, 0);
+                me->GetMotionMaster()->MoveIdle();
+
+                teleportTimer = urand(30000, 35000);
+                arcaneExplosionTimer = 9000;
+                castArcaneExplosionTimer = 2000;
+                frostBombTimer = urand(5000, 8000);
+                timeBombTimer = urand(20000, 25000);
+            }
+
+            void EnterCombat(Unit* /*who*/)
+            {
+                _EnterCombat();
+
+                SetGroups();
+                SummonGroups();
+                CastTeleport();
+
+                if (instance->GetData(DATA_UROM_PLATFORM) != 3)
+                    instance->SetData(DATA_UROM_PLATFORM, instance->GetData(DATA_UROM_PLATFORM) + 1);
+            }
+
+            void KilledUnit(Unit* /*victim*/)
+            {
+                Talk(SAY_KILL);
+            }
+
+            void AttackStart(Unit* who)
+            {
+                if (!who)
+                    return;
+
+                if (me->GetPositionZ() > 518.63f)
+                    DoStartNoMovement(who);
+
+                if (me->GetPositionZ() < 518.63f)
+                {
+                    if (me->Attack(who, true))
+                    {
+                        DoScriptText(SayAggro[3], me);
+
+                        me->SetInCombatWith(who);
+                        who->SetInCombatWith(me);
+
+                        me->GetMotionMaster()->MoveChase(who, 0, 0);
+                    }
                 }
             }
-        }
 
-        void SetGroups()
-        {
-            if (!instance || instance->GetData(DATA_UROM_PLATAFORM) != 0)
-                return;
-
-            while (group[0] == group[1] || group[0] == group[2] || group[1] == group[2])
+            void SetGroups()
             {
-                for (uint8 i = 0; i < 3; i++)
-                    group[i] = urand(0, 2);
-            }
-        }
+                if (!instance || instance->GetData(DATA_UROM_PLATFORM) != 0)
+                    return;
 
-        void SetPosition(uint8 i)
-        {
-            switch (i)
-            {
-                case 0:
-                    x = me->GetPositionX() + 4;
-                    y = me->GetPositionY() - 4;
-                    break;
-                case 1:
-                    x = me->GetPositionX() + 4;
-                    y = me->GetPositionY() + 4;
-                    break;
-                case 2:
-                    x = me->GetPositionX() - 4;
-                    y = me->GetPositionY() + 4;
-                    break;
-                case 3:
-                    x = me->GetPositionX() - 4;
-                    y = me->GetPositionY() - 4;
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        void SummonGroups()
-        {
-            if (!instance || instance->GetData(DATA_UROM_PLATAFORM) > 2)
-                return;
-
-            for (uint8 i = 0; i < 4 ; i++)
-            {
-                SetPosition(i);
-                me->SummonCreature(Group[group[instance->GetData(DATA_UROM_PLATAFORM)]].entry[i], x, y, me->GetPositionZ(), me->GetOrientation());
-            }
-        }
-
-        void CastTeleport()
-        {
-            if (!instance || instance->GetData(DATA_UROM_PLATAFORM) > 2)
-                return;
-
-            DoScriptText(SayAggro[instance->GetData(DATA_UROM_PLATAFORM)], me);
-            DoCast(TeleportSpells[instance->GetData(DATA_UROM_PLATAFORM)]);
-        }
-
-        void UpdateAI(const uint32 uiDiff)
-        {
-            //Return since we have no target
-            if (!UpdateVictim())
-                return;
-
-            if (!instance || instance->GetData(DATA_UROM_PLATAFORM) < 2)
-                return;
-
-            if (teleportTimer <= uiDiff)
-            {
-                me->InterruptNonMeleeSpells(false);
-                DoScriptText(SAY_TELEPORT, me);
-                me->GetMotionMaster()->MoveIdle();
-                DoCast(SPELL_TELEPORT);
-                teleportTimer = urand(30000, 35000);
-
-            } else teleportTimer -= uiDiff;
-
-            if (canCast && !me->FindCurrentSpellBySpellId(SPELL_EMPOWERED_ARCANE_EXPLOSION))
-            {
-                if (castArcaneExplosionTimer <= uiDiff)
+                while (group[0] == group[1] || group[0] == group[2] || group[1] == group[2])
                 {
-                    canCast = false;
-                    canGoBack = true;
-                    DoCastAOE(SPELL_EMPOWERED_ARCANE_EXPLOSION);
-                    castArcaneExplosionTimer = 2000;
-                }else castArcaneExplosionTimer -= uiDiff;
+                    for (uint8 i = 0; i < 3; ++i)
+                        group[i] = urand(0, 2);
+                }
             }
 
-            if (canGoBack)
+            void SetPosition(uint8 i)
             {
-                if (arcaneExplosionTimer <= uiDiff)
+                switch (i)
                 {
-                    Position pPos;
-                    me->getVictim()->GetPosition(&pPos);
-
-                    me->NearTeleportTo(pPos.GetPositionX(), pPos.GetPositionY(), pPos.GetPositionZ(), pPos.GetOrientation());
-                    me->GetMotionMaster()->MoveChase(me->getVictim(), 0, 0);
-                    me->SetUnitMovementFlags(MOVEMENTFLAG_WALKING);
-
-                    canCast = false;
-                    canGoBack = false;
-                    arcaneExplosionTimer = 9000;
-                } else arcaneExplosionTimer -= uiDiff;
+                    case 0:
+                        x = me->GetPositionX() + 4;
+                        y = me->GetPositionY() - 4;
+                        break;
+                    case 1:
+                        x = me->GetPositionX() + 4;
+                        y = me->GetPositionY() + 4;
+                        break;
+                    case 2:
+                        x = me->GetPositionX() - 4;
+                        y = me->GetPositionY() + 4;
+                        break;
+                    case 3:
+                        x = me->GetPositionX() - 4;
+                        y = me->GetPositionY() - 4;
+                        break;
+                    default:
+                        break;
+                }
             }
 
-            if (!me->IsNonMeleeSpellCasted(false, true, true))
+            void SummonGroups()
             {
-                if (frostBombTimer <= uiDiff)
-                {
-                    DoCastVictim(SPELL_FROSTBOMB);
-                    frostBombTimer = urand(5000, 8000);
-                } else frostBombTimer -= uiDiff;
+                if (!instance || instance->GetData(DATA_UROM_PLATFORM) > 2)
+                    return;
 
-                if (timeBombTimer <= uiDiff)
+                for (uint8 i = 0; i < 4; ++i)
                 {
-                    if (Unit* unit = SelectTarget(SELECT_TARGET_RANDOM))
-                        DoCast(unit, SPELL_TIME_BOMB);
-
-                    timeBombTimer = urand(20000, 25000);
-                } else timeBombTimer -= uiDiff;
+                    SetPosition(i);
+                    me->SummonCreature(Group[group[instance->GetData(DATA_UROM_PLATFORM)]].entry[i], x, y, me->GetPositionZ(), me->GetOrientation());
+                }
             }
 
-            DoMeleeAttackIfReady();
-        }
-
-        void JustDied(Unit* /*killer*/)
-        {
-            _JustDied();
-            DoCast(me, SPELL_DEATH_SPELL, true); // we cast the spell as triggered or the summon effect does not occur
-        }
-
-        void LeaveCombat()
-        {
-            me->RemoveAllAuras();
-            me->CombatStop(false);
-            me->DeleteThreatList();
-        }
-
-        void SpellHit(Unit* /*pCaster*/, const SpellInfo* pSpell)
-        {
-            switch (pSpell->Id)
+            void CastTeleport()
             {
-                case SPELL_SUMMON_MENAGERIE:
-                    me->SetHomePosition(968.66f, 1042.53f, 527.32f, 0.077f);
-                    LeaveCombat();
-                    break;
-                case SPELL_SUMMON_MENAGERIE_2:
-                    me->SetHomePosition(1164.02f, 1170.85f, 527.321f, 3.66f);
-                    LeaveCombat();
-                    break;
-                case SPELL_SUMMON_MENAGERIE_3:
-                    me->SetHomePosition(1118.31f, 1080.377f, 508.361f, 4.25f);
-                    LeaveCombat();
-                    break;
-                case SPELL_TELEPORT:
-                    me->AddUnitMovementFlag(MOVEMENTFLAG_CAN_FLY); // with out it the npc will fall down while is casting
-                    canCast = true;
-                    break;
-                default:
-                    break;
+                if (!instance || instance->GetData(DATA_UROM_PLATFORM) > 2)
+                    return;
+
+                Talk(SayAggro[instance->GetData(DATA_UROM_PLATFORM)]);
+                DoCast(TeleportSpells[instance->GetData(DATA_UROM_PLATFORM)]);
             }
+
+            void UpdateAI(uint32 const diff)
+            {
+                if (!me->IsNonMeleeSpellCasted(false) && !UpdateVictim())
+                    return;
+
+                if (!instance || instance->GetData(DATA_UROM_PLATFORM) < 2)
+                    return;
+
+                if (teleportTimer <= diff)
+                {
+                    me->InterruptNonMeleeSpells(false);
+                    if (frostBombTimer <= 8000)
+                        frostBombTimer += 8000;
+                    if (timeBombTimer <= 2500)
+                        timeBombTimer += 2500;
+                    Talk(SAY_EXPLOSION);
+                    me->GetMotionMaster()->MoveIdle();
+                    DoCast(SPELL_TELEPORT);
+                    teleportTimer = urand(30000, 35000);
+
+                }
+                else
+                    teleportTimer -= diff;
+
+                if (canCast && !me->FindCurrentSpellBySpellId(SPELL_EMPOWERED_ARCANE_EXPLOSION))
+                {
+                    if (castArcaneExplosionTimer <= diff)
+                    {
+                        canCast = false;
+                        canGoBack = true;
+                        DoCastAOE(DUNGEON_MODE(SPELL_EMPOWERED_ARCANE_EXPLOSION, SPELL_EMPOWERED_ARCANE_EXPLOSION_H));
+                        castArcaneExplosionTimer = 2000;
+                    }
+                    else
+                        castArcaneExplosionTimer -= diff;
+                }
+
+                if (canGoBack)
+                {
+                    if (arcaneExplosionTimer <= diff)
+                    {
+                        Position pos;
+                        me->getVictim()->GetPosition(&pos);
+
+                        me->RemoveUnitMovementFlag(MOVEMENTFLAG_CAN_FLY);
+                        me->NearTeleportTo(pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), pos.GetOrientation());
+                        me->GetMotionMaster()->MoveChase(me->getVictim(), 0, 0);
+                        //me->SetUnitMovementFlags(MOVEMENTFLAG_WALKING);
+
+                        canCast = false;
+                        canGoBack = false;
+                        arcaneExplosionTimer = 9000;
+                    }
+                    else
+                        arcaneExplosionTimer -= diff;
+                }
+
+                if (!me->IsNonMeleeSpellCasted(false, true, true))
+                {
+                    if (frostBombTimer <= diff)
+                    {
+                        DoCastVictim(SPELL_FROSTBOMB);
+                        frostBombTimer = urand(7000, 15000);
+                    }
+                    else
+                        frostBombTimer -= diff;
+
+                    if (timeBombTimer <= diff)
+                    {
+                        if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM))
+                            DoCast(target, DUNGEON_MODE(SPELL_TIME_BOMB, SPELL_TIME_BOMB_H));
+
+                        timeBombTimer = urand(20000, 25000);
+                    }
+                    else
+                        timeBombTimer -= diff;
+                }
+
+                DoMeleeAttackIfReady();
+            }
+
+            void JustDied(Unit* /*killer*/)
+            {
+                Talk(SAY_DEATH);
+                _JustDied();
+                DoCast(me, SPELL_DEATH_SPELL, true);
+            }
+
+            void LeaveCombat()
+            {
+                me->RemoveAllAuras();
+                me->CombatStop(false);
+                me->DeleteThreatList();
+            }
+
+            void SpellHit(Unit* /*caster*/, SpellInfo const* spell)
+            {
+                switch (spell->Id)
+                {
+                    case SPELL_SUMMON_MENAGERIE:
+                        me->SetHomePosition(968.66f, 1042.53f, 527.32f, 0.077f);
+                        LeaveCombat();
+                        DoCast(SPELL_EVOCATION);
+                        break;
+                    case SPELL_SUMMON_MENAGERIE_2:
+                        me->SetHomePosition(1164.02f, 1170.85f, 527.321f, 3.66f);
+                        LeaveCombat();
+                        DoCast(SPELL_EVOCATION);
+                        break;
+                    case SPELL_SUMMON_MENAGERIE_3:
+                        me->SetHomePosition(1118.31f, 1080.377f, 508.361f, 4.25f);
+                        LeaveCombat();
+                        break;
+                    case SPELL_TELEPORT:
+                        me->AddUnitMovementFlag(MOVEMENTFLAG_CAN_FLY); // without it the npc will fall down while is casting
+                        canCast = true;
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            void DamageDealt(Unit* victim, uint32& /*damage*/, DamageEffectType damageType)
+            {
+                if (!IsHeroic())
+                    return;
+
+                if (damageType == DOT)
+                    DoCast(victim, SPELL_FROST_BUFFET, true);
+            }
+
+            private:
+                float x, y;
+
+                bool canCast;
+                bool canGoBack;
+
+                uint8 group[3];
+
+                uint32 teleportTimer;
+                uint32 arcaneExplosionTimer;
+                uint32 castArcaneExplosionTimer;
+                uint32 frostBombTimer;
+                uint32 timeBombTimer;
+        };
+
+        CreatureAI* GetAI(Creature* creature) const
+        {
+            return new boss_uromAI(creature);
         }
-        private:
-            float x, y;
-
-            bool canCast;
-            bool canGoBack;
-
-            uint8 group[3];
-
-            uint32 teleportTimer;
-            uint32 arcaneExplosionTimer;
-            uint32 castArcaneExplosionTimer;
-            uint32 frostBombTimer;
-            uint32 timeBombTimer;
-    };
 };
 
 void AddSC_boss_urom()

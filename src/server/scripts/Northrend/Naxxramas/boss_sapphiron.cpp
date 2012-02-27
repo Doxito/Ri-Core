@@ -84,7 +84,7 @@ public:
         boss_sapphironAI(Creature* c) : BossAI(c, BOSS_SAPPHIRON)
             , phase(PHASE_NULL)
         {
-            map = me->GetMap();
+            pMap = me->GetMap();
         }
 
         Phases phase;
@@ -93,7 +93,7 @@ public:
 
         bool CanTheHundredClub; // needed for achievement: The Hundred Club(2146, 2147)
         uint32 CheckFrostResistTimer;
-        Map* map;
+        Map* pMap;
 
         void InitializeAI()
         {
@@ -156,9 +156,9 @@ public:
                 AchievementEntry const* AchievTheHundredClub = GetAchievementStore()->LookupEntry(ACHIEVEMENT_THE_HUNDRED_CLUB);
                 if (AchievTheHundredClub)
                 {
-                    if (map && map->IsDungeon())
+                    if (pMap && pMap->IsDungeon())
                     {
-                        Map::PlayerList const &players = map->GetPlayers();
+                        Map::PlayerList const &players = pMap->GetPlayers();
                         for (Map::PlayerList::const_iterator itr = players.begin(); itr != players.end(); ++itr)
                             itr->getSource()->CompletedAchievement(AchievTheHundredClub);
                     }
@@ -172,7 +172,7 @@ public:
                 events.ScheduleEvent(EVENT_LIFTOFF, 0);
         }
 
-        void DoAction(const int32 param)
+        void DoAction(int32 const param)
         {
             if (param == DATA_SAPPHIRON_BIRTH)
             {
@@ -183,9 +183,9 @@ public:
 
         void CheckPlayersFrostResist()
         {
-            if (CanTheHundredClub && map && map->IsDungeon())
+            if (CanTheHundredClub && pMap && pMap->IsDungeon())
             {
-                Map::PlayerList const &players = map->GetPlayers();
+                Map::PlayerList const &players = pMap->GetPlayers();
                 for (Map::PlayerList::const_iterator itr = players.begin(); itr != players.end(); ++itr)
                 {
                     if (itr->getSource()->GetResistance(SPELL_SCHOOL_FROST) > MAX_FROST_RESISTANCE)
@@ -215,13 +215,13 @@ public:
             {
                 if (Player* player = Unit::GetPlayer(*me, itr->first))
                     player->RemoveAura(SPELL_ICEBOLT);
-                if (GameObject* go = GameObject::GetGameObject(*me, itr->second))
-                    go->Delete();
+                if (GameObject* pGo = GameObject::GetGameObject(*me, itr->second))
+                    pGo->Delete();
             }
             iceblocks.clear();
         }
 
-        void UpdateAI(const uint32 diff)
+        void UpdateAI(uint32 const diff)
         {
             if (!phase)
                 return;
@@ -230,6 +230,8 @@ public:
 
             if ((phase != PHASE_BIRTH && !UpdateVictim()) || !CheckInRoom())
                 return;
+
+            _DoAggroPulse(diff);
 
             if (CanTheHundredClub)
             {
@@ -251,7 +253,7 @@ public:
                             DoCast(me, SPELL_BERSERK);
                             return;
                         case EVENT_CLEAVE:
-                            DoCast(me->getVictim(), SPELL_CLEAVE);
+                            DoCastVictim(SPELL_CLEAVE);
                             events.ScheduleEvent(EVENT_CLEAVE, 5000+rand()%10000, 0, PHASE_GROUND);
                             return;
                         case EVENT_TAIL:
@@ -265,8 +267,11 @@ public:
                         case EVENT_BLIZZARD:
                         {
                             //DoCastAOE(SPELL_SUMMON_BLIZZARD);
-                            if (Creature* summon = DoSummon(MOB_BLIZZARD, me, 0.0f, urand(25000, 30000), TEMPSUMMON_TIMED_DESPAWN))
-                                summon->GetMotionMaster()->MoveRandom(40);
+                            Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 1);
+                            if (!target)
+                                target = me->getVictim();
+                            if (Creature* Summon = DoSummon(MOB_BLIZZARD, target, 0.0f, 20000, TEMPSUMMON_TIMED_DESPAWN))
+                                Summon->GetMotionMaster()->MoveRandom(40);
                             events.ScheduleEvent(EVENT_BLIZZARD, RAID_MODE(20000, 7000), 0, PHASE_GROUND);
                             break;
                         }
@@ -353,8 +358,8 @@ public:
                             me->SetReactState(REACT_AGGRESSIVE);
                             return;
                     }
-                }//if (uint32 eventId = events.ExecuteEvent())
-            }//if (phase == PHASE_GROUND)
+                }
+            }
         }
 
         void CastExplosion()
@@ -379,8 +384,10 @@ public:
                 {
                     if (GameObject* go = GameObject::GetGameObject(*me, itr->second))
                     {
-                        if (go->IsInBetween(me, target, 2.0f)
-                            && me->GetExactDist2d(target->GetPositionX(), target->GetPositionY()) - me->GetExactDist2d(go->GetPositionX(), go->GetPositionY()) < 5.0f)
+                        float angle = me->GetAngle(go) - me->GetAngle(target);
+                        float dist = me->GetExactDist2d(target->GetPositionX(), target->GetPositionY()) - me->GetExactDist2d(go->GetPositionX(), go->GetPositionY());
+
+                        if (angle > -0.04f && angle < 0.04f && dist < 5.0f && dist >= 0.0f)
                         {
                             target->ApplySpellImmune(0, IMMUNITY_ID, SPELL_FROST_EXPLOSION, true);
                             targets.push_back(target);

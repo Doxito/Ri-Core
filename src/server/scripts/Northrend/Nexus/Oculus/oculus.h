@@ -24,7 +24,7 @@ enum Data
     DATA_VAROS_EVENT,
     DATA_UROM_EVENT,
     DATA_EREGOS_EVENT,
-    DATA_UROM_PLATAFORM
+    DATA_UROM_PLATFORM
 };
 
 enum Data64
@@ -35,7 +35,7 @@ enum Data64
     DATA_EREGOS
 };
 
-enum Bosses
+enum Creatures
 {
     NPC_DRAKOS                  = 27654,
     NPC_VAROS                   = 27447,
@@ -44,6 +44,11 @@ enum Bosses
 
     NPC_AZURE_RING_GUARDIAN     = 28236,
     NPC_CENTRIFUGE_CONSTRUCT    = 27641,
+    NPC_EMERALD_DRAKE           = 27692,
+    NPC_AMBER_DRAKE             = 27755,
+    NPC_RUBY_DRAKE              = 27756,
+
+    NPC_CENTRIFUGE_CORE         = 28183
 };
 
 enum GameObjects
@@ -72,6 +77,8 @@ enum OculusWorldStates
 enum OculusSpells
 {
     SPELL_CENTRIFUGE_SHIELD = 50053,
+    SPELL_ARCANE_SHIELD     = 53813,
+    SPELL_EVOCATION         = 51602,
     SPELL_DEATH_SPELL       = 50415
 };
 #endif

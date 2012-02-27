@@ -18,294 +18,360 @@
 #include "ScriptPCH.h"
 #include "culling_of_stratholme.h"
 
-#define MAX_ENCOUNTER 5
+#define MAX_ENCOUNTER 7
 
 /* Culling of Stratholme encounters:
-0 - Meathook
-1 - Salramm the Fleshcrafter
-2 - Chrono-Lord Epoch
-3 - Mal'Ganis
-4 - Infinite Corruptor (Heroic only)
+0 - Plague Crates
+1 - Meathook
+2 - Salramm the Fleshcrafter
+3 - Chrono-Lord Epoch
+4 - Mal'Ganis
+5 - Infinite Corruptor (Heroic only)
+6 - Arthas
 */
-
-enum Texts
-{
-    SAY_CRATES_COMPLETED    = 0,
-};
-
-Position const ChromieSummonPos = {1813.298f, 1283.578f, 142.3258f, 3.878161f};
 
 class instance_culling_of_stratholme : public InstanceMapScript
 {
-    public:
-        instance_culling_of_stratholme() : InstanceMapScript("instance_culling_of_stratholme", 595) { }
+public:
+    instance_culling_of_stratholme() : InstanceMapScript("instance_culling_of_stratholme", 595) { }
 
-        InstanceScript* GetInstanceScript(InstanceMap* map) const
+    InstanceScript* GetInstanceScript(InstanceMap* map) const
+    {
+        return new instance_culling_of_stratholme_InstanceMapScript(map);
+    }
+
+    struct instance_culling_of_stratholme_InstanceMapScript : public InstanceScript
+    {
+        instance_culling_of_stratholme_InstanceMapScript(Map* map) : InstanceScript(map) {}
+
+        uint64 uiArthas;
+        uint64 uiMeathook;
+        uint64 uiSalramm;
+        uint64 uiEpoch;
+        uint64 uiMalGanis;
+        uint64 uiInfinite;
+
+        uint64 uiShkafGate;
+        uint64 uiMalGanisGate1;
+        uint64 uiMalGanisGate2;
+        uint64 uiExitGate;
+        uint64 uiMalGanisChest;
+        uint32 uiCountdownTimer;
+        uint16 uiCountdownMinute;
+
+        uint32 m_auiEncounter[MAX_ENCOUNTER];
+        std::string str_data;
+
+        uint32 uiCountCrates;
+
+
+        void Initialize()
         {
-            return new instance_culling_of_stratholme_InstanceMapScript(map);
+            memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
+
+            uiCountCrates = 0;
+            uiCountdownTimer = 0;
+            uiCountdownMinute = 26;
         }
 
-        struct instance_culling_of_stratholme_InstanceMapScript : public InstanceScript
+
+        bool IsEncounterInProgress() const
         {
-            instance_culling_of_stratholme_InstanceMapScript(Map* map) : InstanceScript(map)
+            for (uint8 i = 0; i < MAX_ENCOUNTER; ++i)
+                if (m_auiEncounter[i] == IN_PROGRESS) return true;
+
+            return false;
+        }
+
+        void OnCreatureCreate(Creature* creature)
+        {
+            switch (creature->GetEntry())
             {
-                _arthasGUID = 0;
-                _meathookGUID = 0;
-                _salrammGUID = 0;
-                _epochGUID = 0;
-                _malGanisGUID = 0;
-                _infiniteGUID = 0;
-                _shkafGateGUID = 0;
-                _malGanisGate1GUID = 0;
-                _malGanisGate2GUID = 0;
-                _exitGateGUID = 0;
-                _malGanisChestGUID = 0;
-                _genericBunnyGUID = 0;
-                memset(&_encounterState[0], 0, sizeof(uint32) * MAX_ENCOUNTER);
-                _crateCount = 0;
+                case NPC_ARTHAS:
+                    uiArthas = creature->GetGUID();
+                    break;
+                case NPC_MEATHOOK:
+                    uiMeathook = creature->GetGUID();
+                    break;
+                case NPC_SALRAMM:
+                    uiSalramm = creature->GetGUID();
+                    break;
+                case NPC_EPOCH:
+                    uiEpoch = creature->GetGUID();
+                    break;
+                case NPC_MAL_GANIS:
+                    uiMalGanis = creature->GetGUID();
+                    break;
+                case NPC_INFINITE:
+                    uiInfinite = creature->GetGUID();
+                    creature->SetVisible(false);
+                    creature->setFaction(35);
+                    break;
+                case NPC_ZOMBIE:
+                    if (m_auiEncounter[6] == NOT_STARTED && creature->GetPositionX() < 2205.0f && creature->GetPositionY() < 1320.0f)
+                        creature->UpdateEntry(roll_chance_i(50) ? 28167 : 28169);
+                    creature->SetCorpseDelay(3);
+                    break;
             }
+        }
 
-            bool IsEncounterInProgress() const
+        // Give reward needed for Zombiefest achievement to players out of normal reward distance
+        void OnCreatureDeath(Creature* creature)
+        {
+            if (creature->GetEntry() == NPC_ZOMBIE)
             {
-                for (uint8 i = 0; i < MAX_ENCOUNTER; ++i)
-                    if (_encounterState[i] == IN_PROGRESS)
-                        return true;
+                Map::PlayerList const &PlayerList = instance->GetPlayers();
 
-                return false;
-            }
-
-            void FillInitialWorldStates(WorldPacket& data)
-            {
-                data << uint32(WORLDSTATE_SHOW_CRATES) << uint32(1);
-                data << uint32(WORLDSTATE_CRATES_REVEALED) << uint32(_crateCount);
-                data << uint32(WORLDSTATE_WAVE_COUNT) << uint32(0);
-                data << uint32(WORLDSTATE_TIME_GUARDIAN) << uint32(25);
-                data << uint32(WORLDSTATE_TIME_GUARDIAN_SHOW) << uint32(0);
-            }
-
-            void OnCreatureCreate(Creature* creature)
-            {
-                switch (creature->GetEntry())
-                {
-                    case NPC_ARTHAS:
-                        _arthasGUID = creature->GetGUID();
-                        break;
-                    case NPC_MEATHOOK:
-                        _meathookGUID = creature->GetGUID();
-                        break;
-                    case NPC_SALRAMM:
-                        _salrammGUID = creature->GetGUID();
-                        break;
-                    case NPC_EPOCH:
-                        _epochGUID = creature->GetGUID();
-                        break;
-                    case NPC_MAL_GANIS:
-                        _malGanisGUID = creature->GetGUID();
-                        break;
-                    case NPC_INFINITE:
-                        _infiniteGUID = creature->GetGUID();
-                        break;
-                    case NPC_GENERIC_BUNNY:
-                        _genericBunnyGUID = creature->GetGUID();
-                        break;
-                }
-            }
-
-            void OnGameObjectCreate(GameObject* go)
-            {
-                switch (go->GetEntry())
-                {
-                    case GO_SHKAF_GATE:
-                        _shkafGateGUID = go->GetGUID();
-                        break;
-                    case GO_MALGANIS_GATE_1:
-                        _malGanisGate1GUID = go->GetGUID();
-                        break;
-                    case GO_MALGANIS_GATE_2:
-                        _malGanisGate2GUID = go->GetGUID();
-                        break;
-                    case GO_EXIT_GATE:
-                        _exitGateGUID = go->GetGUID();
-                        if (_encounterState[3] == DONE)
-                            HandleGameObject(_exitGateGUID, true);
-                        break;
-                    case GO_MALGANIS_CHEST_N:
-                    case GO_MALGANIS_CHEST_H:
-                        _malGanisChestGUID = go->GetGUID();
-                        if (_encounterState[3] == DONE)
-                            go->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_INTERACT_COND);
-                        break;
-                }
-            }
-
-            void SetData(uint32 type, uint32 data)
-            {
-                switch (type)
-                {
-                    case DATA_MEATHOOK_EVENT:
-                        _encounterState[0] = data;
-                        break;
-                    case DATA_SALRAMM_EVENT:
-                        _encounterState[1] = data;
-                        break;
-                    case DATA_EPOCH_EVENT:
-                        _encounterState[2] = data;
-                        break;
-                    case DATA_MAL_GANIS_EVENT:
-                        _encounterState[3] = data;
-
-                        switch (_encounterState[3])
-                        {
-                            case NOT_STARTED:
-                                HandleGameObject(_malGanisGate2GUID, true);
-                                break;
-                            case IN_PROGRESS:
-                                HandleGameObject(_malGanisGate2GUID, false);
-                                break;
-                            case DONE:
-                                HandleGameObject(_exitGateGUID, true);
-                                if (GameObject* go = instance->GetGameObject(_malGanisChestGUID))
-                                    go->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_INTERACT_COND);
-                                break;
-                        }
-                        break;
-                    case DATA_INFINITE_EVENT:
-                        _encounterState[4] = data;
-                        break;
-                    case DATA_CRATE_COUNT:
-                        _crateCount = data;
-                        if (_crateCount == 5)
-                        {
-                            if (Creature* bunny = instance->GetCreature(_genericBunnyGUID))
-                                bunny->CastSpell(bunny, SPELL_CRATES_CREDIT, true);
-
-                            // Summon Chromie and global whisper
-                            if (Creature* chromie = instance->SummonCreature(NPC_CHROMIE_2, ChromieSummonPos))
-                                if (!instance->GetPlayers().isEmpty())
-                                    if (Player* player = instance->GetPlayers().getFirst()->getSource())
-                                        sCreatureTextMgr->SendChat(chromie, SAY_CRATES_COMPLETED, player->GetGUID(), CHAT_MSG_ADDON, LANG_ADDON, TEXT_RANGE_MAP);
-                        }
-                        DoUpdateWorldState(WORLDSTATE_CRATES_REVEALED, _crateCount);
-                        break;
-                }
-
-                if (data == DONE)
-                    SaveToDB();
-            }
-
-            uint32 GetData(uint32 type)
-            {
-                switch (type)
-                {
-                    case DATA_MEATHOOK_EVENT:
-                        return _encounterState[0];
-                    case DATA_SALRAMM_EVENT:
-                        return _encounterState[1];
-                    case DATA_EPOCH_EVENT:
-                        return _encounterState[2];
-                    case DATA_MAL_GANIS_EVENT:
-                        return _encounterState[3];
-                    case DATA_INFINITE_EVENT:
-                        return _encounterState[4];
-                    case DATA_CRATE_COUNT:
-                        return _crateCount;
-                }
-                return 0;
-            }
-
-            uint64 GetData64(uint32 identifier)
-            {
-                switch (identifier)
-                {
-                    case DATA_ARTHAS:
-                        return _arthasGUID;
-                    case DATA_MEATHOOK:
-                        return _meathookGUID;
-                    case DATA_SALRAMM:
-                        return _salrammGUID;
-                    case DATA_EPOCH:
-                        return _epochGUID;
-                    case DATA_MAL_GANIS:
-                        return _malGanisGUID;
-                    case DATA_INFINITE:
-                        return _infiniteGUID;
-                    case DATA_SHKAF_GATE:
-                        return _shkafGateGUID;
-                    case DATA_MAL_GANIS_GATE_1:
-                        return _malGanisGate1GUID;
-                    case DATA_MAL_GANIS_GATE_2:
-                        return _malGanisGate2GUID;
-                    case DATA_EXIT_GATE:
-                        return _exitGateGUID;
-                    case DATA_MAL_GANIS_CHEST:
-                        return _malGanisChestGUID;
-                }
-                return 0;
-            }
-
-            std::string GetSaveData()
-            {
-                OUT_SAVE_INST_DATA;
-
-                std::ostringstream saveStream;
-                saveStream << "C S " << _encounterState[0] << ' ' << _encounterState[1] << ' '
-                    << _encounterState[2] << ' ' << _encounterState[3] << ' ' << _encounterState[4];
-
-                OUT_SAVE_INST_DATA_COMPLETE;
-                return saveStream.str();
-            }
-
-            void Load(const char* in)
-            {
-                if (!in)
-                {
-                    OUT_LOAD_INST_DATA_FAIL;
+                if (PlayerList.isEmpty())
                     return;
-                }
 
-                OUT_LOAD_INST_DATA(in);
+                for (Map::PlayerList::const_iterator i = PlayerList.begin(); i != PlayerList.end(); ++i)
+                    if (Player* player = i->getSource())
+                    {
+                        if (player->IsAtGroupRewardDistance(creature)) // already handled
+                            continue;
 
-                char dataHead1, dataHead2;
-                uint16 data0, data1, data2, data3, data4;
+                        if (player->isAlive() || !player->GetCorpse())
+                            player->KilledMonsterCredit(NPC_ZOMBIE, 0);
+                    }
+            }
+        }
 
-                std::istringstream loadStream(in);
-                loadStream >> dataHead1 >> dataHead2 >> data0 >> data1 >> data2 >> data3 >> data4;
+        void GiveQuestKillAllInInstance(uint32 entry)
+        {
+            Map::PlayerList const &PlayerList = instance->GetPlayers();
 
-                if (dataHead1 == 'C' && dataHead2 == 'S')
-                {
-                    _encounterState[0] = data0;
-                    _encounterState[1] = data1;
-                    _encounterState[2] = data2;
-                    _encounterState[3] = data3;
-                    _encounterState[4] = data4;
+            if (PlayerList.isEmpty())
+                return;
 
-                    for (uint8 i = 0; i < MAX_ENCOUNTER; ++i)
-                        if (_encounterState[i] == IN_PROGRESS)
-                            _encounterState[i] = NOT_STARTED;
+            for (Map::PlayerList::const_iterator i = PlayerList.begin(); i != PlayerList.end(); ++i)
+            {
+                if (Player* player = i->getSource())
+                    player->KilledMonsterCredit(entry, 0);
+            }
+        }
 
-                }
-                else
-                    OUT_LOAD_INST_DATA_FAIL;
+        void OnGameObjectCreate(GameObject* go)
+        {
+            switch (go->GetEntry())
+            {
+                case GO_SHKAF_GATE:
+                    uiShkafGate = go->GetGUID();
+                    break;
+                case GO_MALGANIS_GATE_1:
+                    uiMalGanisGate1 = go->GetGUID();
+                    break;
+                case GO_MALGANIS_GATE_2:
+                    uiMalGanisGate2 = go->GetGUID();
+                    break;
+                case GO_EXIT_GATE:
+                    uiExitGate = go->GetGUID();
+                    if (m_auiEncounter[4] == DONE)
+                        HandleGameObject(uiExitGate, true);
+                    break;
+                case GO_MALGANIS_CHEST_N:
+                case GO_MALGANIS_CHEST_H:
+                    uiMalGanisChest = go->GetGUID();
+                    if (m_auiEncounter[4] == DONE)
+                        go->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_INTERACT_COND);
+                    break;
+            }
+        }
 
-                OUT_LOAD_INST_DATA_COMPLETE;
+        void SetData(uint32 type, uint32 data)
+        {
+            switch (type)
+            {
+                case DATA_CRATES_EVENT:
+                    switch (data)
+                    {
+                        case 0: // Entfernt Worldstate
+                            DoUpdateWorldState(WORLDSTATE_NUMBER_CRATES_SHOW, 0);
+                            break;
+                        case 1: // Addiert ein Punkt
+                            ++uiCountCrates;
+                            DoUpdateWorldState(WORLDSTATE_NUMBER_CRATES_COUNT, uiCountCrates);
+                            if (uiCountCrates >= 5)
+                            {
+                                m_auiEncounter[0] = DONE;
+                                GiveQuestKillAllInInstance(CREDIT_DISPELLING_ILLUSIONS);
+                                SaveToDB();
+                            }
+                            break;
+                        case 2: // Startet den Worldstate
+                            uiCountCrates = 0;
+                            m_auiEncounter[0] = IN_PROGRESS;
+                            DoUpdateWorldState(WORLDSTATE_NUMBER_CRATES_SHOW, 1);
+                            DoUpdateWorldState(WORLDSTATE_NUMBER_CRATES_COUNT, uiCountCrates);
+                            break;
+                    }
+                    break;
+                case DATA_MEATHOOK_EVENT:
+                    m_auiEncounter[1] = data;
+                    break;
+                case DATA_SALRAMM_EVENT:
+                    m_auiEncounter[2] = data;
+                    break;
+                case DATA_EPOCH_EVENT:
+                    m_auiEncounter[3] = data;
+                    break;
+                case DATA_MAL_GANIS_EVENT:
+                    m_auiEncounter[4] = data;
+                    switch (data)
+                    {
+                        case NOT_STARTED:
+                            HandleGameObject(uiMalGanisGate2, true);
+                            break;
+                        case IN_PROGRESS:
+                            HandleGameObject(uiMalGanisGate2, false);
+                            break;
+                        case DONE:
+                            GiveQuestKillAllInInstance(CREDIT_A_ROYAL_ESCORT);
+                            HandleGameObject(uiExitGate, true);
+                            HandleGameObject(uiMalGanisGate2, true);
+                            if (GameObject* go = instance->GetGameObject(uiMalGanisChest))
+                                go->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_INTERACT_COND);
+                            break;
+                    }
+                    break;
+                case DATA_INFINITE_EVENT:
+                    m_auiEncounter[5] = data;
+                    switch (data)
+                    {
+                        case DONE:
+                            uiCountdownMinute = 0;
+                            DoUpdateWorldState(WORLDSTATE_NUMBER_INFINITE_SHOW, 0);
+                            break;
+                        case IN_PROGRESS: // make visible
+                        {
+                            if (Creature* creature = instance->GetCreature(uiInfinite))
+                            {
+                                creature->SetVisible(true);
+                                creature->RestoreFaction();
+                            }
+                            break;
+                        }
+                    }
+                    break;
+                case DATA_ARTHAS_EVENT:
+                    m_auiEncounter[6] = data;
+                    break;
             }
 
-        private:
-            uint64 _arthasGUID;
-            uint64 _meathookGUID;
-            uint64 _salrammGUID;
-            uint64 _epochGUID;
-            uint64 _malGanisGUID;
-            uint64 _infiniteGUID;
-            uint64 _shkafGateGUID;
-            uint64 _malGanisGate1GUID;
-            uint64 _malGanisGate2GUID;
-            uint64 _exitGateGUID;
-            uint64 _malGanisChestGUID;
-            uint64 _genericBunnyGUID;
-            uint32 _encounterState[MAX_ENCOUNTER];
-            uint32 _crateCount;
-        };
+            if (data == DONE)
+                SaveToDB();
+        }
+
+        uint32 GetData(uint32 type)
+        {
+            switch (type)
+            {
+                case DATA_CRATES_EVENT:               return m_auiEncounter[0];
+                case DATA_MEATHOOK_EVENT:             return m_auiEncounter[1];
+                case DATA_SALRAMM_EVENT:              return m_auiEncounter[2];
+                case DATA_EPOCH_EVENT:                return m_auiEncounter[3];
+                case DATA_MAL_GANIS_EVENT:            return m_auiEncounter[4];
+                case DATA_INFINITE_EVENT:             return m_auiEncounter[5];
+                case DATA_ARTHAS_EVENT:               return m_auiEncounter[6];
+                case DATA_COUNTDOWN:                  return uiCountdownMinute;
+            }
+            return 0;
+        }
+
+        uint64 GetData64(uint32 identifier)
+        {
+            switch (identifier)
+            {
+                case DATA_ARTHAS:                     return uiArthas;
+                case DATA_MEATHOOK:                   return uiMeathook;
+                case DATA_SALRAMM:                    return uiSalramm;
+                case DATA_EPOCH:                      return uiEpoch;
+                case DATA_MAL_GANIS:                  return uiMalGanis;
+                case DATA_INFINITE:                   return uiInfinite;
+                case DATA_SHKAF_GATE:                 return uiShkafGate;
+                case DATA_MAL_GANIS_GATE_1:           return uiMalGanisGate1;
+                case DATA_MAL_GANIS_GATE_2:           return uiMalGanisGate2;
+                case DATA_EXIT_GATE:                  return uiExitGate;
+                case DATA_MAL_GANIS_CHEST:            return uiMalGanisChest;
+            }
+            return 0;
+        }
+
+        std::string GetSaveData()
+        {
+            OUT_SAVE_INST_DATA;
+
+            std::ostringstream saveStream;
+            saveStream << "C S " << m_auiEncounter[0] << " " << m_auiEncounter[1] << " "
+                << m_auiEncounter[2] << " " << m_auiEncounter[3] << " " << m_auiEncounter[4] << " " << m_auiEncounter[5] << " " << m_auiEncounter[6] << " " << uiCountdownMinute;
+
+            str_data = saveStream.str();
+
+            OUT_SAVE_INST_DATA_COMPLETE;
+            return str_data;
+        }
+
+        void Load(const char* in)
+        {
+            if (!in)
+            {
+                OUT_LOAD_INST_DATA_FAIL;
+                return;
+            }
+
+            OUT_LOAD_INST_DATA(in);
+
+            char dataHead1, dataHead2;
+            uint16 data0, data1, data2, data3, data4, data5, data6, data7;
+
+            std::istringstream loadStream(in);
+            loadStream >> dataHead1 >> dataHead2 >> data0 >> data1 >> data2 >> data3 >> data4 >> data5 >> data6 >> data7;
+
+            if (dataHead1 == 'C' && dataHead2 == 'S')
+            {
+                m_auiEncounter[0] = data0;
+                m_auiEncounter[1] = data1;
+                m_auiEncounter[2] = data2;
+                m_auiEncounter[3] = data3;
+                m_auiEncounter[4] = data4;
+                m_auiEncounter[5] = data5;
+                m_auiEncounter[6] = data6;
+                uiCountdownMinute = data7;
+
+                for (uint8 i = 0; i < MAX_ENCOUNTER; ++i)
+                    if (m_auiEncounter[i] == IN_PROGRESS || m_auiEncounter[i] == SPECIAL)
+                        m_auiEncounter[i] = NOT_STARTED;
+
+            } else OUT_LOAD_INST_DATA_FAIL;
+
+            OUT_LOAD_INST_DATA_COMPLETE;
+        }
+
+        void Update(uint32 diff)
+        {
+            if (GetData(DATA_INFINITE_EVENT) == SPECIAL || GetData(DATA_INFINITE_EVENT) == IN_PROGRESS)
+                if (uiCountdownMinute)
+                {
+                    if (uiCountdownTimer < diff)
+                    {
+                        --uiCountdownMinute;
+
+                        if (uiCountdownMinute)
+                        {
+                            DoUpdateWorldState(WORLDSTATE_NUMBER_INFINITE_SHOW, 1);
+                            DoUpdateWorldState(WORLDSTATE_NUMBER_INFINITE_TIMER, uiCountdownMinute);
+                        }
+                        else
+                        {
+                            DoUpdateWorldState(WORLDSTATE_NUMBER_INFINITE_SHOW, 0);
+                        }
+                        SaveToDB();
+                        uiCountdownTimer += 60000;
+                    }
+                    uiCountdownTimer -= diff;
+                }
+        }
+    };
 };
 
 void AddSC_instance_culling_of_stratholme()

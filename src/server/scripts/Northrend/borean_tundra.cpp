@@ -2368,9 +2368,9 @@ enum eHiddenCultist
     SAY_HIDDEN_CULTIST_4                        = -1571047
 };
 
-const char* GOSSIP_ITEM_TOM_HEGGER = "What do you know about the Cult of the Damned?";
-const char* GOSSIP_ITEM_GUARD_MITCHELLS = "How long have you worked for the Cult of the Damned?";
-const char* GOSSIP_ITEM_SALTY_JOHN_THORPE = "I have a reason to believe you're involved in the cultist activity";
+const char* GOSSIP_ITEM_TOM_HEGGER = """\xc2\xbf""Qu""\xC3\xA9"" sabes acerca del culto de los malditos?";
+const char* GOSSIP_ITEM_GUARD_MITCHELLS = """\xc2\xbf""Cu""\xC3\xA1""nto tiempo has trabajado para ellos?";
+const char* GOSSIP_ITEM_SALTY_JOHN_THORPE = "Tengo varias razones para pensar que est""\xC3\xA1""s relacionado con los cultistas.";
 
 class npc_hidden_cultist : public CreatureScript
 {
@@ -2559,6 +2559,270 @@ public:
 
 };
 
+/*######
+## npc_recon_pilot
+######*/
+
+#define GOSSIP_ITEM_PILOT_1  "Buscar en el cuerpo la insignia de piloto."
+#define GOSSIP_ITEM_PILOT_2  "Buscar en el cuerpo la caja de herramientas de emergencia."
+
+enum eReconPilot
+{
+    QUEST_EMERGENCY_PROTOCOL_C            = 11795,
+    QUEST_EMERGENCY_SUPPLIES              = 11887,
+    SPELL_SUMMON_INSIGNIA                 = 46166,
+    SPELL_GIVE_EMERGENCY_KIT              = 46362,
+    GOSSIP_TEXT_PILOT                     = 12489
+};
+
+class npc_recon_pilot : public CreatureScript
+{
+public:
+    npc_recon_pilot() : CreatureScript("npc_recon_pilot") { }
+
+    bool OnGossipHello(Player* pPlayer, Creature* pCreature)
+    {
+        if (pPlayer->GetQuestStatus(QUEST_EMERGENCY_PROTOCOL_C) == QUEST_STATUS_INCOMPLETE)
+            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_PILOT_1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
+
+        if (pPlayer->GetQuestStatus(QUEST_EMERGENCY_SUPPLIES) == QUEST_STATUS_INCOMPLETE)
+            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_PILOT_2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+2);
+
+        pPlayer->PlayerTalkClass->SendGossipMenu(GOSSIP_TEXT_PILOT, pCreature->GetGUID());
+        return true;
+    }
+
+    bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction)
+    {
+        pPlayer->PlayerTalkClass->ClearMenus();
+
+        switch (uiAction)
+        {
+            case GOSSIP_ACTION_INFO_DEF+1:
+                pCreature->CastSpell(pPlayer, SPELL_SUMMON_INSIGNIA, true);
+                break;
+            case GOSSIP_ACTION_INFO_DEF+2:
+                pCreature->CastSpell(pPlayer, SPELL_GIVE_EMERGENCY_KIT, true);
+                break;
+        }
+
+        pPlayer->CLOSE_GOSSIP_MENU();
+        pCreature->DespawnOrUnsummon();
+
+        return true;
+    }
+};
+
+/*####
+# mob_steam_rager
+####*/
+
+enum eSteamRager
+{
+    SPELL_STEAM_BLAST       = 50375,
+    SPELL_ENERGY_TRANSFER   = 46399,
+    QUEST_POWER_OF_ELEMENTS = 11893,
+    ENTRY_WINDSOUL_TOTEM    = 25987
+};
+
+class mob_steam_rager : public CreatureScript
+{
+public:
+    mob_steam_rager() : CreatureScript("mob_steam_rager") { }
+
+    CreatureAI* GetAI(Creature* pCreature) const
+    {
+        return new mob_steam_ragerAI(pCreature);
+    }
+
+    struct mob_steam_ragerAI : public ScriptedAI
+    {
+        mob_steam_ragerAI(Creature *c) : ScriptedAI(c) { }
+
+        uint32 uiSteamBlastTimer;
+
+        void Reset()
+        {
+            uiSteamBlastTimer = urand(3000, 5000);
+        }
+
+        void UpdateAI(const uint32 diff)
+        {
+            if (!UpdateVictim())
+                return;
+
+            if (uiSteamBlastTimer <= diff)
+            {
+                DoCast(me->getVictim(), SPELL_STEAM_BLAST, false);
+                uiSteamBlastTimer = urand(7000, 10000);
+            } else uiSteamBlastTimer -= diff;
+
+            DoMeleeAttackIfReady();
+        }
+
+        void JustDied(Unit* Killer)
+        {
+            if (Killer->GetTypeId() == TYPEID_PLAYER)
+            {
+                if (Killer->ToPlayer()->GetQuestStatus(QUEST_POWER_OF_ELEMENTS) == QUEST_STATUS_INCOMPLETE)
+                {
+                    if (Unit* pTotem = me->FindNearestCreature(ENTRY_WINDSOUL_TOTEM, 25.0f))
+                    {
+                        DoCast(pTotem, SPELL_ENERGY_TRANSFER, true);
+                        Killer->ToPlayer()->RewardPlayerAndGroupAtEvent(ENTRY_WINDSOUL_TOTEM, Killer);
+                    }
+                }
+            }
+        }
+    };
+};
+
+/*###################
+# npc_q11796_trigger
+####################*/
+
+class npc_q11796_trigger : public CreatureScript
+{
+public:
+    npc_q11796_trigger() : CreatureScript("npc_q11796_trigger") { }
+
+    enum q11796TriggerData
+    {
+        GO_TEMP_CRASHED_FLYING_MACHINE = 300181,
+        EASTERN_WRECK_GUID = 99826,
+        SOUTHERN_WRECK_GUID = 99827,
+        NORTHWESTERN_WRECK_GUID = 99828,
+        EASTERN_WRECK_KC = 25847,
+        SOUTHERN_WRECK_KC = 25846,
+        NORTHWESTERN_WRECK_KC = 25845,
+        SPELL_EMERGENCY_TORCH = 46171
+    };
+
+    struct npc_q11796_triggerAI : public ScriptedAI
+    {
+        npc_q11796_triggerAI(Creature* creature) : ScriptedAI(creature) { }
+
+        void Reset() {}
+
+        void SpellHit(Unit* caster, const SpellInfo* spell)
+        {
+            if (caster->GetTypeId() != TYPEID_PLAYER)
+                return;
+
+            if (caster->GetTypeId() == TYPEID_PLAYER && spell->Id == SPELL_EMERGENCY_TORCH)
+            {
+                if (GameObject* go = me->FindNearestGameObject(GO_TEMP_CRASHED_FLYING_MACHINE,10.0f))
+                {
+                    switch(go->GetGUIDLow())
+                    {
+                        case EASTERN_WRECK_GUID: caster->ToPlayer()->KilledMonsterCredit(EASTERN_WRECK_KC,0); break;
+                        case SOUTHERN_WRECK_GUID: caster->ToPlayer()->KilledMonsterCredit(SOUTHERN_WRECK_KC,0); break;
+                        case NORTHWESTERN_WRECK_GUID: caster->ToPlayer()->KilledMonsterCredit(NORTHWESTERN_WRECK_KC,0); break;
+                    }
+                }
+            }
+        }
+    };
+
+    CreatureAI* GetAI(Creature* creature) const
+    {
+        return new npc_q11796_triggerAI(creature);
+    }
+};
+
+/*##########################
+## npc_fallen_caravan_guard - quest fix 11593 and 11658
+###########################*/
+
+#define GOSSIP_ITEM_GUARD_1 "Buscar en el traje del guardia."
+#define GOSSIP_ITEM_GUARD_2 "Quemar el cadaver para purificar su alma."
+
+class npc_fallen_caravan_guard : public CreatureScript
+{
+public:
+    npc_fallen_caravan_guard() : CreatureScript("npc_fallen_caravan_guard") { }
+
+    enum FallenCaravanData
+    {
+        QUEST_PLAN_B = 11658,
+        QUEST_THE_HONORED_DEAD = 11593,
+        ITEM_WARSONG_OUTFIT = 34842,
+        SPELL_RAGEFIST_TORCH = 45474,
+        GOSSIP_TEXT_GUARD = 12388,
+        NPC_BURNED_CORPSE_KC = 25342
+    };
+
+    bool OnGossipHello(Player* player, Creature* creature)
+    {
+        if (player->GetQuestStatus(QUEST_PLAN_B) == QUEST_STATUS_INCOMPLETE)
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_GUARD_1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
+
+        if (player->GetQuestStatus(QUEST_THE_HONORED_DEAD) == QUEST_STATUS_INCOMPLETE)
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_GUARD_2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+2);
+
+        player->PlayerTalkClass->SendGossipMenu(GOSSIP_TEXT_GUARD, creature->GetGUID());
+        return true;
+    }
+
+    bool OnGossipSelect(Player* player, Creature* creature, uint32 /*uiSender*/, uint32 uiAction)
+    {
+        player->PlayerTalkClass->ClearMenus();
+
+        switch (uiAction)
+        {
+            case GOSSIP_ACTION_INFO_DEF+1:
+                player->AddItem(ITEM_WARSONG_OUTFIT,1);
+                break;
+            case GOSSIP_ACTION_INFO_DEF+2:
+                player->CastSpell(creature,SPELL_RAGEFIST_TORCH,false);
+                player->KilledMonsterCredit(NPC_BURNED_CORPSE_KC,0);
+                break;
+        }
+
+        player->CLOSE_GOSSIP_MENU();
+        creature->DespawnOrUnsummon();
+
+        return true;
+    }
+};
+
+/*#####################
+# item_snq_control_unit (34981)
+#######################*/
+
+class item_snq_control_unit : public ItemScript
+{
+    public:
+
+        item_snq_control_unit() : ItemScript("item_snq_control_unit") { }
+
+        bool OnUse(Player* player, Item* /*item*/, SpellCastTargets const& /*targets*/)
+        {
+            if (player->GetQuestStatus(11723) == QUEST_STATUS_INCOMPLETE)
+                player->SummonCreature(25629,3511.959961f,4527.180176f,-12.994900f,0.357893f,TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT,30000);
+                return true;
+        }
+};
+
+/*###################################
+# item_interdimensional_refabricator (35479)
+####################################*/
+
+class item_interdimensional_refabricator : public ItemScript
+{
+    public:
+
+        item_interdimensional_refabricator() : ItemScript("item_interdimensional_refabricator") { }
+
+        bool OnUse(Player* player, Item* /*item*/, SpellCastTargets const& /*targets*/)
+        {
+            if (player->GetQuestStatus(11905) == QUEST_STATUS_INCOMPLETE)
+                player->CastSpell(player,46547,false);
+                player->KilledMonsterCredit(26105,0);
+                return true;
+        }
+};
+
 void AddSC_borean_tundra()
 {
     new npc_sinkhole_kill_credit;
@@ -2577,6 +2841,11 @@ void AddSC_borean_tundra()
     new npc_image_lich_king;
     new npc_counselor_talbot;
     new npc_leryssa;
+	new npc_recon_pilot();
+    new npc_q11796_trigger();
+    new npc_fallen_caravan_guard();
+    new item_snq_control_unit();
+    new item_interdimensional_refabricator();
     new npc_general_arlos;
     new npc_beryl_sorcerer;
     new npc_imprisoned_beryl_sorcerer;

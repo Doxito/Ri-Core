@@ -15,47 +15,53 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * Comment: Find in the future best timers and the event is not implemented.
- */
-
 #include "ScriptPCH.h"
 #include "azjol_nerub.h"
 
 enum Spells
 {
+    // krikthir
     SPELL_MIND_FLAY                               = 52586,
     H_SPELL_MIND_FLAY                             = 59367,
     SPELL_CURSE_OF_FATIGUE                        = 52592,
     H_SPELL_CURSE_OF_FATIGUE                      = 59368,
-    SPELL_FRENZY                                  = 28747, //maybe 53361
-    SPELL_SUMMON_SKITTERING_SWARMER               = 52438, //AOE Effect 140, maybe 52439
-    SPELL_SUMMON_SKITTERING_SWARMER_1             = 52439, //Summon 3x 28735
-    H_SPELL_ACID_SPLASH                           = 59363,
+    SPELL_FRENZY                                  = 28747,
+    SPELL_SWARM                                   = 52440, // ( 52438,52439,52440,52448,52449,52450 )
+    // skittering infector
     SPELL_ACID_SPLASH                             = 52446,
-    SPELL_CHARGE                                  = 16979, //maybe is another spell
+    H_SPELL_ACID_SPLASH                           = 59363,
+    // anub'ar skirmisher
+    SPELL_FIXATE                                  = 52537,
+    SPELL_CHARGE                                  = 52538,
     SPELL_BACKSTAB                                = 52540,
+    // anub'ar shadowcaster
     SPELL_SHADOW_BOLT                             = 52534,
     H_SPELL_SHADOW_BOLT                           = 59357,
     SPELL_SHADOW_NOVA                             = 52535,
     H_SPELL_SHADOW_NOVA                           = 59358,
+    // anub'ar warrior
     SPELL_STRIKE                                  = 52532,
     SPELL_CLEAVE                                  = 49806,
-    SPELL_ENRAGE                                  = 52470,
+    // common watcher spells
+    SPELL_WEB_WRAP                                = 52086,
+    SPELL_WEB_WRAP_STUN                           = 52087,
     SPELL_INFECTED_BITE                           = 52469,
     H_SPELL_INFECTED_BITE                         = 59364,
-    SPELL_WEB_WRAP                                = 52086, //the spell is not working properly
+    // gashra
+    SPELL_ENRAGE                                  = 52470,
+    // narjil
     SPELL_BLINDING_WEBS                           = 52524,
     H_SPELL_BLINDING_WEBS                         = 59365,
+    // silthik
     SPELL_POSION_SPRAY                            = 52493,
     H_SPELL_POSION_SPRAY                          = 59366
 };
 
-enum Mobs
+enum Creatures
 {
-    MOB_SKITTERING_SWARMER                        = 28735,
-    MOB_SKITTERING_SWARMER_CONTROLLER             = 32593,
-    MOB_SKITTERING_INFECTIOR                      = 28736
+    NPC_SKITTERING_SWARMER                        = 28735,
+    NPC_SKITTERING_SWARMER_CONTROLLER             = 32593,
+    NPC_SKITTERING_INFECTOR                       = 28736
 };
 
 enum Yells
@@ -64,470 +70,503 @@ enum Yells
     SAY_SLAY_1                                    = -1601012,
     SAY_SLAY_2                                    = -1601013,
     SAY_DEATH                                     = -1601014,
-    //Not in db
-    SAY_SEND_GROUP_1                              = -1601020,
-    SAY_SEND_GROUP_2                              = -1601021,
-    SAY_SEND_GROUP_3                              = -1601022,
     SAY_SWARM_1                                   = -1601015,
     SAY_SWARM_2                                   = -1601016,
     SAY_PREFIGHT_1                                = -1601017,
     SAY_PREFIGHT_2                                = -1601018,
-    SAY_PREFIGHT_3                                = -1601019
-};
-
-const Position SpawnPoint[] =
-{
-    { 566.164f, 682.087f, 769.079f, 2.21657f  },
-    { 529.042f, 706.941f, 777.298f, 1.0821f   },
-    { 489.975f, 671.239f, 772.131f, 0.261799f },
-    { 488.556f, 692.95f,  771.764f, 4.88692f  },
-    { 553.34f,  640.387f, 777.419f, 1.20428f  },
-    { 517.486f, 706.398f, 777.335f, 5.35816f  },
-    { 504.01f,  637.693f, 777.479f, 0.506145f },
-    { 552.625f, 706.408f, 777.177f, 3.4383f   }
+    SAY_PREFIGHT_3                                = -1601019,
+    SAY_SEND_GROUP_1                              = -1601020,
+    SAY_SEND_GROUP_2                              = -1601021,
+    SAY_SEND_GROUP_3                              = -1601022
 };
 
 class boss_krik_thir : public CreatureScript
 {
-public:
-    boss_krik_thir() : CreatureScript("boss_krik_thir") { }
+    public:
+        boss_krik_thir() : CreatureScript("boss_krik_thir") { }
 
-    struct boss_krik_thirAI : public ScriptedAI
-    {
-        boss_krik_thirAI(Creature* c) : ScriptedAI(c)
+        struct boss_krik_thirAI : public ScriptedAI
         {
-            instance = c->GetInstanceScript();
-        }
-
-        InstanceScript* instance;
-
-        uint32 uiMindFlayTimer;
-        uint32 uiCurseFatigueTimer;
-        uint32 uiSummonTimer;
-
-        void Reset()
-        {
-            uiMindFlayTimer = 15*IN_MILLISECONDS;
-            uiCurseFatigueTimer = 12*IN_MILLISECONDS;
-
-            if (instance)
-                instance->SetData(DATA_KRIKTHIR_THE_GATEWATCHER_EVENT, NOT_STARTED);
-        }
-
-        void EnterCombat(Unit* /*who*/)
-        {
-            DoScriptText(SAY_AGGRO, me);
-            Summon();
-            uiSummonTimer = 15*IN_MILLISECONDS;
-
-            if (instance)
-                instance->SetData(DATA_KRIKTHIR_THE_GATEWATCHER_EVENT, IN_PROGRESS);
-        }
-
-        void Summon()
-        {
-                me->SummonCreature(MOB_SKITTERING_SWARMER, SpawnPoint[0], TEMPSUMMON_TIMED_DESPAWN, 25*IN_MILLISECONDS);
-                me->SummonCreature(MOB_SKITTERING_SWARMER, SpawnPoint[0], TEMPSUMMON_TIMED_DESPAWN, 25*IN_MILLISECONDS);
-                me->SummonCreature(MOB_SKITTERING_SWARMER, SpawnPoint[1], TEMPSUMMON_TIMED_DESPAWN, 25*IN_MILLISECONDS);
-                me->SummonCreature(MOB_SKITTERING_SWARMER, SpawnPoint[1], TEMPSUMMON_TIMED_DESPAWN, 25*IN_MILLISECONDS);
-                me->SummonCreature(MOB_SKITTERING_SWARMER, SpawnPoint[2], TEMPSUMMON_TIMED_DESPAWN, 25*IN_MILLISECONDS);
-                me->SummonCreature(MOB_SKITTERING_SWARMER, SpawnPoint[2], TEMPSUMMON_TIMED_DESPAWN, 25*IN_MILLISECONDS);
-                me->SummonCreature(MOB_SKITTERING_SWARMER, SpawnPoint[3], TEMPSUMMON_TIMED_DESPAWN, 25*IN_MILLISECONDS);
-                me->SummonCreature(MOB_SKITTERING_SWARMER, SpawnPoint[3], TEMPSUMMON_TIMED_DESPAWN, 25*IN_MILLISECONDS);
-                me->SummonCreature(MOB_SKITTERING_INFECTIOR, SpawnPoint[4], TEMPSUMMON_TIMED_DESPAWN, 25*IN_MILLISECONDS);
-                me->SummonCreature(MOB_SKITTERING_SWARMER, SpawnPoint[4], TEMPSUMMON_TIMED_DESPAWN, 25*IN_MILLISECONDS);
-                me->SummonCreature(MOB_SKITTERING_INFECTIOR, SpawnPoint[5], TEMPSUMMON_TIMED_DESPAWN, 25*IN_MILLISECONDS);
-                me->SummonCreature(MOB_SKITTERING_SWARMER, SpawnPoint[5], TEMPSUMMON_TIMED_DESPAWN, 25*IN_MILLISECONDS);
-                me->SummonCreature(MOB_SKITTERING_INFECTIOR, SpawnPoint[6], TEMPSUMMON_TIMED_DESPAWN, 25*IN_MILLISECONDS);
-                me->SummonCreature(MOB_SKITTERING_SWARMER, SpawnPoint[6], TEMPSUMMON_TIMED_DESPAWN, 25*IN_MILLISECONDS);
-                me->SummonCreature(MOB_SKITTERING_SWARMER, SpawnPoint[7], TEMPSUMMON_TIMED_DESPAWN, 25*IN_MILLISECONDS);
-                me->SummonCreature(MOB_SKITTERING_SWARMER, SpawnPoint[7], TEMPSUMMON_TIMED_DESPAWN, 25*IN_MILLISECONDS);
-        }
-
-        void UpdateAI(const uint32 diff)
-        {
-            if (!UpdateVictim())
-                return;
-
-            if (uiSummonTimer <= diff)
+            boss_krik_thirAI(Creature* c) : ScriptedAI(c), _summons(me)
             {
-                Summon();
-                uiSummonTimer = 15*IN_MILLISECONDS;
-            } else uiSummonTimer -= diff;
+                _instance = c->GetInstanceScript();
+            }
 
-            if (uiMindFlayTimer <= diff)
+            void Reset()
             {
-                    DoCast(me->getVictim(), SPELL_MIND_FLAY);
-                    uiMindFlayTimer = 15*IN_MILLISECONDS;
-                } else uiMindFlayTimer -= diff;
+                _frenzy = false;
+           //     _summonTimer = 10*IN_MILLISECONDS;
+                _mindFlayTimer = 12*IN_MILLISECONDS;
+                _curseFatigueTimer = 7*IN_MILLISECONDS;
 
-            if (uiCurseFatigueTimer <= diff)
+                _summons.DespawnAll();
+
+                if (_instance)
+                    _instance->SetData(DATA_KRIKTHIR_THE_GATEWATCHER_EVENT, NOT_STARTED);
+            }
+
+            void EnterCombat(Unit* /*who*/)
             {
-                //WowWiki say "Curse of Fatigue-Kirk'thir will cast Curse of Fatigue on 2-3 targets periodically."
-                if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
-                    DoCast(target, SPELL_CURSE_OF_FATIGUE);
-                if (Unit* tankTarget = SelectTarget(SELECT_TARGET_RANDOM, 1, 100, true))
-                    DoCast(tankTarget, SPELL_CURSE_OF_FATIGUE);
+                DoScriptText(SAY_AGGRO, me);
 
-                uiCurseFatigueTimer = 10*IN_MILLISECONDS;
-            } else uiCurseFatigueTimer -= diff;
+                if (_instance)
+                    _instance->SetData(DATA_KRIKTHIR_THE_GATEWATCHER_EVENT, IN_PROGRESS);
+            }
 
-            if (!me->HasAura(SPELL_FRENZY) && HealthBelowPct(10))
-                DoCast(me, SPELL_FRENZY, true);
+            void UpdateAI(uint32 const diff)
+            {
+                if (!UpdateVictim())
+                    return;
 
-            DoMeleeAttackIfReady();
-        }
-        void JustDied(Unit* /*killer*/)
+                if (me->HasUnitState(UNIT_STATE_CASTING))
+                    return;
+
+             /*   if (_summonTimer <= diff)
+                {
+                    DoScriptText(RAND(SAY_SWARM_1, SAY_SWARM_2), me);
+
+                    DoCast(me, SPELL_SWARM);
+                    _summonTimer = urand(20, 25) *IN_MILLISECONDS;
+                }
+                else
+                    _summonTimer -= diff;*/
+
+                if (_mindFlayTimer <= diff)
+                {
+                    DoCastVictim(SPELL_MIND_FLAY);
+                    _mindFlayTimer = urand(10, 15) *IN_MILLISECONDS;
+                }
+                else
+                    _mindFlayTimer -= diff;
+
+                if (_curseFatigueTimer <= diff)
+                {
+                    if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
+                        DoCast(target, SPELL_CURSE_OF_FATIGUE);
+
+                    _curseFatigueTimer = 20*IN_MILLISECONDS;
+                }
+                else
+                    _curseFatigueTimer -= diff;
+
+                if (!_frenzy && HealthBelowPct(20))
+                {
+                    me->InterruptNonMeleeSpells(true);
+                    DoCast(me, SPELL_FRENZY, true);
+                    _frenzy = true;
+                }
+
+                DoMeleeAttackIfReady();
+            }
+
+            void JustDied(Unit* /*killer*/)
+            {
+                DoScriptText(SAY_DEATH, me);
+
+                if (_instance)
+                    _instance->SetData(DATA_KRIKTHIR_THE_GATEWATCHER_EVENT, DONE);
+            }
+
+            void KilledUnit(Unit* victim)
+            {
+                if (victim == me)
+                    return;
+
+                DoScriptText(RAND(SAY_SLAY_1, SAY_SLAY_2), me);
+            }
+
+            void JustSummoned(Creature* summoned)
+            {
+               summoned->GetMotionMaster()->MovePoint(0, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ());
+               _summons.Summon(summoned);
+            }
+
+        private:
+            InstanceScript* _instance;
+            SummonList _summons;
+            uint32 _mindFlayTimer;
+            uint32 _curseFatigueTimer;
+            uint32 _summonTimer;
+            bool _frenzy;
+        };
+
+        CreatureAI* GetAI(Creature* creature) const
         {
-            DoScriptText(SAY_DEATH, me);
-
-            if (instance)
-                instance->SetData(DATA_KRIKTHIR_THE_GATEWATCHER_EVENT, DONE);
+            return new boss_krik_thirAI(creature);
         }
-
-        void KilledUnit(Unit* victim)
-        {
-            if (victim == me)
-                return;
-
-            DoScriptText(RAND(SAY_SLAY_1, SAY_SLAY_2), me);
-        }
-
-        void JustSummoned(Creature* summoned)
-        {
-            summoned->GetMotionMaster()->MovePoint(0, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ());
-        }
-    };
-
-    CreatureAI* GetAI(Creature* creature) const
-    {
-        return new boss_krik_thirAI(creature);
-    }
 };
 
 class npc_skittering_infector : public CreatureScript
 {
-public:
-    npc_skittering_infector() : CreatureScript("npc_skittering_infector") { }
+    public:
+        npc_skittering_infector() : CreatureScript("npc_skittering_infector") { }
 
-    struct npc_skittering_infectorAI : public ScriptedAI
-    {
-        npc_skittering_infectorAI(Creature* c) : ScriptedAI(c) {}
-
-        void JustDied(Unit* /*killer*/)
+        struct npc_skittering_infectorAI : public ScriptedAI
         {
-            //The spell is not working propperly
-            DoCast(me->getVictim(), SPELL_ACID_SPLASH, true);
-        }
-    };
+            npc_skittering_infectorAI(Creature* c) : ScriptedAI(c) {}
 
-    CreatureAI* GetAI(Creature* creature) const
-    {
-        return new npc_skittering_infectorAI(creature);
-    }
+            void JustDied(Unit* /*killer*/)
+            {
+                DoCastAOE(DUNGEON_MODE<uint32>(SPELL_ACID_SPLASH, H_SPELL_ACID_SPLASH));
+            }
+        };
+
+        CreatureAI* GetAI(Creature* creature) const
+        {
+            return new npc_skittering_infectorAI(creature);
+        }
 };
 
 class npc_anub_ar_skirmisher : public CreatureScript
 {
-public:
-    npc_anub_ar_skirmisher() : CreatureScript("npc_anub_ar_skirmisher") { }
+    public:
+        npc_anub_ar_skirmisher() : CreatureScript("npc_anub_ar_skirmisher") { }
 
-    struct npc_anub_ar_skirmisherAI : public ScriptedAI
-    {
-        npc_anub_ar_skirmisherAI(Creature* c) : ScriptedAI(c) {}
-
-        uint32 uiChargeTimer;
-        uint32 uiBackstabTimer;
-
-        void Reset()
+        struct npc_anub_ar_skirmisherAI : public ScriptedAI
         {
-            uiChargeTimer   = 11*IN_MILLISECONDS;
-            uiBackstabTimer = 7*IN_MILLISECONDS;
-        }
+            npc_anub_ar_skirmisherAI(Creature* c) : ScriptedAI(c) {}
 
-        void UpdateAI(const uint32 diff)
-        {
-            if (!UpdateVictim())
-                return;
-
-            if (uiChargeTimer <= diff)
+            void Reset()
             {
-                if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
+                _chargeTimer = 10*IN_MILLISECONDS;
+                _backstabTimer = 7*IN_MILLISECONDS;
+            }
+
+            void UpdateAI(uint32 const diff)
+            {
+                if (!UpdateVictim())
+                    return;
+
+                if (_chargeTimer <= diff)
                 {
-                    DoResetThreat();
-                    me->AddThreat(target, 1.0f);
-                    DoCast(target, SPELL_CHARGE, true);
+                    if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 1, 100, true))
+                    {
+                        DoCast(target, SPELL_CHARGE, true);
+                        target->CastSpell(me, SPELL_FIXATE, true);
+                    }
+                    _chargeTimer = 15*IN_MILLISECONDS;
                 }
-                uiChargeTimer = 15*IN_MILLISECONDS;
-            } else uiChargeTimer -= diff;
+                else
+                    _chargeTimer -= diff;
 
-            if (uiBackstabTimer <= diff)
-            {
-                DoCast(me->getVictim(), SPELL_BACKSTAB);
-                uiBackstabTimer = 12*IN_MILLISECONDS;
-            } else uiBackstabTimer -= diff;
+                if (_backstabTimer <= diff)
+                {
+                    if (me->getVictim()->isInBackInMap(me, 5.0f, 1.5f))
+                        DoCastVictim(SPELL_BACKSTAB);
+                    _backstabTimer = 5*IN_MILLISECONDS;
+                }
+                else
+                    _backstabTimer -= diff;
 
-            DoMeleeAttackIfReady();
+                DoMeleeAttackIfReady();
+            }
 
+        private:
+            uint32 _chargeTimer;
+            uint32 _backstabTimer;
+        };
+
+        CreatureAI* GetAI(Creature* creature) const
+        {
+            return new npc_anub_ar_skirmisherAI(creature);
         }
-    };
-
-    CreatureAI* GetAI(Creature* creature) const
-    {
-        return new npc_anub_ar_skirmisherAI(creature);
-    }
 };
 
 class npc_anub_ar_shadowcaster : public CreatureScript
 {
-public:
-    npc_anub_ar_shadowcaster() : CreatureScript("npc_anub_ar_shadowcaster") { }
+    public:
+        npc_anub_ar_shadowcaster() : CreatureScript("npc_anub_ar_shadowcaster") { }
 
-    struct npc_anub_ar_shadowcasterAI : public ScriptedAI
-    {
-        npc_anub_ar_shadowcasterAI(Creature* c) : ScriptedAI(c) {}
-
-        uint32 uiShadowBoltTimer;
-        uint32 uiShadowNovaTimer;
-
-        void Reset()
+        struct npc_anub_ar_shadowcasterAI : public ScriptedAI
         {
-            uiShadowBoltTimer = 6*IN_MILLISECONDS;
-            uiShadowNovaTimer = 15*IN_MILLISECONDS;
-        }
+            npc_anub_ar_shadowcasterAI(Creature* c) : ScriptedAI(c) {}
 
-        void UpdateAI(const uint32 diff)
+            void Reset()
+            {
+                _shadowBoltTimer = 6*IN_MILLISECONDS;
+                _shadowNovaTimer = 12*IN_MILLISECONDS;
+            }
+
+            void UpdateAI(uint32 const diff)
+            {
+                if (!UpdateVictim())
+                    return;
+
+                if (_shadowBoltTimer <= diff)
+                {
+                    if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
+                         DoCast(target, SPELL_SHADOW_BOLT);
+                    _shadowBoltTimer = 6*IN_MILLISECONDS;
+                }
+                else
+                    _shadowBoltTimer -= diff;
+
+                if (_shadowNovaTimer <= diff)
+                {
+                    DoCastVictim(SPELL_SHADOW_NOVA, true);
+                    _shadowNovaTimer = 15*IN_MILLISECONDS;
+                }
+                else
+                    _shadowNovaTimer -= diff;
+
+                DoMeleeAttackIfReady();
+            }
+
+        private:
+            uint32 _shadowBoltTimer;
+            uint32 _shadowNovaTimer;
+        };
+
+        CreatureAI* GetAI(Creature* creature) const
         {
-            if (!UpdateVictim())
-                return;
-
-            if (uiShadowBoltTimer <= diff)
-            {
-                if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
-                     DoCast(target, SPELL_SHADOW_BOLT, true);
-                uiShadowBoltTimer = 15*IN_MILLISECONDS;
-            } else uiShadowBoltTimer -= diff;
-
-            if (uiShadowNovaTimer <= diff)
-            {
-                DoCast(me->getVictim(), SPELL_SHADOW_NOVA, true);
-                uiShadowNovaTimer = 17*IN_MILLISECONDS;
-            } else uiShadowNovaTimer -= diff;
-
-            DoMeleeAttackIfReady();
+            return new npc_anub_ar_shadowcasterAI(creature);
         }
-    };
-
-    CreatureAI* GetAI(Creature* creature) const
-    {
-        return new npc_anub_ar_shadowcasterAI(creature);
-    }
 };
 
 class npc_anub_ar_warrior : public CreatureScript
 {
-public:
-    npc_anub_ar_warrior() : CreatureScript("npc_anub_ar_warrior") { }
+    public:
+        npc_anub_ar_warrior() : CreatureScript("npc_anub_ar_warrior") { }
 
-    struct npc_anub_ar_warriorAI : public ScriptedAI
-    {
-        npc_anub_ar_warriorAI(Creature* c) : ScriptedAI(c){}
-
-        uint32 uiCleaveTimer;
-        uint32 uiStrikeTimer;
-
-        void Reset()
+        struct npc_anub_ar_warriorAI : public ScriptedAI
         {
-            uiCleaveTimer = 11*IN_MILLISECONDS;
-            uiStrikeTimer = 6*IN_MILLISECONDS;
-        }
+            npc_anub_ar_warriorAI(Creature* c) : ScriptedAI(c){}
 
-        void UpdateAI(const uint32 diff)
+            void Reset()
+            {
+                _cleaveTimer = 9*IN_MILLISECONDS;
+                _strikeTimer = 6*IN_MILLISECONDS;
+            }
+
+            void UpdateAI(uint32 const diff)
+            {
+                if (!UpdateVictim())
+                    return;
+
+                if (_strikeTimer <= diff)
+                {
+                    DoCastVictim(SPELL_STRIKE, true);
+                    _strikeTimer = 9*IN_MILLISECONDS;
+                }
+                else
+                    _strikeTimer -= diff;
+
+                if (_cleaveTimer <= diff)
+                {
+                    DoCastVictim(SPELL_CLEAVE, true);
+                    _cleaveTimer = 12*IN_MILLISECONDS;
+                }
+                else
+                    _cleaveTimer -= diff;
+
+                DoMeleeAttackIfReady();
+            }
+
+        private:
+            uint32 _cleaveTimer;
+            uint32 _strikeTimer;
+        };
+
+        CreatureAI* GetAI(Creature* creature) const
         {
-            if (!UpdateVictim())
-                return;
-
-            if (uiStrikeTimer <= diff)
-            {
-                DoCast(me->getVictim(), SPELL_STRIKE, true);
-                uiStrikeTimer = 15*IN_MILLISECONDS;
-            } else uiStrikeTimer -= diff;
-
-            if (uiCleaveTimer <= diff)
-            {
-                DoCast(me->getVictim(), SPELL_CLEAVE, true);
-                uiCleaveTimer = 17*IN_MILLISECONDS;
-            } else uiCleaveTimer -= diff;
-
-            DoMeleeAttackIfReady();
+            return new npc_anub_ar_warriorAI(creature);
         }
-    };
-
-    CreatureAI* GetAI(Creature* creature) const
-    {
-        return new npc_anub_ar_warriorAI(creature);
-    }
 };
 
-class npc_watcher_gashra : public CreatureScript
+class npc_krikthir_watcher : public CreatureScript
 {
-public:
-    npc_watcher_gashra() : CreatureScript("npc_watcher_gashra") { }
+    public:
+        npc_krikthir_watcher() : CreatureScript("npc_krikthir_watcher") { }
 
-    struct npc_watcher_gashraAI : public ScriptedAI
-    {
-        npc_watcher_gashraAI(Creature* c) : ScriptedAI(c) {}
-
-        uint32 uiWebWrapTimer;
-        uint32 uiInfectedBiteTimer;
-
-        void Reset()
+        struct npc_krikthir_watcherAI : public ScriptedAI
         {
-            uiWebWrapTimer      = 11*IN_MILLISECONDS;
-            uiInfectedBiteTimer = 4*IN_MILLISECONDS;
-        }
-
-        void EnterCombat(Unit* /*who*/)
-        {
-            DoCast(me, SPELL_ENRAGE, true);
-        }
-
-        void UpdateAI(const uint32 diff)
-        {
-            if (!UpdateVictim())
-                return;
-
-            if (uiWebWrapTimer <= diff)
+            npc_krikthir_watcherAI(Creature* c) : ScriptedAI(c)
             {
-                if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
-                    DoCast(target, SPELL_WEB_WRAP, true);
-                uiWebWrapTimer = 17*IN_MILLISECONDS;
-            } else uiWebWrapTimer -= diff;
+                _instance = c->GetInstanceScript();
+            }
 
-            if (uiInfectedBiteTimer <= diff)
+            void Reset()
             {
-                DoCast(me->getVictim(), SPELL_INFECTED_BITE, true);
-                uiInfectedBiteTimer = 15*IN_MILLISECONDS;
-            } else uiInfectedBiteTimer -= diff;
+                switch (me->GetEntry())
+                {
+                    // watcher narjil
+                    case 28729:
+                        _specialSpell = DUNGEON_MODE<uint32>(SPELL_BLINDING_WEBS, H_SPELL_BLINDING_WEBS);
+                        break;
+                    // watcher gashra
+                    case 28730:
+                        me->setFaction(14);
+                        _specialSpell = SPELL_ENRAGE;
+                        break;
+                    // watcher silthik
+                    case 28731:
+                        _specialSpell = DUNGEON_MODE<uint32>(SPELL_POSION_SPRAY, H_SPELL_POSION_SPRAY);
+                        break;
+                    default:
+                        _specialSpell = 0;
+                        break;
+                }
 
-            DoMeleeAttackIfReady();
+                _webWrapTimer      = 10*IN_MILLISECONDS;
+                _infectedBiteTimer = 6*IN_MILLISECONDS;
+                _specialSpellTimer = 15*IN_MILLISECONDS;
+                _enwrapTimer       = 3*IN_MILLISECONDS;
+                _wrapTarget        = 0;
+                _enwrapping        = false;
+
+                if (_instance)
+                    _instance->SetData(DATA_KRIKTHIR_THE_GATEWATCHER_EVENT, NOT_STARTED);
+            }
+
+            void EnterCombat(Unit* /*who*/)
+            {
+                if (!_instance)
+                    return;
+
+                Creature* Krikthir = Unit::GetCreature(*me, _instance->GetData64(DATA_KRIKTHIR_THE_GATEWATCHER));
+                if (Krikthir && Krikthir->isAlive())
+                    DoScriptText(RAND(SAY_SEND_GROUP_1, SAY_SEND_GROUP_2, SAY_SEND_GROUP_3), Krikthir);
+
+                _instance->SetData(DATA_KRIKTHIR_THE_GATEWATCHER_EVENT, SPECIAL);
+            }
+
+            void UpdateAI(uint32 const diff)
+            {
+                if (!UpdateVictim())
+                    return;
+
+                if (_enwrapping)
+                {
+                    if (_enwrapTimer <= diff)
+                    {
+                        if (Unit* target = Unit::GetUnit(*me, _wrapTarget))
+                        {
+                            target->CastSpell(target, SPELL_WEB_WRAP_STUN, true);
+                            _wrapTarget = NULL;
+                        }
+                        _enwrapping = false;
+                        _enwrapTimer = 3*IN_MILLISECONDS;
+                    }
+                    else
+                        _enwrapTimer -= diff;
+                }
+
+                if (me->HasUnitState(UNIT_STATE_CASTING))
+                    return;
+
+                if (_webWrapTimer <= diff)
+                {
+                    Unit* target = NULL;
+                    std::list<Unit *> playerList;
+                    SelectTargetList(playerList, 5, SELECT_TARGET_RANDOM, 40, true);
+                    for (std::list<Unit*>::const_iterator itr = playerList.begin(); itr != playerList.end(); ++itr)
+                    {
+                        target = (*itr);
+                        if (!target->HasAura(SPELL_WEB_WRAP) && !target->HasAura(SPELL_WEB_WRAP_STUN))
+                            break;  // found someone
+
+                        target = NULL;
+                    }
+                    // if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, 40, true, -SPELL_WEB_WRAP_STUN)
+                    if (target)
+                    {
+                        _enwrapping = true;
+                        _wrapTarget = target->GetGUID();
+                        DoCast(target, SPELL_WEB_WRAP, false);
+                    }
+                    _webWrapTimer = 15*IN_MILLISECONDS;
+                }
+                else
+                    _webWrapTimer -= diff;
+
+                if (_infectedBiteTimer <= diff)
+                {
+                    DoCastVictim(SPELL_INFECTED_BITE, true);
+                    _infectedBiteTimer = 15*IN_MILLISECONDS;
+                }
+                else
+                    _infectedBiteTimer -= diff;
+
+                if (_specialSpell)
+                    if (_specialSpellTimer <= diff)
+                    {
+                        DoCast(_specialSpell);
+                        _specialSpellTimer = 20*IN_MILLISECONDS;
+                    }
+                    else
+                        _specialSpellTimer -= diff;
+
+                DoMeleeAttackIfReady();
+            }
+
+        private:
+            InstanceScript* _instance;
+            uint32 _webWrapTimer;
+            uint32 _infectedBiteTimer;
+            uint32 _specialSpell;
+            uint32 _specialSpellTimer;
+            uint32 _enwrapTimer;
+            uint64 _wrapTarget;
+            bool _enwrapping;
+        };
+
+        CreatureAI* GetAI(Creature* creature) const
+        {
+            return new npc_krikthir_watcherAI(creature);
         }
-    };
-
-    CreatureAI* GetAI(Creature* creature) const
-    {
-        return new npc_watcher_gashraAI(creature);
-    }
 };
 
-class npc_watcher_narjil : public CreatureScript
+class npc_web_wrap : public CreatureScript
 {
-public:
-    npc_watcher_narjil() : CreatureScript("npc_watcher_narjil") { }
+    public:
+        npc_web_wrap() : CreatureScript("npc_web_wrap") { }
 
-    struct npc_watcher_narjilAI : public ScriptedAI
-    {
-        npc_watcher_narjilAI(Creature* c) : ScriptedAI(c) {}
-
-        uint32 uiWebWrapTimer;
-        uint32 uiInfectedBiteTimer;
-        uint32 uiBindingWebsTimer;
-
-        void Reset()
+        struct npc_web_wrapAI : public ScriptedAI
         {
-            uiWebWrapTimer      = 11*IN_MILLISECONDS;
-            uiInfectedBiteTimer = 4*IN_MILLISECONDS;
-            uiBindingWebsTimer = 17*IN_MILLISECONDS;
-        }
+            npc_web_wrapAI(Creature* c) : ScriptedAI(c) {}
 
-        void UpdateAI(const uint32 diff)
+            void Reset()
+            {
+                _wrapTargetGUID = 0;
+            }
+
+            void EnterCombat(Unit* /*who*/) {}
+            void AttackStart(Unit* /*who*/) {}
+            void MoveInLineOfSight(Unit* /*who*/) {}
+
+            void JustDied(Unit* /*killer*/)
+            {
+                if (_wrapTargetGUID)
+                {
+                    Unit* target = Unit::GetUnit(*me, _wrapTargetGUID);
+                    if (target)
+                        target->RemoveAurasDueToSpell(SPELL_WEB_WRAP_STUN);
+                }
+                me->RemoveCorpse();
+            }
+
+            void UpdateAI(uint32 const /*diff*/)
+            {
+                if (!me->ToTempSummon())
+                    return;
+
+                // should not be here?
+                if (Unit* summoner = me->ToTempSummon()->GetSummoner())
+                    _wrapTargetGUID = summoner->GetGUID();
+
+                Unit* temp = Unit::GetUnit((*me), _wrapTargetGUID);
+                if ((temp && temp->isAlive() && !temp->HasAura(SPELL_WEB_WRAP_STUN)) || !temp)
+                    me->DealDamage(me, me->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
+            }
+
+        private:
+            uint64 _wrapTargetGUID;
+        };
+
+        CreatureAI* GetAI(Creature* creature) const
         {
-            if (!UpdateVictim())
-                return;
-
-            if (uiWebWrapTimer <= diff)
-            {
-                if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
-                    DoCast(target, SPELL_WEB_WRAP, true);
-                uiWebWrapTimer = 15*IN_MILLISECONDS;
-            } else uiWebWrapTimer -= diff;
-
-            if (uiInfectedBiteTimer <= diff)
-            {
-                DoCast(me->getVictim(), SPELL_INFECTED_BITE, true);
-                uiInfectedBiteTimer = 11*IN_MILLISECONDS;
-            } else uiInfectedBiteTimer -= diff;
-
-            if (uiBindingWebsTimer <= diff)
-            {
-                DoCast(me->getVictim(), SPELL_BLINDING_WEBS, true);
-                uiBindingWebsTimer = 17*IN_MILLISECONDS;
-            } else uiBindingWebsTimer -= diff;
-
-            DoMeleeAttackIfReady();
+            return new npc_web_wrapAI(creature);
         }
-    };
-
-    CreatureAI* GetAI(Creature* creature) const
-    {
-        return new npc_watcher_narjilAI(creature);
-    }
-};
-
-class npc_watcher_silthik : public CreatureScript
-{
-public:
-    npc_watcher_silthik() : CreatureScript("npc_watcher_silthik") { }
-
-    struct npc_watcher_silthikAI : public ScriptedAI
-    {
-        npc_watcher_silthikAI(Creature* c) : ScriptedAI(c) {}
-
-        uint32 uiWebWrapTimer;
-        uint32 uiInfectedBiteTimer;
-        uint32 uiPoisonSprayTimer;
-
-        void Reset()
-        {
-            uiWebWrapTimer      = 11*IN_MILLISECONDS;
-            uiInfectedBiteTimer = 4*IN_MILLISECONDS;
-            uiPoisonSprayTimer  = 15*IN_MILLISECONDS;
-        }
-
-        void UpdateAI(const uint32 diff)
-        {
-            if (!UpdateVictim())
-                return;
-
-            if (uiWebWrapTimer <= diff)
-            {
-                if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
-                    DoCast(target, SPELL_WEB_WRAP, true);
-
-                uiWebWrapTimer = 15*IN_MILLISECONDS;
-            } else uiWebWrapTimer -= diff;
-
-            if (uiInfectedBiteTimer <= diff)
-            {
-                DoCast(me->getVictim(), SPELL_INFECTED_BITE, true);
-                uiInfectedBiteTimer = 15*IN_MILLISECONDS;
-            } else uiInfectedBiteTimer -= diff;
-
-            if (uiPoisonSprayTimer <= diff)
-            {
-                DoCast(me->getVictim(), SPELL_POSION_SPRAY, true);
-                uiPoisonSprayTimer = 17*IN_MILLISECONDS;
-            } else uiPoisonSprayTimer -= diff;
-
-            DoMeleeAttackIfReady();
-
-        }
-    };
-
-    CreatureAI* GetAI(Creature* creature) const
-    {
-        return new npc_watcher_silthikAI(creature);
-    }
 };
 
 class achievement_watch_him_die : public AchievementCriteriaScript
@@ -543,14 +582,13 @@ class achievement_watch_him_die : public AchievementCriteriaScript
                 return false;
 
             InstanceScript* instance = target->GetInstanceScript();
-            Creature* Watcher[3];
             if (!instance)
                 return false;
 
             for (uint8 n = 0; n < 3; ++n)
             {
-                Watcher[n] = ObjectAccessor::GetCreature(*target, instance->GetData64(DATA_WATCHER_GASHRA + n));
-                if (Watcher[n] && !Watcher[n]->isAlive())
+                Creature* watcher = ObjectAccessor::GetCreature(*target, instance->GetData64(DATA_WATCHER_GASHRA + n));
+                if (!watcher || !watcher->isAlive())
                     return false;
             }
 
@@ -561,12 +599,11 @@ class achievement_watch_him_die : public AchievementCriteriaScript
 void AddSC_boss_krik_thir()
 {
     new boss_krik_thir();
+    new npc_krikthir_watcher();
     new npc_skittering_infector();
+    new npc_anub_ar_warrior();
     new npc_anub_ar_skirmisher();
     new npc_anub_ar_shadowcaster();
-    new npc_watcher_gashra();
-    new npc_anub_ar_warrior();
-    new npc_watcher_silthik();
-    new npc_watcher_narjil();
+    new npc_web_wrap();
     new achievement_watch_him_die();
 }

@@ -64,7 +64,7 @@ void HomeMovementGenerator<Creature>::Finalize(Creature& owner)
 {
     // sometimes movement wont be finished, clear UNIT_STAT_EVADE anyways
     // TODO: why?
-    owner.ClearUnitState(UNIT_STAT_EVADE);
+    owner.ClearUnitState(UNIT_STATE_EVADE);
 
     if (arrived)
     {

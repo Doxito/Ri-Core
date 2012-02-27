@@ -27,6 +27,7 @@ enum Spells
     SPELL_SHOCK                 = 64363,
     SPELL_OVERCHARGED           = 64217,
     SPELL_OVERCHARGED_BLAST     = 64219,    // Cast when Overcharged reaches 10 stacks. Mob dies after that
+    SPELL_WARDER_OVERCHARGE     = 64379
 };
 
 // cannot let SpellDifficulty handle it, no entries for these
@@ -113,12 +114,13 @@ class boss_emalon : public CreatureScript
                 _EnterCombat();
             }
 
-            void UpdateAI(const uint32 diff)
+            void UpdateAI(uint32 const diff)
             {
                 if (!UpdateVictim())
                     return;
 
                 events.Update(diff);
+                _DoAggroPulse(diff);
 
                 if (me->HasUnitState(UNIT_STATE_CASTING))
                     return;
@@ -130,27 +132,19 @@ class boss_emalon : public CreatureScript
                         case EVENT_CHAIN_LIGHTNING:
                             if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0))
                                 DoCast(target, SPELL_CHAIN_LIGHTNING);
-                            events.ScheduleEvent(EVENT_CHAIN_LIGHTNING, 25000);
+                            events.ScheduleEvent(EVENT_CHAIN_LIGHTNING, urand(10000, 12000));
                             break;
                         case EVENT_LIGHTNING_NOVA:
                             DoCastAOE(SPELL_LIGHTNING_NOVA);
                             events.ScheduleEvent(EVENT_LIGHTNING_NOVA, 40000);
                             break;
                         case EVENT_OVERCHARGE:
-                            if (!summons.empty())
-                            {
-                                Creature* minion = Unit::GetCreature(*me, SelectRandomContainerElement(summons));
-                                if (minion && minion->isAlive())
-                                {
-                                    minion->CastSpell(me, SPELL_OVERCHARGED, true);
-                                    minion->SetFullHealth();
-                                    DoScriptText(EMOTE_OVERCHARGE, me);
-                                    events.ScheduleEvent(EVENT_OVERCHARGE, 45000);
-                                }
-                            }
+                            DoCast(SPELL_OVERCHARGE);
+                            DoScriptText(EMOTE_OVERCHARGE, me);
+                            events.ScheduleEvent(EVENT_OVERCHARGE, 45000);
                             break;
                         case EVENT_BERSERK:
-                            DoCast(me, SPELL_BERSERK);
+                            DoCast(me, SPELL_BERSERK, true);
                             DoScriptText(EMOTE_BERSERK, me);
                             break;
                         default:
@@ -180,22 +174,24 @@ class mob_tempest_minion : public CreatureScript
         {
             mob_tempest_minionAI(Creature* creature) : ScriptedAI(creature)
             {
-                instance = creature->GetInstanceScript();
+                _instance = creature->GetInstanceScript();
             }
 
             void Reset()
             {
-                events.Reset();
-                OverchargedTimer = 0;
+                _events.Reset();
             }
 
             void JustDied(Unit* /*Killer*/)
             {
-                if (Creature* emalon = Unit::GetCreature(*me, instance ? instance->GetData64(DATA_EMALON) : 0))
+                if (!me->isSummon())
+                    return;
+
+                if (Creature* emalon = Unit::GetCreature(*me, _instance ? _instance->GetData64(DATA_EMALON) : 0))
                 {
                     if (emalon->isAlive())
                     {
-                        emalon->SummonCreature(MOB_TEMPEST_MINION, 0, 0, 0, 0, TEMPSUMMON_CORPSE_DESPAWN, 0);
+                        emalon->SummonCreature(MOB_TEMPEST_MINION, *emalon, TEMPSUMMON_CORPSE_DESPAWN, 0);
                         DoScriptText(EMOTE_MINION_RESPAWN, me);
                     }
                 }
@@ -204,62 +200,49 @@ class mob_tempest_minion : public CreatureScript
             void EnterCombat(Unit* who)
             {
                 DoZoneInCombat();
-                events.ScheduleEvent(EVENT_SHOCK, 20000);
+                _events.ScheduleEvent(EVENT_SHOCK, urand(10000, 20000));
 
-                if (Creature* pEmalon = Unit::GetCreature(*me, instance ? instance->GetData64(DATA_EMALON) : 0))
+                if (!me->isSummon())
+                    return;
+
+                if (Creature* emalon = Unit::GetCreature(*me, _instance ? _instance->GetData64(DATA_EMALON) : 0))
                 {
-                    if (!pEmalon->getVictim() && pEmalon->AI())
-                        pEmalon->AI()->AttackStart(who);
+                    if (!emalon->getVictim() && emalon->AI())
+                        emalon->AI()->AttackStart(who);
                 }
             }
 
-            void UpdateAI(const uint32 diff)
+            void UpdateAI(uint32 const diff)
             {
-                //Return since we have no target
                 if (!UpdateVictim())
                     return;
 
-                events.Update(diff);
+                _events.Update(diff);
 
                 if (me->HasUnitState(UNIT_STATE_CASTING))
                     return;
 
-                if (Aura const* overchargedAura = me->GetAura(SPELL_OVERCHARGED))
+                if (!me->isSummon() && HealthBelowPct(40) && !me->HasAura(SPELL_WARDER_OVERCHARGE))
+                    DoCast(me, SPELL_WARDER_OVERCHARGE, true);
+
+                if (me->GetAuraCount(SPELL_OVERCHARGED) >= 10)
                 {
-                    if (overchargedAura->GetStackAmount() < 10)
-                    {
-                        if (OverchargedTimer <= diff)
-                        {
-                            DoCast(me, SPELL_OVERCHARGED);
-                            OverchargedTimer = 2000;
-                        }
-                        else
-                            OverchargedTimer -= diff;
-                    }
-                    else
-                    {
-                        if (overchargedAura->GetStackAmount() == 10)
-                        {
-                            DoCast(me, SPELL_OVERCHARGED_BLAST);
-                            me->DespawnOrUnsummon();
-                            DoScriptText(EMOTE_MINION_RESPAWN, me);
-                        }
-                    }
+                    DoCast(me, SPELL_OVERCHARGED_BLAST);
+                    me->DealDamage(me, me->GetHealth());
                 }
 
-                if (events.ExecuteEvent() == EVENT_SHOCK)
+                if (_events.ExecuteEvent() == EVENT_SHOCK)
                 {
                     DoCastVictim(SPELL_SHOCK);
-                    events.ScheduleEvent(EVENT_SHOCK, 20000);
+                    _events.ScheduleEvent(EVENT_SHOCK, urand(17500, 22500));
                 }
 
                 DoMeleeAttackIfReady();
             }
 
         private:
-            InstanceScript* instance;
-            EventMap events;
-            uint32 OverchargedTimer;
+            InstanceScript* _instance;
+            EventMap _events;
         };
 
         CreatureAI* GetAI(Creature* creature) const
@@ -268,8 +251,88 @@ class mob_tempest_minion : public CreatureScript
         }
 };
 
+class spell_overcharge_targeting : public SpellScriptLoader
+{
+    public:
+        spell_overcharge_targeting() : SpellScriptLoader("spell_overcharge_targeting") { }
+
+        class spell_overcharge_targeting_SpellScript : public SpellScript
+        {
+            PrepareSpellScript(spell_overcharge_targeting_SpellScript);
+
+            void FilterTargetsInitial(std::list<Unit*>& unitList)
+            {
+                if (unitList.empty())
+                    return;
+
+                std::list<Unit*>::iterator itr = unitList.begin();
+                std::advance(itr, urand(0, unitList.size() - 1));
+                Unit* target = *itr;
+                unitList.clear();
+                unitList.push_back(target);
+                _target = target;
+            }
+
+            void FilterTargetsSubsequent(std::list<Unit*>& unitList)
+            {
+                unitList.clear();
+                if (_target)
+                    unitList.push_back(_target);
+            }
+
+            void Register()
+            {
+                OnUnitTargetSelect += SpellUnitTargetFn(spell_overcharge_targeting_SpellScript::FilterTargetsInitial, EFFECT_0, TARGET_UNIT_SRC_AREA_ENTRY);
+                OnUnitTargetSelect += SpellUnitTargetFn(spell_overcharge_targeting_SpellScript::FilterTargetsSubsequent, EFFECT_1, TARGET_UNIT_SRC_AREA_ENTRY);
+                OnUnitTargetSelect += SpellUnitTargetFn(spell_overcharge_targeting_SpellScript::FilterTargetsSubsequent, EFFECT_2, TARGET_UNIT_SRC_AREA_ENTRY);
+            }
+
+            Unit* _target;
+        };
+
+        SpellScript* GetSpellScript() const
+        {
+            return new spell_overcharge_targeting_SpellScript();
+        }
+};
+
+class spell_emalon_lightning_nova : public SpellScriptLoader
+{
+    public:
+        spell_emalon_lightning_nova() : SpellScriptLoader("spell_emalon_lightning_nova") { }
+
+        class spell_emalon_lightning_nova_SpellScript : public SpellScript
+        {
+            PrepareSpellScript(spell_emalon_lightning_nova_SpellScript);
+
+            void CalcDamage()
+            {
+                if (!GetHitUnit() || !GetCaster())
+                    return;
+
+                float distance = GetHitUnit()->GetExactDist2d(GetCaster());
+                if (distance < 10.0f)
+                    return;
+
+                SetHitDamage(int32(GetHitDamage() * 10 / distance));
+            }
+
+            void Register()
+            {
+                OnHit += SpellHitFn(spell_emalon_lightning_nova_SpellScript::CalcDamage);
+            }
+        };
+
+        SpellScript* GetSpellScript() const
+        {
+            return new spell_emalon_lightning_nova_SpellScript();
+        }
+};
+
 void AddSC_boss_emalon()
 {
     new boss_emalon();
     new mob_tempest_minion();
+    new spell_overcharge_targeting();
+    new spell_emalon_lightning_nova();
 }

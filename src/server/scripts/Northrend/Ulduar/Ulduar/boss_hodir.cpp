@@ -358,6 +358,8 @@ class boss_hodir : public CreatureScript
                 {
                     damage = 0;
                     DoScriptText(SAY_DEATH, me);
+                    instance->SetBossState(BOSS_HODIR, DONE);
+                    me->CastSpell(me, 64899, true);
                     if (iCouldSayThatThisCacheWasRare)
                         instance->SetData(DATA_HODIR_RARE_CACHE, 1);
 
@@ -670,64 +672,65 @@ class npc_hodir_priest : public CreatureScript
 
 class npc_hodir_shaman : public CreatureScript
 {
-    public:
-        npc_hodir_shaman() : CreatureScript("npc_hodir_shaman") { }
+public:
+    npc_hodir_shaman() : CreatureScript("npc_hodir_shaman") { }
 
-        struct npc_hodir_shamanAI : public ScriptedAI
+    CreatureAI* GetAI(Creature* pCreature) const
+    {
+        return new npc_hodir_shamanAI (pCreature);
+    }
+
+    struct npc_hodir_shamanAI : public ScriptedAI
+    {
+        npc_hodir_shamanAI(Creature *pCreature) : ScriptedAI(pCreature)
         {
-            npc_hodir_shamanAI(Creature* creature) : ScriptedAI(creature)
+            pInstance = pCreature->GetInstanceScript();
+            me->setFaction(1665);
+        }
+
+        InstanceScript* pInstance;
+        uint32 StormTimer;
+
+        void Reset()
+        {
+            StormTimer = urand(15000, 20000);
+        }
+
+        void AttackStart(Unit *who)
+        {
+            AttackStartCaster(who, 20);
+        }
+
+        void UpdateAI(const uint32 uiDiff)
+        {
+            if (!UpdateVictim() || me->HasUnitState(UNIT_STATE_STUNNED))
+                return;
+
+            if (StormTimer <= uiDiff)
             {
-                instance = me->GetInstanceScript();
-            }
-
-            void Reset()
-            {
-                events.Reset();
-                events.ScheduleEvent(EVENT_STORM_CLOUD, urand(10000, 12500));
-            }
-
-            void UpdateAI(uint32 const diff)
-            {
-                if (!UpdateVictim() || me->HasUnitState(UNIT_STATE_STUNNED) || me->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_STUNNED))
-                    return;
-
-                events.Update(diff);
-
-                if (me->HasUnitState(UNIT_STATE_CASTING))
-                    return;
-
-                while (uint32 eventId = events.ExecuteEvent())
+                std::list<Player*> players;
+                Trinity::AnyPlayerInObjectRangeCheck checker(me, 30);
+                Trinity::PlayerListSearcher<Trinity::AnyPlayerInObjectRangeCheck> searcher(me, players, checker);
+                me->VisitNearbyWorldObject(30, searcher);
+                if (!players.empty())
                 {
-                    switch (eventId)
-                    {
-                        case EVENT_STORM_CLOUD:
-                            if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, 100.0f, true))
-                                DoCast(target, SPELL_STORM_CLOUD, true);
-                            events.ScheduleEvent(EVENT_STORM_CLOUD, urand(15000, 20000));
-                            break;
-                        default:
-                            break;
-                    }
+                    std::list<Player*>::iterator iter = players.begin();
+                    DoCast((*iter), SPELL_STORM_CLOUD, true);
                 }
-
-                DoSpellAttackIfReady(SPELL_LAVA_BURST);
+                StormTimer = urand(15000, 20000);
             }
+            else StormTimer -= uiDiff;
 
-            void JustDied(Unit* /*who*/)
-             {
-                if (Creature* Hodir = ObjectAccessor::GetCreature(*me, instance ? instance->GetData64(BOSS_HODIR) : 0))
-                    Hodir->AI()->DoAction(ACTION_I_HAVE_THE_COOLEST_FRIENDS);
-              }
+            DoSpellAttackIfReady(SPELL_LAVA_BURST);
+        }
 
-        private:
-            InstanceScript* instance;
-            EventMap events;
-        };
-
-        CreatureAI* GetAI(Creature* creature) const
+        void JustDied(Unit* /*victim*/)
         {
-            return GetUlduarAI<npc_hodir_shamanAI>(creature);
-        };
+            // I Have the Coolest Friends
+                if (Creature* Hodir = ObjectAccessor::GetCreature(*me, pInstance ? pInstance->GetData64(BOSS_HODIR) : 0))
+                    Hodir->AI()->DoAction(ACTION_I_HAVE_THE_COOLEST_FRIENDS);
+        }
+    };
 };
 
 class npc_hodir_druid : public CreatureScript
