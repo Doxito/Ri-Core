@@ -717,17 +717,82 @@ void Map::PlayerRelocation(Player* player, float x, float y, float z, float orie
 
     if(!area)
     {
+		if(player->GetMapId() ==  571)
+		{ 
+			if (player->GetPositionX() > 12000 || player->GetPositionX() < -2000 || player->GetPositionY() > 10500 || player->GetPositionY() < -10500 )
+              player->TeleportTo(player->m_homebindMapId, player->m_homebindX, player->m_homebindY, player->m_homebindZ, player->GetOrientation()); //Teleport a piedra de Hogar
+			else
+			{
+		sLog->outStaticDebug("Player %s relocation grid[%u, %u]cell[%u, %u]->grid[%u, %u]cell[%u, %u] Map 571", player->GetName(), old_cell.GridX(), old_cell.GridY(), old_cell.CellX(), old_cell.CellY(), new_cell.GridX(), new_cell.GridY(), new_cell.CellX(), new_cell.CellY());
+         
+        player->RemoveFromGrid();
+
+        if (old_cell.DiffGrid(new_cell))
+            EnsureGridLoadedForActiveObject(new_cell, player);
+
+        AddToGrid(player, new_cell);
+			}
+		
+		}
+        else if(player->GetMapId() ==  1)
+		{
+			if (player->GetPositionX() < -15000 || player->GetPositionX() > 12100 || player->GetPositionY() < -9500 || player->GetPositionY() > 6800 )
+             player->TeleportTo(player->m_homebindMapId, player->m_homebindX, player->m_homebindY, player->m_homebindZ, player->GetOrientation()); //Teleport a piedra de Hogar
+					else
+			{
+		sLog->outStaticDebug("Player %s relocation grid[%u, %u]cell[%u, %u]->grid[%u, %u]cell[%u, %u] Map 1", player->GetName(), old_cell.GridX(), old_cell.GridY(), old_cell.CellX(), old_cell.CellY(), new_cell.GridX(), new_cell.GridY(), new_cell.CellX(), new_cell.CellY());
+         
+        player->RemoveFromGrid();
+
+        if (old_cell.DiffGrid(new_cell))
+            EnsureGridLoadedForActiveObject(new_cell, player);
+
+        AddToGrid(player, new_cell);
+			}
+		}
+	    else if(player->GetMapId() ==  0)
+		{
+			if (player->GetPositionX() > 6200 || player->GetPositionX() < -15900 || player->GetPositionY() > 3600 || player->GetPositionY() < -5800 )
       player->TeleportTo(player->m_homebindMapId, player->m_homebindX, player->m_homebindY, player->m_homebindZ, player->GetOrientation()); //Teleport a piedra de Hogar
-    // En caso de querer banear a la gente que está en un área desonocida - Activar:
+  	 				else
+			{
+		sLog->outStaticDebug("Player %s relocation grid[%u, %u]cell[%u, %u]->grid[%u, %u]cell[%u, %u] Map 0", player->GetName(), old_cell.GridX(), old_cell.GridY(), old_cell.CellX(), old_cell.CellY(), new_cell.GridX(), new_cell.GridY(), new_cell.CellX(), new_cell.CellY());
+         
+        player->RemoveFromGrid();
+
+        if (old_cell.DiffGrid(new_cell))
+            EnsureGridLoadedForActiveObject(new_cell, player);
+
+        AddToGrid(player, new_cell);
+			}
+		}
+		  else if(player->GetMapId() ==  530)
+		 {
+		
+		sLog->outStaticDebug("Player %s relocation grid[%u, %u]cell[%u, %u]->grid[%u, %u]cell[%u, %u] Map 530", player->GetName(), old_cell.GridX(), old_cell.GridY(), old_cell.CellX(), old_cell.CellY(), new_cell.GridX(), new_cell.GridY(), new_cell.CellX(), new_cell.CellY());
+         
+        player->RemoveFromGrid();
+
+        if (old_cell.DiffGrid(new_cell))
+            EnsureGridLoadedForActiveObject(new_cell, player);
+
+        AddToGrid(player, new_cell);
+			}
+		  else
+	player->TeleportTo(player->m_homebindMapId, player->m_homebindX, player->m_homebindY, player->m_homebindZ, player->GetOrientation()); //Teleport a piedra de Hogar
+  	
+		
+		
+		// En caso de querer banear a la gente que está en un área desonocida - Activar:
      //  std::string accountName;   
       // AccountMgr::GetName(player->GetSession()->GetAccountId(), accountName);
        //std::stringstream duration;
        //duration << sWorld->getIntConfig(CONFIG_WARDEN_CLIENT_BAN_DURATION_C) << "s";         
 	   //sWorld->BanAccount(BAN_ACCOUNT, accountName, duration.str(), "Situacion del PJ: Desconocido - Intento de tirar el server?","Server");
     
-     }
+	}
     else
-    {
+	{
 
         sLog->outStaticDebug("Player %s relocation grid[%u, %u]cell[%u, %u]->grid[%u, %u]cell[%u, %u]", player->GetName(), old_cell.GridX(), old_cell.GridY(), old_cell.CellX(), old_cell.CellY(), new_cell.GridX(), new_cell.GridY(), new_cell.CellX(), new_cell.CellY());
          
