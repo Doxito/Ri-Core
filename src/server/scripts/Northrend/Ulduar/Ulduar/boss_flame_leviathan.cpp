@@ -2030,7 +2030,7 @@ class spell_shield_generator : public SpellScriptLoader
                 if (Unit* caster = GetCaster())
                     if (Unit* siege = caster->GetVehicleBase())
                         amount = int32(siege->CountPctFromMaxHealth(15));
-            }
+ }
 
             void Register()
             {
