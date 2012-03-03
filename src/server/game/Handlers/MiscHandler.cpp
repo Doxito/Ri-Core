@@ -360,18 +360,18 @@ void WorldSession::HandleWhoOpcode(WorldPacket & recv_data)
      if(matchcount > 50 && matchcount < 60)
 		matchcount = (matchcount + 20);
 	else if(matchcount > 60 && matchcount < 70)
-		matchcount = (matchcount + 33);
+		matchcount = (matchcount + 39);
     else if(matchcount > 70 && matchcount < 90)
-		matchcount = (matchcount + 50);
-	else if(matchcount > 90 && matchcount < 150)
+		matchcount = (matchcount + 60);
+	else if(matchcount > 90 && matchcount < 200)
 		matchcount = (matchcount + 100);
-	else if(matchcount > 150 && matchcount < 200)
-		matchcount = (matchcount + 170);
 	else if(matchcount > 200 && matchcount < 300)
-		matchcount = (matchcount + 250);
+		matchcount = (matchcount + 170);
 	else if(matchcount > 300 && matchcount < 400)
+		matchcount = (matchcount + 250);
+	else if(matchcount > 400 && matchcount < 560)
 		matchcount = (matchcount + 300);
-	else if(matchcount > 400)
+	else if(matchcount > 560)
 		matchcount = (matchcount + 400);
 
     data.put(0, displaycount);                            // insert right count, count displayed
