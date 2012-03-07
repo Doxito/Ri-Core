@@ -125,7 +125,7 @@ public:
         void Reset()
         {
             if (!encounterActionReset)
-                DoEncounterAction(NULL, false, true, false);
+                DoEncounteraction(NULL, false, true, false);
 
             if (instance)
                 instance->SetData(DATA_HORSEMEN0 + id, NOT_STARTED);
@@ -143,6 +143,7 @@ public:
             _Reset();
         }
 
+
         void EnterEvadeMode()
         {
             _EnterEvadeMode();
@@ -151,6 +152,7 @@ public:
         }
 
         bool DoEncounterAction(Unit* who, bool attack, bool reset, bool checkAllDead)
+
         {
             if (!instance)
                 return false;
@@ -291,7 +293,7 @@ public:
                 BeginFourHorsemenMovement();
 
                 if (!encounterActionAttack)
-                    DoEncounterAction(who, true, false, false);
+                    DoEncounteraction(who, true, false, false);
             }
             else if (movementCompleted && movementStarted)
             {
@@ -321,7 +323,7 @@ public:
             if (instance)
                 instance->SetData(DATA_HORSEMEN0 + id, DONE);
 
-            if (instance && DoEncounterAction(NULL, false, false, true))
+            if (instance && DoEncounteraction(NULL, false, false, true))
             {
                 instance->SetBossState(BOSS_HORSEMEN, DONE);
                 instance->SaveToDB();

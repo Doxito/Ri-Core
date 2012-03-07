@@ -68,6 +68,7 @@ class npc_oculus_drake : public CreatureScript
         {
             player->PlayerTalkClass->ClearMenus();
             switch (creature->GetEntry())
+
             {
                 case NPC_VERDISA:
                     switch (action)
@@ -186,7 +187,9 @@ class npc_oculus_mount : public CreatureScript
                 _entered = false;
             }
 
+
             void PassengerBoarded(Unit* /*unit*/, int8 /*seat*/, bool apply)
+
             {
                 if (!apply)
                     me->DespawnOrUnsummon(1500);
@@ -273,6 +276,7 @@ class spell_amber_drake_shock_lance : public SpellScriptLoader
             {
                 OnHit += SpellHitFn(spell_amber_drake_shock_lance_SpellScript::RecalculateDamage);
             }
+
         };
 
         SpellScript* GetSpellScript() const
@@ -287,6 +291,7 @@ class IsNoValidDrake
         bool operator() (Unit* unit)
         {
             if (unit->ToCreature())
+
             {
                 switch (unit->ToCreature()->GetEntry())
                 {

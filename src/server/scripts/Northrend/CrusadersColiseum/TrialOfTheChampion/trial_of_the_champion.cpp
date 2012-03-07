@@ -1428,6 +1428,7 @@ public:
         return true;
     }
 
+
     bool OnGossipSelect(Player* player, Creature* creature, uint32 /*uiSender*/, uint32 action)
     {
         player->PlayerTalkClass->ClearMenus();
@@ -1438,6 +1439,7 @@ public:
                 chest->RemoveFromWorld();
 
         switch (action)
+
         {
             case GOSSIP_ACTION_INFO_DEF:
                 if (creature->AI()->GetData(EVENT_INTRO) != IN_PROGRESS)
