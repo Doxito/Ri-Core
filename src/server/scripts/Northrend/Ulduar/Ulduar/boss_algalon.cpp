@@ -206,9 +206,18 @@ class boss_algalon : public CreatureScript
     public:
         boss_algalon() : CreatureScript("boss_algalon") { }
 
+<<<<<<< HEAD
         CreatureAI* GetAI(Creature* creature) const
         {
             return GetUlduarAI<boss_algalonAI>(creature);
+=======
+    struct boss_algalonAI : public ScriptedAI
+    {
+        boss_algalonAI(Creature* creature) : ScriptedAI(creature)
+        {
+            instance = creature->GetInstanceScript();
+            Summon = false; // not in reset. intro speech done only once.
+>>>>>>> e8f414e... Core/Script: Clean-Up in Scripts.
         }
 
         struct boss_algalonAI : public BossAI

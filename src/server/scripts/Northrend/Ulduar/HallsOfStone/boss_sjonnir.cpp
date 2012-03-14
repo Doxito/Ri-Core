@@ -92,9 +92,13 @@ public:
 
     struct boss_sjonnirAI : public ScriptedAI
     {
-        boss_sjonnirAI(Creature* c) : ScriptedAI(c), lSummons(me)
+        boss_sjonnirAI(Creature* creature) : ScriptedAI(creature), lSummons(me)
         {
+<<<<<<< HEAD
             pInstance = c->GetInstanceScript();
+=======
+            instance = creature->GetInstanceScript();
+>>>>>>> e8f414e... Core/Script: Clean-Up in Scripts.
         }
 
         bool bIsFrenzy;
@@ -336,10 +340,14 @@ public:
 
     struct mob_malformed_oozeAI : public ScriptedAI
     {
+<<<<<<< HEAD
         mob_malformed_oozeAI(Creature *c) : ScriptedAI(c) 
         {
             pInstance = c->GetInstanceScript();
         }
+=======
+        mob_malformed_oozeAI(Creature* creature) : ScriptedAI(creature) {}
+>>>>>>> e8f414e... Core/Script: Clean-Up in Scripts.
 
         InstanceScript* pInstance;
         uint32 uiMergeTimer;
@@ -389,8 +397,9 @@ public:
 
     struct mob_iron_sludgeAI : public ScriptedAI
     {
-        mob_iron_sludgeAI(Creature* c) : ScriptedAI(c)
+        mob_iron_sludgeAI(Creature* creature) : ScriptedAI(creature)
         {
+<<<<<<< HEAD
             pInstance = c->GetInstanceScript();
         }
 
@@ -400,6 +409,9 @@ public:
         void Reset()
         {
             uiToxicVolleyTimer = 2000;
+=======
+            instance = creature->GetInstanceScript();
+>>>>>>> e8f414e... Core/Script: Clean-Up in Scripts.
         }
 
         void UpdateAI(const uint32 diff)

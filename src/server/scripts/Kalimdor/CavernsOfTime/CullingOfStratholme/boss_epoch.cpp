@@ -62,9 +62,9 @@ public:
 
     struct boss_epochAI : public ScriptedAI
     {
-        boss_epochAI(Creature* c) : ScriptedAI(c)
+        boss_epochAI(Creature* creature) : ScriptedAI(creature)
         {
-            instance = c->GetInstanceScript();
+            instance = creature->GetInstanceScript();
         }
 
         uint8 uiStepCount;

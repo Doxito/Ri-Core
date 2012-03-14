@@ -93,9 +93,15 @@ public:
 
     struct boss_palehoofAI : public ScriptedAI
     {
+<<<<<<< HEAD
         boss_palehoofAI(Creature *c) : ScriptedAI(c)
         {
             pInstance = c->GetInstanceScript();
+=======
+        boss_palehoofAI(Creature* creature) : ScriptedAI(creature)
+        {
+            instance = creature->GetInstanceScript();
+>>>>>>> e8f414e... Core/Script: Clean-Up in Scripts.
         }
 
         uint32 uiArcingSmashTimer;
@@ -300,9 +306,15 @@ public:
 
     struct mob_ravenous_furbolgAI : public ScriptedAI
     {
+<<<<<<< HEAD
         mob_ravenous_furbolgAI(Creature *c) : ScriptedAI(c)
         {
             pInstance = c->GetInstanceScript();
+=======
+        mob_ravenous_furbolgAI(Creature* creature) : ScriptedAI(creature)
+        {
+            instance = creature->GetInstanceScript();
+>>>>>>> e8f414e... Core/Script: Clean-Up in Scripts.
         }
 
         uint32 uiChainLightingTimer;
@@ -403,9 +415,15 @@ public:
 
     struct mob_frenzied_worgenAI : public ScriptedAI
     {
+<<<<<<< HEAD
         mob_frenzied_worgenAI(Creature *c) : ScriptedAI(c)
         {
             pInstance = c->GetInstanceScript();
+=======
+        mob_frenzied_worgenAI(Creature* creature) : ScriptedAI(creature)
+        {
+            instance = creature->GetInstanceScript();
+>>>>>>> e8f414e... Core/Script: Clean-Up in Scripts.
         }
 
         uint32 uiMortalWoundTimer;
@@ -497,9 +515,15 @@ public:
 
     struct mob_ferocious_rhinoAI : public ScriptedAI
     {
+<<<<<<< HEAD
         mob_ferocious_rhinoAI(Creature *c) : ScriptedAI(c)
         {
             pInstance = c->GetInstanceScript();
+=======
+        mob_ferocious_rhinoAI(Creature* creature) : ScriptedAI(creature)
+        {
+            instance = creature->GetInstanceScript();
+>>>>>>> e8f414e... Core/Script: Clean-Up in Scripts.
         }
 
         uint32 uiStompTimer;
@@ -597,9 +621,15 @@ public:
 
     struct mob_massive_jormungarAI : public ScriptedAI
     {
+<<<<<<< HEAD
         mob_massive_jormungarAI(Creature *c) : ScriptedAI(c)
         {
             pInstance = c->GetInstanceScript();
+=======
+        mob_massive_jormungarAI(Creature* creature) : ScriptedAI(creature)
+        {
+            instance = creature->GetInstanceScript();
+>>>>>>> e8f414e... Core/Script: Clean-Up in Scripts.
         }
 
         uint32 uiAcidSpitTimer;
@@ -690,9 +720,15 @@ public:
 
     struct mob_palehoof_orbAI : public ScriptedAI
     {
+<<<<<<< HEAD
         mob_palehoof_orbAI(Creature *c) : ScriptedAI(c)
         {
             pInstance = c->GetInstanceScript();
+=======
+        mob_palehoof_orbAI(Creature* creature) : ScriptedAI(creature)
+        {
+            instance = creature->GetInstanceScript();
+>>>>>>> e8f414e... Core/Script: Clean-Up in Scripts.
         }
 
         InstanceScript* pInstance;

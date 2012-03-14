@@ -85,12 +85,21 @@ class boss_krik_thir : public CreatureScript
     public:
         boss_krik_thir() : CreatureScript("boss_krik_thir") { }
 
+<<<<<<< HEAD
         struct boss_krik_thirAI : public ScriptedAI
         {
             boss_krik_thirAI(Creature* c) : ScriptedAI(c), _summons(me)
             {
                 _instance = c->GetInstanceScript();
             }
+=======
+    struct boss_krik_thirAI : public ScriptedAI
+    {
+        boss_krik_thirAI(Creature* creature) : ScriptedAI(creature)
+        {
+            instance = creature->GetInstanceScript();
+        }
+>>>>>>> e8f414e... Core/Script: Clean-Up in Scripts.
 
             void Reset()
             {
@@ -201,9 +210,15 @@ class npc_skittering_infector : public CreatureScript
     public:
         npc_skittering_infector() : CreatureScript("npc_skittering_infector") { }
 
+<<<<<<< HEAD
         struct npc_skittering_infectorAI : public ScriptedAI
         {
             npc_skittering_infectorAI(Creature* c) : ScriptedAI(c) {}
+=======
+    struct npc_skittering_infectorAI : public ScriptedAI
+    {
+        npc_skittering_infectorAI(Creature* creature) : ScriptedAI(creature) {}
+>>>>>>> e8f414e... Core/Script: Clean-Up in Scripts.
 
             void JustDied(Unit* /*killer*/)
             {
@@ -219,8 +234,20 @@ class npc_skittering_infector : public CreatureScript
 
 class npc_anub_ar_skirmisher : public CreatureScript
 {
+<<<<<<< HEAD
     public:
         npc_anub_ar_skirmisher() : CreatureScript("npc_anub_ar_skirmisher") { }
+=======
+public:
+    npc_anub_ar_skirmisher() : CreatureScript("npc_anub_ar_skirmisher") { }
+
+    struct npc_anub_ar_skirmisherAI : public ScriptedAI
+    {
+        npc_anub_ar_skirmisherAI(Creature* creature) : ScriptedAI(creature) {}
+
+        uint32 uiChargeTimer;
+        uint32 uiBackstabTimer;
+>>>>>>> e8f414e... Core/Script: Clean-Up in Scripts.
 
         struct npc_anub_ar_skirmisherAI : public ScriptedAI
         {
@@ -274,8 +301,26 @@ class npc_anub_ar_skirmisher : public CreatureScript
 
 class npc_anub_ar_shadowcaster : public CreatureScript
 {
+<<<<<<< HEAD
     public:
         npc_anub_ar_shadowcaster() : CreatureScript("npc_anub_ar_shadowcaster") { }
+=======
+public:
+    npc_anub_ar_shadowcaster() : CreatureScript("npc_anub_ar_shadowcaster") { }
+
+    struct npc_anub_ar_shadowcasterAI : public ScriptedAI
+    {
+        npc_anub_ar_shadowcasterAI(Creature* creature) : ScriptedAI(creature) {}
+
+        uint32 uiShadowBoltTimer;
+        uint32 uiShadowNovaTimer;
+
+        void Reset()
+        {
+            uiShadowBoltTimer = 6*IN_MILLISECONDS;
+            uiShadowNovaTimer = 15*IN_MILLISECONDS;
+        }
+>>>>>>> e8f414e... Core/Script: Clean-Up in Scripts.
 
         struct npc_anub_ar_shadowcasterAI : public ScriptedAI
         {
@@ -309,8 +354,14 @@ class npc_anub_ar_shadowcaster : public CreatureScript
                 else
                     _shadowNovaTimer -= diff;
 
+<<<<<<< HEAD
                 DoMeleeAttackIfReady();
             }
+=======
+    struct npc_anub_ar_warriorAI : public ScriptedAI
+    {
+        npc_anub_ar_warriorAI(Creature* creature) : ScriptedAI(creature){}
+>>>>>>> e8f414e... Core/Script: Clean-Up in Scripts.
 
         private:
             uint32 _shadowBoltTimer;
@@ -359,8 +410,14 @@ class npc_anub_ar_warrior : public CreatureScript
                 else
                     _cleaveTimer -= diff;
 
+<<<<<<< HEAD
                 DoMeleeAttackIfReady();
             }
+=======
+    struct npc_watcher_gashraAI : public ScriptedAI
+    {
+        npc_watcher_gashraAI(Creature* creature) : ScriptedAI(creature) {}
+>>>>>>> e8f414e... Core/Script: Clean-Up in Scripts.
 
         private:
             uint32 _cleaveTimer;
@@ -423,9 +480,15 @@ class npc_krikthir_watcher : public CreatureScript
                 if (!_instance)
                     return;
 
+<<<<<<< HEAD
                 Creature* Krikthir = Unit::GetCreature(*me, _instance->GetData64(DATA_KRIKTHIR_THE_GATEWATCHER));
                 if (Krikthir && Krikthir->isAlive())
                     DoScriptText(RAND(SAY_SEND_GROUP_1, SAY_SEND_GROUP_2, SAY_SEND_GROUP_3), Krikthir);
+=======
+    struct npc_watcher_narjilAI : public ScriptedAI
+    {
+        npc_watcher_narjilAI(Creature* creature) : ScriptedAI(creature) {}
+>>>>>>> e8f414e... Core/Script: Clean-Up in Scripts.
 
                 _instance->SetData(DATA_KRIKTHIR_THE_GATEWATCHER_EVENT, SPECIAL);
             }
@@ -518,8 +581,28 @@ class npc_krikthir_watcher : public CreatureScript
 
 class npc_web_wrap : public CreatureScript
 {
+<<<<<<< HEAD
     public:
         npc_web_wrap() : CreatureScript("npc_web_wrap") { }
+=======
+public:
+    npc_watcher_silthik() : CreatureScript("npc_watcher_silthik") { }
+
+    struct npc_watcher_silthikAI : public ScriptedAI
+    {
+        npc_watcher_silthikAI(Creature* creature) : ScriptedAI(creature) {}
+
+        uint32 uiWebWrapTimer;
+        uint32 uiInfectedBiteTimer;
+        uint32 uiPoisonSprayTimer;
+
+        void Reset()
+        {
+            uiWebWrapTimer      = 11*IN_MILLISECONDS;
+            uiInfectedBiteTimer = 4*IN_MILLISECONDS;
+            uiPoisonSprayTimer  = 15*IN_MILLISECONDS;
+        }
+>>>>>>> e8f414e... Core/Script: Clean-Up in Scripts.
 
         struct npc_web_wrapAI : public ScriptedAI
         {

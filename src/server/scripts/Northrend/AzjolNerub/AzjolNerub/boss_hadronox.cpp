@@ -95,6 +95,7 @@ class boss_hadronox : public CreatureScript
     public:
         boss_hadronox() : CreatureScript("boss_hadronox") { }
 
+<<<<<<< HEAD
         struct boss_hadronoxAI : public ScriptedAI
         {
             boss_hadronoxAI(Creature* c) : ScriptedAI(c), _summons(me)
@@ -102,6 +103,16 @@ class boss_hadronox : public CreatureScript
                 _instance = c->GetInstanceScript();
                 _home = c->GetHomePosition();
             }
+=======
+    struct boss_hadronoxAI : public ScriptedAI
+    {
+        boss_hadronoxAI(Creature* creature) : ScriptedAI(creature)
+        {
+            instance = creature->GetInstanceScript();
+            fMaxDistance = 50.0f;
+            bFirstTime = true;
+        }
+>>>>>>> e8f414e... Core/Script: Clean-Up in Scripts.
 
             void Reset()
             {

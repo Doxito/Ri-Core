@@ -112,9 +112,15 @@ public:
 
     struct boss_ymironAI : public ScriptedAI
     {
+<<<<<<< HEAD
         boss_ymironAI(Creature *c) : ScriptedAI(c), summons(c)
         {
             pInstance = c->GetInstanceScript();
+=======
+        boss_ymironAI(Creature* creature) : ScriptedAI(creature)
+        {
+            instance = creature->GetInstanceScript();
+>>>>>>> e8f414e... Core/Script: Clean-Up in Scripts.
             for (int i = 0; i < 4; ++i)
                 m_uiActiveOrder[i] = i;
             for (int i = 0; i < 3; ++i)
