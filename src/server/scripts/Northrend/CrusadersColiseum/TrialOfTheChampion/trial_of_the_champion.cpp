@@ -348,11 +348,13 @@ public:
                 switch(events.ExecuteEvent())
                 {
                     case 1:
+
                         Talk(SAY_ANNOUNCER_INTRO_PLAYER);
                         events.ScheduleEvent(2, 7000);
                         break;
                     case 2:
                         if (!playersGUID.empty())
+
 
                         {
                             if (Player* player = me->GetMap()->GetPlayers().begin()->getSource())
@@ -382,6 +384,7 @@ public:
                         }
                         break;
 
+
                     case 5:
                         if (instance->GetData(DATA_TEAM) == HORDE)
                         {
@@ -390,12 +393,14 @@ public:
                             events.ScheduleEvent(6, 8000);
                         } else
 
+
                         {
                             if (Creature* jaina = me->GetCreature(*me, instance->GetData64(DATA_JAINA)))
                                 jaina->AI()->Talk(SAY_JAINA_INTRO_CHAMPS_A);
                             events.ScheduleEvent(6, 5000);
                         }
                         break;
+
                     case 6:
                         if (instance->GetData(DATA_TEAM) == HORDE)
                         {
@@ -403,6 +408,7 @@ public:
                                 varian->AI()->Talk(SAY_VARIAN_INTRO_CHAMPS_H);
                             events.ScheduleEvent(7, 8000);
                         } else
+
 
                         {
                             if (Creature* garrosh = me->GetCreature(*me, instance->GetData64(DATA_GARROSH)))
