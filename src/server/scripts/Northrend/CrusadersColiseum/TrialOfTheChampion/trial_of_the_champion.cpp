@@ -353,6 +353,7 @@ public:
                         break;
                     case 2:
                         if (!playersGUID.empty())
+
                         {
                             if (Player* player = me->GetMap()->GetPlayers().begin()->getSource())
                                 AnnounceChampion(player);
@@ -380,6 +381,7 @@ public:
                             events.ScheduleEvent(5, 8000);
                         }
                         break;
+
                     case 5:
                         if (instance->GetData(DATA_TEAM) == HORDE)
                         {
@@ -387,6 +389,7 @@ public:
                                 garrosh->AI()->Talk(SAY_GARROSH_INTRO_CHAMPS_H);
                             events.ScheduleEvent(6, 8000);
                         } else
+
                         {
                             if (Creature* jaina = me->GetCreature(*me, instance->GetData64(DATA_JAINA)))
                                 jaina->AI()->Talk(SAY_JAINA_INTRO_CHAMPS_A);
@@ -400,6 +403,7 @@ public:
                                 varian->AI()->Talk(SAY_VARIAN_INTRO_CHAMPS_H);
                             events.ScheduleEvent(7, 8000);
                         } else
+
                         {
                             if (Creature* garrosh = me->GetCreature(*me, instance->GetData64(DATA_GARROSH)))
                                 garrosh->AI()->Talk(SAY_GARROSH_INTRO_CHAMPS_A);
