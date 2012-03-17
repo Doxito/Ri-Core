@@ -184,15 +184,9 @@ public:
 
     struct boss_skadiAI : public ScriptedAI
     {
-<<<<<<< HEAD
         boss_skadiAI(Creature *c) : ScriptedAI(c), Summons(me)
         {
             m_pInstance = c->GetInstanceScript();
-=======
-        boss_skadiAI(Creature* creature) : ScriptedAI(creature), Summons(me)
-        {
-            m_instance = creature->GetInstanceScript();
->>>>>>> e8f414e... Core/Script: Clean-Up in Scripts.
         }
 
         InstanceScript* m_pInstance;

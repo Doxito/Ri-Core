@@ -79,9 +79,9 @@ public:
 
     struct boss_taldaramAI : public ScriptedAI
     {
-        boss_taldaramAI(Creature* creature) : ScriptedAI(creature)
+        boss_taldaramAI(Creature* c) : ScriptedAI(c)
         {
-            instance = creature->GetInstanceScript();
+            instance = c->GetInstanceScript();
             me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC);
             me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
         }
@@ -338,9 +338,9 @@ public:
 
     struct mob_taldaram_flamesphereAI : public ScriptedAI
     {
-        mob_taldaram_flamesphereAI(Creature* creature) : ScriptedAI(creature)
+        mob_taldaram_flamesphereAI(Creature* c) : ScriptedAI(c)
         {
-            instance = creature->GetInstanceScript();
+            instance = c->GetInstanceScript();
         }
 
         uint32 uiDespawnTimer;

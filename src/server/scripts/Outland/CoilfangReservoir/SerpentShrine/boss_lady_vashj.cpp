@@ -143,12 +143,12 @@ public:
 
     struct boss_lady_vashjAI : public ScriptedAI
     {
-        boss_lady_vashjAI (Creature* creature) : ScriptedAI(creature)
+        boss_lady_vashjAI (Creature* c) : ScriptedAI(c)
         {
-            Instance = creature->GetInstanceScript();
+            Instance = c->GetInstanceScript();
             Intro = false;
             JustCreated = true;
-            creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE); // set it only once on Creature create (no need do intro if wiped)
+            c->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE); // set it only once on Creature create (no need do intro if wiped)
         }
 
         InstanceScript* Instance;
@@ -553,9 +553,9 @@ public:
 
     struct mob_enchanted_elementalAI : public ScriptedAI
     {
-        mob_enchanted_elementalAI(Creature* creature) : ScriptedAI(creature)
+        mob_enchanted_elementalAI(Creature* c) : ScriptedAI(c)
         {
-            Instance = creature->GetInstanceScript();
+            Instance = c->GetInstanceScript();
         }
 
         InstanceScript* Instance;
@@ -647,9 +647,9 @@ public:
 
     struct mob_tainted_elementalAI : public ScriptedAI
     {
-        mob_tainted_elementalAI(Creature* creature) : ScriptedAI(creature)
+        mob_tainted_elementalAI(Creature* c) : ScriptedAI(c)
         {
-            Instance = creature->GetInstanceScript();
+            Instance = c->GetInstanceScript();
         }
 
         InstanceScript* Instance;
@@ -716,9 +716,9 @@ public:
 
     struct mob_toxic_sporebatAI : public ScriptedAI
     {
-        mob_toxic_sporebatAI(Creature* creature) : ScriptedAI(creature)
+        mob_toxic_sporebatAI(Creature* c) : ScriptedAI(c)
         {
-            Instance = creature->GetInstanceScript();
+            Instance = c->GetInstanceScript();
             EnterEvadeMode();
         }
 
@@ -812,9 +812,9 @@ public:
 
     struct mob_shield_generator_channelAI : public ScriptedAI
     {
-        mob_shield_generator_channelAI(Creature* creature) : ScriptedAI(creature)
+        mob_shield_generator_channelAI(Creature* c) : ScriptedAI(c)
         {
-            Instance = creature->GetInstanceScript();
+            Instance = c->GetInstanceScript();
         }
 
         InstanceScript* Instance;

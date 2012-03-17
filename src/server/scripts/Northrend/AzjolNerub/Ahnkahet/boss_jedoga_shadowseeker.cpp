@@ -73,9 +73,9 @@ public:
 
     struct boss_jedoga_shadowseekerAI : public ScriptedAI
     {
-        boss_jedoga_shadowseekerAI(Creature* creature) : ScriptedAI(creature)
+        boss_jedoga_shadowseekerAI(Creature* c) : ScriptedAI(c)
         {
-            instance = creature->GetInstanceScript();
+            instance = c->GetInstanceScript();
             bFirstTime = true;
             bPreDone = false;
         }
@@ -355,9 +355,9 @@ public:
 
     struct mob_jedoga_initiandAI : public ScriptedAI
     {
-        mob_jedoga_initiandAI(Creature* creature) : ScriptedAI(creature)
+        mob_jedoga_initiandAI(Creature* c) : ScriptedAI(c)
         {
-            instance = creature->GetInstanceScript();
+            instance = c->GetInstanceScript();
         }
 
         InstanceScript* instance;
@@ -531,9 +531,9 @@ public:
 
     struct npc_jedogas_aufseher_triggerAI : public Scripted_NoMovementAI
     {
-        npc_jedogas_aufseher_triggerAI(Creature* creature) : Scripted_NoMovementAI(creature)
+        npc_jedogas_aufseher_triggerAI(Creature* c) : Scripted_NoMovementAI(c)
         {
-            instance = creature->GetInstanceScript();
+            instance = c->GetInstanceScript();
             bRemoved = false;
             bRemoved2 = false;
             bCasted = false;

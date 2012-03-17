@@ -89,9 +89,9 @@ public:
 
     struct boss_felblood_kaelthasAI : public ScriptedAI
     {
-        boss_felblood_kaelthasAI(Creature* creature) : ScriptedAI(creature)
+        boss_felblood_kaelthasAI(Creature* c) : ScriptedAI(c)
         {
-            instance = creature->GetInstanceScript();
+            instance = c->GetInstanceScript();
         }
 
         InstanceScript* instance;
@@ -441,7 +441,7 @@ public:
 
     struct mob_felkael_flamestrikeAI : public ScriptedAI
     {
-        mob_felkael_flamestrikeAI(Creature* creature) : ScriptedAI(creature)
+        mob_felkael_flamestrikeAI(Creature* c) : ScriptedAI(c)
         {
         }
 
@@ -483,9 +483,9 @@ public:
 
     struct mob_felkael_phoenixAI : public ScriptedAI
     {
-        mob_felkael_phoenixAI(Creature* creature) : ScriptedAI(creature)
+        mob_felkael_phoenixAI(Creature* c) : ScriptedAI(c)
         {
-            instance = creature->GetInstanceScript();
+            instance = c->GetInstanceScript();
         }
 
         InstanceScript* instance;
@@ -603,7 +603,7 @@ public:
 
     struct mob_felkael_phoenix_eggAI : public ScriptedAI
     {
-        mob_felkael_phoenix_eggAI(Creature* creature) : ScriptedAI(creature) {}
+        mob_felkael_phoenix_eggAI(Creature* c) : ScriptedAI(c) {}
 
         uint32 HatchTimer;
 
@@ -640,7 +640,7 @@ public:
 
     struct mob_arcane_sphereAI : public ScriptedAI
     {
-        mob_arcane_sphereAI(Creature* creature) : ScriptedAI(creature) { Reset(); }
+        mob_arcane_sphereAI(Creature* c) : ScriptedAI(c) { Reset(); }
 
         uint32 DespawnTimer;
         uint32 ChangeTargetTimer;

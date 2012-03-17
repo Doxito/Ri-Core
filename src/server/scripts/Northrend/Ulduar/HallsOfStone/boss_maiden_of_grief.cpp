@@ -65,11 +65,7 @@ public:
 
     struct boss_maiden_of_griefAI : public ScriptedAI
     {
-<<<<<<< HEAD
         boss_maiden_of_griefAI(Creature *c) : ScriptedAI(c)
-=======
-        boss_maiden_of_griefAI(Creature* creature) : ScriptedAI(creature)
->>>>>>> e8f414e... Core/Script: Clean-Up in Scripts.
         {
             pInstance = me->GetInstanceScript();
         }

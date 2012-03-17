@@ -299,17 +299,8 @@ class mob_annhylde_the_caller : public CreatureScript
     public:
         mob_annhylde_the_caller() : CreatureScript("mob_annhylde_the_caller") { }
 
-<<<<<<< HEAD
         struct mob_annhylde_the_callerAI : public ScriptedAI
         {
-=======
-    struct mob_annhylde_the_callerAI : public ScriptedAI
-    {
-        mob_annhylde_the_callerAI(Creature* creature) : ScriptedAI(creature)
-        {
-            instance = creature->GetInstanceScript();
-        }
->>>>>>> e8f414e... Core/Script: Clean-Up in Scripts.
 
             mob_annhylde_the_callerAI(Creature* c) : ScriptedAI(c)
             {
@@ -416,13 +407,7 @@ class mob_ingvar_throw_dummy : public CreatureScript
     public:
         mob_ingvar_throw_dummy() : CreatureScript("mob_ingvar_throw_dummy") { }
 
-<<<<<<< HEAD
         struct mob_ingvar_throw_dummyAI : public ScriptedAI
-=======
-    struct mob_ingvar_throw_dummyAI : public ScriptedAI
-    {
-        mob_ingvar_throw_dummyAI(Creature* creature) : ScriptedAI(creature)
->>>>>>> e8f414e... Core/Script: Clean-Up in Scripts.
         {
             mob_ingvar_throw_dummyAI(Creature* c) : ScriptedAI(c) { }
 

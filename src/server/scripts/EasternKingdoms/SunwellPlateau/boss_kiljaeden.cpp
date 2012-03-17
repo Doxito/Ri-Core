@@ -251,9 +251,9 @@ public:
 
     struct boss_kalecgos_kjAI : public ScriptedAI
     {
-        boss_kalecgos_kjAI(Creature* creature) : ScriptedAI(creature)
+        boss_kalecgos_kjAI(Creature* c) : ScriptedAI(c)
         {
-            instance = creature->GetInstanceScript();
+            instance = c->GetInstanceScript();
         }
 
         InstanceScript* instance;
@@ -406,9 +406,9 @@ public:
 
     struct mob_kiljaeden_controllerAI : public Scripted_NoMovementAI
     {
-        mob_kiljaeden_controllerAI(Creature* creature) : Scripted_NoMovementAI(creature), summons(me)
+        mob_kiljaeden_controllerAI(Creature* c) : Scripted_NoMovementAI(c), summons(me)
         {
-            instance = creature->GetInstanceScript();
+            instance = c->GetInstanceScript();
         }
 
         InstanceScript* instance;
@@ -506,9 +506,9 @@ public:
 
     struct boss_kiljaedenAI : public Scripted_NoMovementAI
     {
-        boss_kiljaedenAI(Creature* creature) : Scripted_NoMovementAI(creature), summons(me)
+        boss_kiljaedenAI(Creature* c) : Scripted_NoMovementAI(c), summons(me)
         {
-            instance = creature->GetInstanceScript();
+            instance = c->GetInstanceScript();
         }
 
         InstanceScript* instance;
@@ -914,9 +914,9 @@ public:
 
     struct mob_hand_of_the_deceiverAI : public ScriptedAI
     {
-        mob_hand_of_the_deceiverAI(Creature* creature) : ScriptedAI(creature)
+        mob_hand_of_the_deceiverAI(Creature* c) : ScriptedAI(c)
         {
-            instance = creature->GetInstanceScript();
+            instance = c->GetInstanceScript();
         }
 
         InstanceScript* instance;
@@ -1015,7 +1015,7 @@ public:
 
     struct mob_felfire_portalAI : public Scripted_NoMovementAI
     {
-        mob_felfire_portalAI(Creature* creature) : Scripted_NoMovementAI(creature) {}
+        mob_felfire_portalAI(Creature* c) : Scripted_NoMovementAI(c) {}
 
         uint32 uiSpawnFiendTimer;
 
@@ -1060,7 +1060,7 @@ public:
 
     struct mob_volatile_felfire_fiendAI : public ScriptedAI
     {
-        mob_volatile_felfire_fiendAI(Creature* creature) : ScriptedAI(creature) {}
+        mob_volatile_felfire_fiendAI(Creature* c) : ScriptedAI(c) {}
 
         uint32 uiExplodeTimer;
 
@@ -1118,7 +1118,7 @@ public:
 
     struct mob_armageddonAI : public Scripted_NoMovementAI
     {
-        mob_armageddonAI(Creature* creature) : Scripted_NoMovementAI(creature) {}
+        mob_armageddonAI(Creature* c) : Scripted_NoMovementAI(c) {}
 
         uint8 spell;
         uint32 uiTimer;
@@ -1173,9 +1173,9 @@ public:
 
     struct mob_shield_orbAI : public ScriptedAI
     {
-        mob_shield_orbAI(Creature* creature) : ScriptedAI(creature)
+        mob_shield_orbAI(Creature* c) : ScriptedAI(c)
         {
-            instance = creature->GetInstanceScript();
+            instance = c->GetInstanceScript();
         }
 
         InstanceScript* instance;
@@ -1261,7 +1261,7 @@ public:
 
     struct mob_sinster_reflectionAI : public ScriptedAI
     {
-        mob_sinster_reflectionAI(Creature* creature) : ScriptedAI(creature) {}
+        mob_sinster_reflectionAI(Creature* c) : ScriptedAI(c) {}
 
         uint8 victimClass;
         uint32 uiTimer[3];

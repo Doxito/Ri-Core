@@ -115,9 +115,9 @@ public:
 
     struct boss_felmystAI : public ScriptedAI
     {
-        boss_felmystAI(Creature* creature) : ScriptedAI(creature)
+        boss_felmystAI(Creature* c) : ScriptedAI(c)
         {
-            instance = creature->GetInstanceScript();
+            instance = c->GetInstanceScript();
         }
 
         InstanceScript* instance;
@@ -522,7 +522,7 @@ public:
 
     struct mob_felmyst_vaporAI : public ScriptedAI
     {
-        mob_felmyst_vaporAI(Creature* creature) : ScriptedAI(creature)
+        mob_felmyst_vaporAI(Creature* c) : ScriptedAI(c)
         {
             me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             me->SetSpeed(MOVE_RUN, 0.8f);
@@ -555,7 +555,7 @@ public:
 
     struct mob_felmyst_trailAI : public ScriptedAI
     {
-        mob_felmyst_trailAI(Creature* creature) : ScriptedAI(creature)
+        mob_felmyst_trailAI(Creature* c) : ScriptedAI(c)
         {
             me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             DoCast(me, SPELL_TRAIL_TRIGGER, true);

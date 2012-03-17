@@ -70,9 +70,9 @@ public:
 
     struct boss_nightbaneAI : public ScriptedAI
     {
-        boss_nightbaneAI(Creature* creature) : ScriptedAI(creature)
+        boss_nightbaneAI(Creature* c) : ScriptedAI(c)
         {
-            instance = creature->GetInstanceScript();
+            instance = c->GetInstanceScript();
             Intro = true;
         }
 

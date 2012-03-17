@@ -59,30 +59,8 @@ enum CombatPhases
 
 class boss_mal_ganis : public CreatureScript
 {
-<<<<<<< HEAD
     public:
         boss_mal_ganis() : CreatureScript("boss_mal_ganis") { }
-=======
-public:
-    boss_mal_ganis() : CreatureScript("boss_mal_ganis") { }
-
-    CreatureAI* GetAI(Creature* creature) const
-    {
-        return new boss_mal_ganisAI (creature);
-    }
-
-    struct boss_mal_ganisAI : public ScriptedAI
-    {
-        boss_mal_ganisAI(Creature* creature) : ScriptedAI(creature)
-        {
-            instance = creature->GetInstanceScript();
-        }
-
-        uint32 uiCarrionSwarmTimer;
-        uint32 uiMindBlastTimer;
-        uint32 uiVampiricTouchTimer;
-        uint32 uiSleepTimer;
->>>>>>> e8f414e... Core/Script: Clean-Up in Scripts.
 
         struct boss_mal_ganisAI : public ScriptedAI
         {

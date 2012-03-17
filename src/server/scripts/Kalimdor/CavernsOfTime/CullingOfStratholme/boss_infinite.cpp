@@ -47,11 +47,9 @@ public:
 
     struct boss_infinite_corruptorAI : public ScriptedAI
     {
-        boss_infinite_corruptorAI(Creature* creature) : ScriptedAI(creature)
+        boss_infinite_corruptorAI(Creature* c) : ScriptedAI(c)
         {
-
-            instance = creature->GetInstanceScript();
-
+            pInstance = c->GetInstanceScript();
         }
 
         InstanceScript* pInstance;

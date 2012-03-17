@@ -64,9 +64,9 @@ public:
 
     struct boss_talon_king_ikissAI : public ScriptedAI
     {
-        boss_talon_king_ikissAI(Creature* creature) : ScriptedAI(creature)
+        boss_talon_king_ikissAI(Creature* c) : ScriptedAI(c)
         {
-            instance = creature->GetInstanceScript();
+            instance = c->GetInstanceScript();
         }
 
         InstanceScript* instance;

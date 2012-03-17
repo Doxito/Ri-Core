@@ -73,9 +73,9 @@ public:
 
     struct boss_salrammAI : public ScriptedAI
     {
-        boss_salrammAI(Creature* creature) : ScriptedAI(creature)
+        boss_salrammAI(Creature* c) : ScriptedAI(c)
         {
-            instance = creature->GetInstanceScript();
+            instance = c->GetInstanceScript();
             if (instance)
                 DoScriptText(SAY_SPAWN, me);
         }

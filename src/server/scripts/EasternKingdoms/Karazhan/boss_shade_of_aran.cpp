@@ -92,9 +92,9 @@ public:
 
     struct boss_aranAI : public ScriptedAI
     {
-        boss_aranAI(Creature* creature) : ScriptedAI(creature)
+        boss_aranAI(Creature* c) : ScriptedAI(c)
         {
-            instance = creature->GetInstanceScript();
+            instance = c->GetInstanceScript();
         }
 
         InstanceScript* instance;
@@ -522,7 +522,7 @@ public:
 
     struct water_elementalAI : public ScriptedAI
     {
-        water_elementalAI(Creature* creature) : ScriptedAI(creature) {}
+        water_elementalAI(Creature* c) : ScriptedAI(c) {}
 
         uint32 CastTimer;
 

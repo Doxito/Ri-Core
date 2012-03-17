@@ -332,9 +332,9 @@ public:
 
     struct mob_stalaggAI : public ScriptedAI
     {
-        mob_stalaggAI(Creature* creature) : ScriptedAI(creature)
+        mob_stalaggAI(Creature* c) : ScriptedAI(c)
         {
-            instance = creature->GetInstanceScript();
+            instance = c->GetInstanceScript();
         }
 
         InstanceScript* instance;
@@ -423,9 +423,9 @@ public:
 
     struct mob_feugenAI : public ScriptedAI
     {
-        mob_feugenAI(Creature* creature) : ScriptedAI(creature)
+        mob_feugenAI(Creature* c) : ScriptedAI(c)
         {
-            instance = creature->GetInstanceScript();
+            instance = c->GetInstanceScript();
         }
 
         InstanceScript* instance;
