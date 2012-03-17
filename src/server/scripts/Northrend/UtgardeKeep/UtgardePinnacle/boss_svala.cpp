@@ -94,12 +94,6 @@ enum SvalaPhase
     INTRO,
     NORMAL,
     SACRIFICING,
-    SVALADEAD
-};
-
-enum SvalaPoint
-{
-    POINT_FALL_GROUND = 1,
 };
 
 #define DATA_INCREDIBLE_HULK 2043
@@ -160,15 +154,20 @@ public:
 
             summons.DespawnAll();
             me->RemoveAllAuras();
+<<<<<<< HEAD
             
             if (Phase > INTRO)
             {
                 me->SetFlying(true);
                 me->AddUnitMovementFlag(MOVEMENTFLAG_LEVITATING);
             }
+=======
+>>>>>>> 03a24a8... Core/Units:
 
             if (Phase > NORMAL)
                 Phase = NORMAL;
+
+            me->SetDisableGravity(Phase == NORMAL);
 
             introTimer = 1 * IN_MILLISECONDS;
             introPhase = 0;
@@ -180,6 +179,7 @@ public:
                 instance->SetData64(DATA_SACRIFICED_PLAYER, 0);
             }
         }
+<<<<<<< HEAD
         
         void JustReachedHome()
         {
@@ -192,6 +192,9 @@ public:
             }
         }
         
+=======
+
+>>>>>>> 03a24a8... Core/Units:
         void EnterCombat(Unit* /*who*/)
         {
            // Talk(SAY_AGGRO);
@@ -243,6 +246,7 @@ public:
             if (victim != me)
                DoScriptText(SAY_SLAY, me);
         }
+<<<<<<< HEAD
         
         void DamageTaken(Unit* attacker, uint32 &damage)
         {
@@ -272,16 +276,21 @@ public:
         }
 
         void MovementInform(uint32 motionType, uint32 pointId)
+=======
+
+        void JustDied(Unit* /*killer*/)
+>>>>>>> 03a24a8... Core/Units:
         {
-            if (motionType != EFFECT_MOTION_TYPE)
-                return;
+            if (Phase == SACRIFICING)
+                SetEquipmentSlots(false, EQUIP_UNEQUIP, EQUIP_NO_CHANGE, EQUIP_NO_CHANGE);
 
-            if (pointId == POINT_FALL_GROUND)
-                me->DealDamage(me, me->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
-        }
+            me->HandleEmoteCommand(EMOTE_ONESHOT_FLYDEATH);
 
+<<<<<<< HEAD
         void JustDied(Unit* killer)
         {
+=======
+>>>>>>> 03a24a8... Core/Units:
             summons.DespawnAll();
 
             if (instance)
@@ -329,8 +338,11 @@ public:
                             break;
                         case 2:
                             arthas->CastSpell(me, SPELL_TRANSFORMING_CHANNEL, false);
+<<<<<<< HEAD
                             me->SetFlying(true);
                             me->AddUnitMovementFlag(MOVEMENTFLAG_LEVITATING);
+=======
+>>>>>>> 03a24a8... Core/Units:
                             pos.Relocate(me);
                             pos.m_positionZ += 8.0f;
                             me->GetMotionMaster()->MoveTakeoff(0, pos, 3.30078125f);
@@ -386,14 +398,19 @@ public:
                             introTimer = 13800;
                             break;
                         case 8:
+<<<<<<< HEAD
                             me->SetFlying(false);
                             me->RemoveUnitMovementFlag(MOVEMENTFLAG_LEVITATING);
                             me->SendMovementFlagUpdate();
+=======
+>>>>>>> 03a24a8... Core/Units:
                             pos.Relocate(me);
                             pos.m_positionX = me->GetHomePosition().GetPositionX();
                             pos.m_positionY = me->GetHomePosition().GetPositionY();
                             pos.m_positionZ = 90.6065f;
                             me->GetMotionMaster()->MoveLand(0, pos, 6.247422f);
+                            me->SetDisableGravity(false, true);
+                            me->SetHover(true);
                             ++introPhase;
                             introTimer = 3000;
                             break;
@@ -407,7 +424,8 @@ public:
                             break;
                     }
                 }
-                else introTimer -= diff;
+                else
+                    introTimer -= diff;
 
                 return;
             }
@@ -418,6 +436,7 @@ public:
                 if (!UpdateVictim())
                     return;
 
+<<<<<<< HEAD
                 if (me->IsWithinMeleeRange(me->getVictim()) && me->HasUnitMovementFlag(MOVEMENTFLAG_LEVITATING))
                 {
                     me->SetFlying(false);
@@ -425,26 +444,31 @@ public:
                     me->SendMovementFlagUpdate();
                 }
 
+=======
+>>>>>>> 03a24a8... Core/Units:
                 if (sinsterStrikeTimer <= diff)
                 {
                     DoCast(me->getVictim(), SPELL_SINSTER_STRIKE);
                     sinsterStrikeTimer = urand(5 * IN_MILLISECONDS, 9 * IN_MILLISECONDS);
-                } else sinsterStrikeTimer -= diff;
+                }
+                else
+                    sinsterStrikeTimer -= diff;
 
                 if (callFlamesTimer <= diff)
                 {
-                    if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
+                    if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, 100.0f, true))
                     {
                         DoCast(target, SPELL_CALL_FLAMES);
                         callFlamesTimer = urand(10 * IN_MILLISECONDS, 20 * IN_MILLISECONDS);
                     }
-                } else callFlamesTimer -= diff;
+                }
+                    else callFlamesTimer -= diff;
 
                 if (!sacrificed)
                 {
                     if (HealthBelowPct(50))
                     {
-                        if (Unit* sacrificeTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 80, true))
+                        if (Unit* sacrificeTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 80.0f, true))
                         {
                             if (instance)
                                 instance->SetData64(DATA_SACRIFICED_PLAYER, sacrificeTarget->GetGUID());
@@ -457,8 +481,11 @@ public:
                             //DoCast(sacrificeTarget, SPELL_RITUAL_PREPARATION);
 
                             SetCombatMovement(false);
+<<<<<<< HEAD
                             me->SetFlying(true);
                             me->AddUnitMovementFlag(MOVEMENTFLAG_LEVITATING);
+=======
+>>>>>>> 03a24a8... Core/Units:
 
                             Phase = SACRIFICING;
                             sacrePhase = 0;

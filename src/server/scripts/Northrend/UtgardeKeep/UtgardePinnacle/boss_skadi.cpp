@@ -245,7 +245,7 @@ public:
 
         void JustReachedHome()
         {
-            me->SetFlying(false);
+            me->SetCanFly(false);
             me->Dismount();
             me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_NON_ATTACKABLE);
             if (Unit::GetCreature((*me), m_uiGraufGUID) == NULL)
@@ -314,6 +314,10 @@ public:
                 if (m_uiSpellHitCount >= MAX_HIT_COUNT)
                 {
                     Phase = SKADI;
+<<<<<<< HEAD
+=======
+                    me->SetCanFly(false);
+>>>>>>> 03a24a8... Core/Units:
                     me->Dismount();
                     me->SetFlying(false);
                     me->SetUInt32Value(UNIT_FIELD_BYTES_1, 0);
@@ -371,7 +375,7 @@ public:
                     if (m_uiMountTimer && m_uiMountTimer <= diff)
                     {
                         me->Mount(DATA_MOUNT);
-                        me->SetFlying(true);
+                        me->SetCanFly(true);
                         m_uiMountTimer = 0;
                     } else m_uiMountTimer -= diff;
 

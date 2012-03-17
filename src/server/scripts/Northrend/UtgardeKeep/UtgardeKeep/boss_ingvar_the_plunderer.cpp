@@ -301,10 +301,32 @@ class mob_annhylde_the_caller : public CreatureScript
 
         struct mob_annhylde_the_callerAI : public ScriptedAI
         {
+<<<<<<< HEAD
             mob_annhylde_the_callerAI(Creature* c) : ScriptedAI(c)
             {
                 _instance = c->GetInstanceScript();
             }
+=======
+            instance = c->GetInstanceScript();
+        }
+
+        float x, y, z;
+        InstanceScript* instance;
+        uint32 uiResurectTimer;
+        uint32 uiResurectPhase;
+
+        void Reset()
+        {
+            //! HACK: Creature's can't have MOVEMENTFLAG_FLYING
+            me->AddUnitMovementFlag(MOVEMENTFLAG_FLYING | MOVEMENTFLAG_HOVER);
+            me->SetSpeed(MOVE_SWIM, 1.0f);
+            me->SetSpeed(MOVE_RUN, 1.0f);
+            me->SetSpeed(MOVE_WALK, 1.0f);
+            //me->SetSpeed(MOVE_FLIGHT, 1.0f);
+
+            me->GetPosition(x, y, z);
+            DoTeleportTo(x+1, y, z+30);
+>>>>>>> 03a24a8... Core/Units:
 
             void Reset()
             {

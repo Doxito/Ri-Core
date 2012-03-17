@@ -807,6 +807,7 @@ class boss_stormcaller_brundir : public CreatureScript
                 _forceLand = false;
                 _couldNotDoThat = true;
                 me->RemoveAllAuras();
+<<<<<<< HEAD
                 me->RemoveLootMode(LOOT_MODE_DEFAULT);
                 me->ApplySpellImmune(0, IMMUNITY_MECHANIC, MECHANIC_STUN, false);
                 if (instance)
@@ -818,6 +819,12 @@ class boss_stormcaller_brundir : public CreatureScript
                     me->RemoveUnitMovementFlag(MOVEMENTFLAG_LEVITATING);
                     me->SendMovementFlagUpdate();
                 }
+=======
+                me->SetDisableGravity(false);
+                me->ApplySpellImmune(0, IMMUNITY_MECHANIC, MECHANIC_INTERRUPT, false);  // Should be interruptable unless overridden by spell (Overload)
+                me->ApplySpellImmune(0, IMMUNITY_MECHANIC, MECHANIC_STUN, false);   // Reset immumity, Brundir should be stunnable by default
+                RespawnEncounter(instance, me);
+>>>>>>> 03a24a8... Core/Units:
             }
 
             void EnterCombat(Unit* who)

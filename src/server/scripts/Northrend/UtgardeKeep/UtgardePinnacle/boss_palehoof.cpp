@@ -701,10 +701,16 @@ public:
 
         void Reset()
         {
+<<<<<<< HEAD
             currentPhase=PHASE_NONE;
             SummonTimer=5*IN_MILLISECONDS;
             me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE|UNIT_FLAG_NON_ATTACKABLE|UNIT_FLAG_NOT_ATTACKABLE_1|UNIT_FLAG_IMMUNE_TO_PC);
             me->SetDisplayId(11686);
+=======
+            currentPhase = PHASE_NONE;
+            SummonTimer = 5000;
+            //! HACK: Creature's can't have MOVEMENTFLAG_FLYING
+>>>>>>> 03a24a8... Core/Units:
             me->AddUnitMovementFlag(MOVEMENTFLAG_FLYING);
             me->RemoveAurasDueToSpell(SPELL_ORB_VISUAL);
             me->SetSpeed(MOVE_FLIGHT , 0.5f);

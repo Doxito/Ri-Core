@@ -258,6 +258,7 @@ class boss_malygos : public CreatureScript
                 summons.Summon(summon);
             }
 
+<<<<<<< HEAD
             void SummonedCreatureDespawn(Creature* summon)
             {
                 switch (summon->GetEntry())
@@ -277,6 +278,9 @@ class boss_malygos : public CreatureScript
                 }
                 summons.Despawn(summon);
             }
+=======
+            me->SetCanFly(true);
+>>>>>>> 03a24a8... Core/Units:
 
             void KilledUnit(Unit* victim)
             {
@@ -330,8 +334,12 @@ class boss_malygos : public CreatureScript
                         me->SetInCombatWithZone();
                         me->GetMotionMaster()->MoveLand(POINT_START, Locations[0], 12.0f);
 
+<<<<<<< HEAD
                         while (Creature* dragon = me->FindNearestCreature(NPC_WYRMREST_SKYTALON, 250.0f))
                             dragon->ForcedDespawn();
+=======
+            me->SetDisableGravity(true);
+>>>>>>> 03a24a8... Core/Units:
 
                         break;
                     }
@@ -515,8 +523,13 @@ class boss_malygos : public CreatureScript
                                 if ((*itr)->getTarget()->ToCreature() && (*itr)->getTarget()->GetEntry() == NPC_WYRMREST_SKYTALON)
                                     targetList.push_back((*itr)->getTarget());
 
+<<<<<<< HEAD
                             if (targetList.empty())
                                 return;
+=======
+            me->SetDisableGravity(false);
+            me->SetCanFly(false);
+>>>>>>> 03a24a8... Core/Units:
 
                             // randomize and resize
                             Trinity::RandomResizeList<Unit*>(targetList, 3);
@@ -597,6 +610,20 @@ class boss_malygos : public CreatureScript
                             spark->DespawnOrUnsummon(1000);
                     }
             }
+<<<<<<< HEAD
+=======
+        }
+
+        void PrepareForVortex()
+        {
+            me->SetDisableGravity(true);
+            me->SetCanFly(true);
+
+            me->GetMotionMaster()->MovementExpired();
+            me->GetMotionMaster()->MovePoint(MOVE_VORTEX, MalygosPositions[1].GetPositionX(), MalygosPositions[1].GetPositionY(), MalygosPositions[1].GetPositionZ());
+            // continues in MovementInform function.
+        }
+>>>>>>> 03a24a8... Core/Units:
 
             void MovementInform(uint32 type, uint32 id)
             {
@@ -708,8 +735,13 @@ class boss_malygos : public CreatureScript
                     if (Unit* vehicle = target->GetVehicleBase())
                         return vehicle;
 
+<<<<<<< HEAD
                     return target;
                 }
+=======
+            me->SetDisableGravity(true);
+            me->SetCanFly(true);
+>>>>>>> 03a24a8... Core/Units:
 
                 return NULL;
             }
@@ -1112,6 +1144,7 @@ class npc_alexstrasza : public CreatureScript
                             //me->SummonGameObject(RAID_MODE<uint32>(GO_HEART_OF_MAGIC_10, GO_HEART_OF_MAGIC_25), Locations[5].GetPositionX() + 15.0f,
                             //    Locations[5].GetPositionY(), Locations[5].GetPositionZ(), 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0);
 
+<<<<<<< HEAD
                             // custom
                             if (Creature* temporary = me->SummonCreature(NPC_ALEXSTRASZAS_GIFT, Locations[0]))
                             {
@@ -1124,6 +1157,10 @@ class npc_alexstrasza : public CreatureScript
                                 if (Is25ManRaid())
                                     temporary->SetLootMode(LOOT_MODE_HARD_MODE_1);
                             }
+=======
+                        malygos->SetDisableGravity(false);
+                        malygos->SetCanFly(false);
+>>>>>>> 03a24a8... Core/Units:
 
                             if (_instance)
                             {

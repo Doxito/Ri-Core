@@ -369,7 +369,33 @@ class boss_urom : public CreatureScript
 
         CreatureAI* GetAI(Creature* creature) const
         {
+<<<<<<< HEAD
             return new boss_uromAI(creature);
+=======
+            switch (pSpell->Id)
+            {
+                case SPELL_SUMMON_MENAGERIE:
+                    me->SetHomePosition(968.66f, 1042.53f, 527.32f, 0.077f);
+                    LeaveCombat();
+                    break;
+                case SPELL_SUMMON_MENAGERIE_2:
+                    me->SetHomePosition(1164.02f, 1170.85f, 527.321f, 3.66f);
+                    LeaveCombat();
+                    break;
+                case SPELL_SUMMON_MENAGERIE_3:
+                    me->SetHomePosition(1118.31f, 1080.377f, 508.361f, 4.25f);
+                    LeaveCombat();
+                    break;
+                case SPELL_TELEPORT:
+                    //! Unconfirmed, previous below
+                    me->SetDisableGravity(true);
+                    //me->AddUnitMovementFlag(MOVEMENTFLAG_CAN_FLY); // with out it the npc will fall down while is casting
+                    canCast = true;
+                    break;
+                default:
+                    break;
+            }
+>>>>>>> 03a24a8... Core/Units:
         }
 };
 
