@@ -527,17 +527,10 @@ class boss_malygos : public CreatureScript
                             {
                                 surgeTargets[targetCount++] = (*itr)->GetGUID();
 
-<<<<<<< HEAD
                                 if (Player* player = (*itr)->GetCharmerOrOwnerPlayerOrPlayerItself())
                                     me->MonsterWhisper(WHISPER_SURGE, player->GetGUID(), true);
                             }
-=======
-            DoCast(SPELL_BERSEKER); // periodic aura, first tick in 10 minutes
 
-            if (instance)
-                instance->DoStartTimedAchievement(ACHIEVEMENT_TIMED_TYPE_EVENT, ACHIEV_TIMED_START_EVENT);
-        }
->>>>>>> a153e0c... Core: Remove some whitespace and tabs
 
                             targetCount = 0;
                             DoCast(SPELL_SURGE_OF_POWER_25);
