@@ -154,15 +154,13 @@ public:
 
             summons.DespawnAll();
             me->RemoveAllAuras();
-<<<<<<< HEAD
             
             if (Phase > INTRO)
             {
                 me->SetFlying(true);
                 me->AddUnitMovementFlag(MOVEMENTFLAG_LEVITATING);
             }
-=======
->>>>>>> 03a24a8... Core/Units:
+
 
             if (Phase > NORMAL)
                 Phase = NORMAL;
@@ -179,7 +177,7 @@ public:
                 instance->SetData64(DATA_SACRIFICED_PLAYER, 0);
             }
         }
-<<<<<<< HEAD
+
         
         void JustReachedHome()
         {
@@ -192,9 +190,7 @@ public:
             }
         }
         
-=======
 
->>>>>>> 03a24a8... Core/Units:
         void EnterCombat(Unit* /*who*/)
         {
            // Talk(SAY_AGGRO);
@@ -246,7 +242,7 @@ public:
             if (victim != me)
                DoScriptText(SAY_SLAY, me);
         }
-<<<<<<< HEAD
+
         
         void DamageTaken(Unit* attacker, uint32 &damage)
         {
@@ -276,21 +272,17 @@ public:
         }
 
         void MovementInform(uint32 motionType, uint32 pointId)
-=======
 
-        void JustDied(Unit* /*killer*/)
->>>>>>> 03a24a8... Core/Units:
         {
             if (Phase == SACRIFICING)
                 SetEquipmentSlots(false, EQUIP_UNEQUIP, EQUIP_NO_CHANGE, EQUIP_NO_CHANGE);
 
             me->HandleEmoteCommand(EMOTE_ONESHOT_FLYDEATH);
 
-<<<<<<< HEAD
+
         void JustDied(Unit* killer)
         {
-=======
->>>>>>> 03a24a8... Core/Units:
+
             summons.DespawnAll();
 
             if (instance)
@@ -338,11 +330,10 @@ public:
                             break;
                         case 2:
                             arthas->CastSpell(me, SPELL_TRANSFORMING_CHANNEL, false);
-<<<<<<< HEAD
+
                             me->SetFlying(true);
                             me->AddUnitMovementFlag(MOVEMENTFLAG_LEVITATING);
-=======
->>>>>>> 03a24a8... Core/Units:
+
                             pos.Relocate(me);
                             pos.m_positionZ += 8.0f;
                             me->GetMotionMaster()->MoveTakeoff(0, pos, 3.30078125f);
@@ -398,12 +389,11 @@ public:
                             introTimer = 13800;
                             break;
                         case 8:
-<<<<<<< HEAD
+
                             me->SetFlying(false);
                             me->RemoveUnitMovementFlag(MOVEMENTFLAG_LEVITATING);
                             me->SendMovementFlagUpdate();
-=======
->>>>>>> 03a24a8... Core/Units:
+
                             pos.Relocate(me);
                             pos.m_positionX = me->GetHomePosition().GetPositionX();
                             pos.m_positionY = me->GetHomePosition().GetPositionY();
@@ -436,7 +426,6 @@ public:
                 if (!UpdateVictim())
                     return;
 
-<<<<<<< HEAD
                 if (me->IsWithinMeleeRange(me->getVictim()) && me->HasUnitMovementFlag(MOVEMENTFLAG_LEVITATING))
                 {
                     me->SetFlying(false);
@@ -444,8 +433,7 @@ public:
                     me->SendMovementFlagUpdate();
                 }
 
-=======
->>>>>>> 03a24a8... Core/Units:
+
                 if (sinsterStrikeTimer <= diff)
                 {
                     DoCast(me->getVictim(), SPELL_SINSTER_STRIKE);
@@ -481,11 +469,10 @@ public:
                             //DoCast(sacrificeTarget, SPELL_RITUAL_PREPARATION);
 
                             SetCombatMovement(false);
-<<<<<<< HEAD
+
                             me->SetFlying(true);
                             me->AddUnitMovementFlag(MOVEMENTFLAG_LEVITATING);
-=======
->>>>>>> 03a24a8... Core/Units:
+
 
                             Phase = SACRIFICING;
                             sacrePhase = 0;

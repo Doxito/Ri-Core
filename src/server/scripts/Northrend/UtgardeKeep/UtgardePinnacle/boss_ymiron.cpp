@@ -234,17 +234,12 @@ public:
                     DoCast(me, SPELL_CHANNEL_YMIRON_TO_SPIRIT); // should be on spirit
                     if (Creature* pTemp = me->SummonCreature(ActiveBot[m_uiActiveOrder[m_uiActivedNumber]].npc, ActiveBot[m_uiActiveOrder[m_uiActivedNumber]].SpawnX, ActiveBot[m_uiActiveOrder[m_uiActivedNumber]].SpawnY, ActiveBot[m_uiActiveOrder[m_uiActivedNumber]].SpawnZ, ActiveBot[m_uiActiveOrder[m_uiActivedNumber]].SpawnO, TEMPSUMMON_CORPSE_DESPAWN, 0))
                     {
-<<<<<<< HEAD
+
                         m_uiActivedCreatureGUID = pTemp->GetGUID();
                         pTemp->CastSpell(me, SPELL_CHANNEL_SPIRIT_TO_YMIRON, true);
                         pTemp->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
                         pTemp->SetLevitate(true);
-=======
-                        m_uiActivedCreatureGUID = temp->GetGUID();
-                        temp->CastSpell(me, SPELL_CHANNEL_SPIRIT_TO_YMIRON, true);
-                        temp->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE);
-                        temp->SetDisableGravity(true);
->>>>>>> 03a24a8... Core/Units:
+
                         switch (m_uiActiveOrder[m_uiActivedNumber])
                         {
                             case 0: m_bIsActiveWithBJORN  = true; break;

@@ -220,13 +220,8 @@ class npc_azure_ring_captain : public CreatureScript
             {
                 targetGUID = 0;
 
-<<<<<<< HEAD
                 me->AddUnitMovementFlag(MOVEMENTFLAG_WALKING | MOVEMENTFLAG_FLYING);
-=======
-                me->SetWalk(true);
-                //! HACK: Creature's can't have MOVEMENTFLAG_FLYING
-                me->AddUnitMovementFlag(MOVEMENTFLAG_FLYING);
->>>>>>> 03a24a8... Core/Units:
+
                 me->SetReactState(REACT_AGGRESSIVE);
             }
 
