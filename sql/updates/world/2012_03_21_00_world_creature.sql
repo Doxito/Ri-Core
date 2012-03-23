@@ -1,6 +1,6 @@
 -- ToC missing trigger spawns
 
-SET @GUID            := 88412;
+SET @GUID            := 2284357; -- Guids libres para la DB de RI.
 SET @NPC_TRIGGER1    := 34704; -- Val'kyr Twins Bullet Stalker Dark
 SET @NPC_TRIGGER2    := 34720; -- Val'kyr Twins Bullet Stalker Light
 
