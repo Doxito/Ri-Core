@@ -232,9 +232,9 @@ CharacterDatabase.PExecute("REPLACE ri_antihack (nameacc,detectnum) VALUES (%u, 
             break;
 		}
     default:
-        return "Undefined";
         break;
     }
+    return "Undefined";
 }
 
 void WorldSession::HandleWardenDataOpcode(WorldPacket& recvData)
