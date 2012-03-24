@@ -456,7 +456,10 @@ static ChatCommand wintergraspCommandTable[] = //Línea de control chat -- Comand
                 added += appendCommandTable(commandTableCache + added, *it);
         }
 
-        QueryResult result = WorldDatabase.Query("SELECT name, security, help FROM command");
+        PreparedStatement* stmt = WorldDatabase.GetPreparedStatement(WORLD_SEL_COMMANDS);
+
+        PreparedQueryResult result = WorldDatabase.Query(stmt);
+
         if (result)
         {
             do
