@@ -1185,7 +1185,7 @@ void SpellMgr::LoadSpellRanks()
         mSpellInfoMap[itr->first]->ChainEntry = NULL;
     }
     mSpellChains.clear();
-
+    //                                                     0             1      2
     QueryResult result = WorldDatabase.Query("SELECT first_spell_id, spell_id, rank from spell_ranks ORDER BY first_spell_id, rank");
 
     if (!result)
@@ -1298,6 +1298,7 @@ void SpellMgr::LoadSpellRequired()
     mSpellsReqSpell.clear();                                   // need for reload case
     mSpellReq.clear();                                         // need for reload case
 
+    //                                                   0        1
     QueryResult result = WorldDatabase.Query("SELECT spell_id, req_spell from spell_required");
 
     if (!result)
@@ -1408,10 +1409,10 @@ void SpellMgr::LoadSpellLearnSpells()
     {
         Field* fields = result->Fetch();
 
-        uint32 spell_id = fields[0].GetUInt32();
+        uint32 spell_id = fields[0].GetUInt16();
 
         SpellLearnSpellNode node;
-        node.spell      = fields[1].GetUInt32();
+        node.spell      = fields[1].GetUInt16();
         node.active     = fields[2].GetBool();
         node.autoLearned= false;
 
@@ -1497,7 +1498,7 @@ void SpellMgr::LoadSpellTargetPositions()
 
     mSpellTargetPositions.clear();                                // need for reload case
 
-    //                                                0   1           2                  3                  4                  5
+    //                                                0      1              2                  3                  4                  5
     QueryResult result = WorldDatabase.Query("SELECT id, target_map, target_position_x, target_position_y, target_position_z, target_orientation FROM spell_target_position");
     if (!result)
     {
@@ -1516,7 +1517,7 @@ void SpellMgr::LoadSpellTargetPositions()
 
         SpellTargetPosition st;
 
-        st.target_mapId       = fields[1].GetUInt32();
+        st.target_mapId       = fields[1].GetUInt16();
         st.target_X           = fields[2].GetFloat();
         st.target_Y           = fields[3].GetFloat();
         st.target_Z           = fields[4].GetFloat();
@@ -1621,7 +1622,7 @@ void SpellMgr::LoadSpellGroups()
 
     uint32 count = 0;
 
-    //                                                       0   1
+    //                                                0     1
     QueryResult result = WorldDatabase.Query("SELECT id, spell_id FROM spell_group");
     if (!result)
     {
@@ -1718,7 +1719,7 @@ void SpellMgr::LoadSpellGroupStackRules()
         Field* fields = result->Fetch();
 
         uint32 group_id = fields[0].GetUInt32();
-        uint8 stack_rule = fields[1].GetUInt32();
+        uint8 stack_rule = fields[1].GetInt8();
         if (stack_rule >= SPELL_GROUP_STACK_RULE_MAX)
         {
             sLog->outErrorDb("SpellGroupStackRule %u listed in `spell_group_stack_rules` does not exist", stack_rule);
@@ -1775,8 +1776,8 @@ void SpellMgr::LoadSpellProcEvents()
 
         SpellProcEventEntry spe;
 
-        spe.schoolMask      = fields[1].GetUInt32();
-        spe.spellFamilyName = fields[2].GetUInt32();
+        spe.schoolMask      = fields[1].GetInt8();
+        spe.spellFamilyName = fields[2].GetUInt16();
         spe.spellFamilyMask[0] = fields[3].GetUInt32();
         spe.spellFamilyMask[1] = fields[4].GetUInt32();
         spe.spellFamilyMask[2] = fields[5].GetUInt32();
@@ -1815,7 +1816,7 @@ void SpellMgr::LoadSpellProcs()
 
     uint32 count = 0;
 
-    //                                               0        1           2                3                 4                 5                 6         7              8               9        10              11             12      13        14
+    //                                                 0        1           2                3                 4                 5                 6         7              8               9        10              11             12      13        14
     QueryResult result = WorldDatabase.Query("SELECT spellId, schoolMask, spellFamilyName, spellFamilyMask0, spellFamilyMask1, spellFamilyMask2, typeMask, spellTypeMask, spellPhaseMask, hitMask, attributesMask, ratePerMinute, chance, cooldown, charges FROM spell_proc");
     if (!result)
     {
@@ -1855,8 +1856,8 @@ void SpellMgr::LoadSpellProcs()
 
         SpellProcEntry baseProcEntry;
 
-        baseProcEntry.schoolMask      = fields[1].GetUInt32();
-        baseProcEntry.spellFamilyName = fields[2].GetUInt32();
+        baseProcEntry.schoolMask      = fields[1].GetInt8();
+        baseProcEntry.spellFamilyName = fields[2].GetUInt16();
         baseProcEntry.spellFamilyMask[0] = fields[3].GetUInt32();
         baseProcEntry.spellFamilyMask[1] = fields[4].GetUInt32();
         baseProcEntry.spellFamilyMask[2] = fields[5].GetUInt32();
@@ -2019,7 +2020,7 @@ void SpellMgr::LoadSpellThreats()
         }
 
         SpellThreatEntry ste;
-        ste.flatMod  = fields[1].GetInt16();
+        ste.flatMod  = fields[1].GetInt32();
         ste.pctMod   = fields[2].GetFloat();
         ste.apPctMod = fields[3].GetFloat();
 
@@ -2226,7 +2227,7 @@ void SpellMgr::LoadSpellLinked()
 
         int32 trigger = fields[0].GetInt32();
         int32 effect =  fields[1].GetInt32();
-        int32 type =    fields[2].GetInt32();
+        int32 type =    fields[2].GetUInt8();
 
         SpellInfo const* spellInfo = GetSpellInfo(abs(trigger));
         if (!spellInfo)
