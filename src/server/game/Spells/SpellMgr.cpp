@@ -1162,11 +1162,6 @@ bool SpellArea::IsFitToRequirements(Player const* player, uint32 newZone, uint32
     return true;
 }
 
-void SpellMgr::LoadSpellInfos()
-{
-
-}
-
 void SpellMgr::LoadSpellRanks()
 {
     uint32 oldMSTime = getMSTime();
@@ -1182,13 +1177,12 @@ void SpellMgr::LoadSpellRanks()
 
     if (!result)
     {
-        sLog->outString(">> Loaded 0 spell rank records");
+        sLog->outString(">> Loaded 0 spell rank records. DB table `spell_ranks` is empty.");
         sLog->outString();
-        sLog->outErrorDb("`spell_ranks` table is empty!");
         return;
     }
 
-    uint32 rows = 0;
+    uint32 count = 0;
     bool finished = false;
 
     do
@@ -1259,7 +1253,7 @@ void SpellMgr::LoadSpellRanks()
         std::list<std::pair<int32, int32> >::iterator itr = rankChain.begin();
         do
         {
-            ++rows;
+            ++count;
             int32 addedSpell = itr->first;
             mSpellChains[addedSpell].first = GetSpellInfo(lastSpell);
             mSpellChains[addedSpell].last = GetSpellInfo(rankChain.back().first);
@@ -1279,7 +1273,7 @@ void SpellMgr::LoadSpellRanks()
         while (true);
     } while (!finished);
 
-    sLog->outString(">> Loaded %u spell rank records in %u ms", rows, GetMSTimeDiffToNow(oldMSTime));
+    sLog->outString(">> Loaded %u spell rank records in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
     sLog->outString();
 }
 
@@ -1295,19 +1289,19 @@ void SpellMgr::LoadSpellRequired()
 
     if (!result)
     {
-        sLog->outString(">> Loaded 0 spell required records");
+        sLog->outString(">> Loaded 0 spell required records. DB table `spell_required` is empty.");
         sLog->outString();
-        sLog->outErrorDb("`spell_required` table is empty!");
         return;
     }
-    uint32 rows = 0;
 
+    uint32 count = 0;
     do
     {
         Field* fields = result->Fetch();
 
         uint32 spell_id =  fields[0].GetUInt32();
         uint32 spell_req = fields[1].GetUInt32();
+
         // check if chain is made with valid first spell
         SpellInfo const* spell = GetSpellInfo(spell_id);
         if (!spell)
@@ -1315,17 +1309,20 @@ void SpellMgr::LoadSpellRequired()
             sLog->outErrorDb("spell_id %u in `spell_required` table is not found in dbcs, skipped", spell_id);
             continue;
         }
+
         SpellInfo const* req_spell = GetSpellInfo(spell_req);
         if (!req_spell)
         {
             sLog->outErrorDb("req_spell %u in `spell_required` table is not found in dbcs, skipped", spell_req);
             continue;
         }
+
         if (GetFirstSpellInChain(spell_id) == GetFirstSpellInChain(spell_req))
         {
             sLog->outErrorDb("req_spell %u and spell_id %u in `spell_required` table are ranks of the same spell, entry not needed, skipped", spell_req, spell_id);
             continue;
         }
+
         if (IsSpellRequiringSpell(spell_id, spell_req))
         {
             sLog->outErrorDb("duplicated entry of req_spell %u and spell_id %u in `spell_required`, skipped", spell_req, spell_id);
@@ -1334,10 +1331,10 @@ void SpellMgr::LoadSpellRequired()
 
         mSpellReq.insert (std::pair<uint32, uint32>(spell_id, spell_req));
         mSpellsReqSpell.insert (std::pair<uint32, uint32>(spell_req, spell_id));
-        ++rows;
+        ++count;
     } while (result->NextRow());
 
-    sLog->outString(">> Loaded %u spell required records in %u ms", rows, GetMSTimeDiffToNow(oldMSTime));
+    sLog->outString(">> Loaded %u spell required records in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
     sLog->outString();
 }
 
@@ -1389,14 +1386,12 @@ void SpellMgr::LoadSpellLearnSpells()
     QueryResult result = WorldDatabase.Query("SELECT entry, SpellID, Active FROM spell_learn_spell");
     if (!result)
     {
-        sLog->outString(">> Loaded 0 spell learn spells");
+        sLog->outString(">> Loaded 0 spell learn spells. DB table `spell_learn_spell` is empty.");
         sLog->outString();
-        sLog->outErrorDb("`spell_learn_spell` table is empty!");
         return;
     }
 
     uint32 count = 0;
-
     do
     {
         Field* fields = result->Fetch();
@@ -1404,9 +1399,9 @@ void SpellMgr::LoadSpellLearnSpells()
         uint32 spell_id = fields[0].GetUInt16();
 
         SpellLearnSpellNode node;
-        node.spell      = fields[1].GetUInt16();
-        node.active     = fields[2].GetBool();
-        node.autoLearned= false;
+        node.spell       = fields[1].GetUInt16();
+        node.active      = fields[2].GetBool();
+        node.autoLearned = false;
 
         if (!GetSpellInfo(spell_id))
         {
@@ -1500,7 +1495,6 @@ void SpellMgr::LoadSpellTargetPositions()
     }
 
     uint32 count = 0;
-
     do
     {
         Field* fields = result->Fetch();
@@ -1612,19 +1606,17 @@ void SpellMgr::LoadSpellGroups()
     mSpellSpellGroup.clear();                                  // need for reload case
     mSpellGroupSpell.clear();
 
-    uint32 count = 0;
-
     //                                                0     1
     QueryResult result = WorldDatabase.Query("SELECT id, spell_id FROM spell_group");
     if (!result)
     {
+        sLog->outString(">> Loaded 0 spell group definitions. DB table `spell_group` is empty.");
         sLog->outString();
-        sLog->outString(">> Loaded %u spell group definitions", count);
         return;
     }
 
     std::set<uint32> groups;
-
+    uint32 count = 0;
     do
     {
         Field* fields = result->Fetch();
@@ -1695,17 +1687,16 @@ void SpellMgr::LoadSpellGroupStackRules()
 
     mSpellGroupStack.clear();                                  // need for reload case
 
-    uint32 count = 0;
-
     //                                                       0         1
     QueryResult result = WorldDatabase.Query("SELECT group_id, stack_rule FROM spell_group_stack_rules");
     if (!result)
     {
-        sLog->outString(">> Loaded 0 spell group stack rules");
+        sLog->outString(">> Loaded 0 spell group stack rules. DB table `spell_group_stack_rules` is empty.");
         sLog->outString();
         return;
     }
 
+    uint32 count = 0;
     do
     {
         Field* fields = result->Fetch();
@@ -1741,17 +1732,16 @@ void SpellMgr::LoadSpellProcEvents()
 
     mSpellProcEventMap.clear();                             // need for reload case
 
-    uint32 count = 0;
-
     //                                                0      1           2                3                 4                 5                 6          7       8        9             10
     QueryResult result = WorldDatabase.Query("SELECT entry, SchoolMask, SpellFamilyName, SpellFamilyMask0, SpellFamilyMask1, SpellFamilyMask2, procFlags, procEx, ppmRate, CustomChance, Cooldown FROM spell_proc_event");
     if (!result)
     {
-        sLog->outString(">> Loaded %u spell proc event conditions", count);
+        sLog->outString(">> Loaded 0 spell proc event conditions. DB table `spell_proc_event` is empty.");
         sLog->outString();
         return;
     }
 
+    uint32 count = 0;
     uint32 customProc = 0;
     do
     {
@@ -1806,17 +1796,16 @@ void SpellMgr::LoadSpellProcs()
 
     mSpellProcMap.clear();                             // need for reload case
 
-    uint32 count = 0;
-
     //                                                 0        1           2                3                 4                 5                 6         7              8               9        10              11             12      13        14
     QueryResult result = WorldDatabase.Query("SELECT spellId, schoolMask, spellFamilyName, spellFamilyMask0, spellFamilyMask1, spellFamilyMask2, typeMask, spellTypeMask, spellPhaseMask, hitMask, attributesMask, ratePerMinute, chance, cooldown, charges FROM spell_proc");
     if (!result)
     {
-        sLog->outString(">> Loaded %u spell proc conditions and data", count);
+        sLog->outString(">> Loaded 0 spell proc conditions and data. DB table `spell_proc` is empty.");
         sLog->outString();
         return;
     }
 
+    uint32 count = 0;
     do
     {
         Field* fields = result->Fetch();
@@ -1947,16 +1936,17 @@ void SpellMgr::LoadSpellBonusess()
     uint32 oldMSTime = getMSTime();
 
     mSpellBonusMap.clear();                             // need for reload case
-    uint32 count = 0;
+
     //                                                0      1             2          3         4
     QueryResult result = WorldDatabase.Query("SELECT entry, direct_bonus, dot_bonus, ap_bonus, ap_dot_bonus FROM spell_bonus_data");
     if (!result)
     {
-        sLog->outString(">> Loaded %u spell bonus data", count);
+        sLog->outString(">> Loaded 0 spell bonus data. DB table `spell_bonus_data` is empty.");
         sLog->outString();
         return;
     }
 
+    uint32 count = 0;
     do
     {
         Field* fields = result->Fetch();
@@ -1988,17 +1978,16 @@ void SpellMgr::LoadSpellThreats()
 
     mSpellThreatMap.clear();                                // need for reload case
 
-    uint32 count = 0;
-
     //                                                0      1        2       3
     QueryResult result = WorldDatabase.Query("SELECT entry, flatMod, pctMod, apPctMod FROM spell_threat");
     if (!result)
     {
-        sLog->outString(">> Loaded 0 aggro generating spells");
+        sLog->outString(">> Loaded 0 aggro generating spells. DB table `spell_threat` is empty.");
         sLog->outString();
         return;
     }
 
+    uint32 count = 0;
     do
     {
         Field* fields = result->Fetch();
@@ -2062,7 +2051,6 @@ void SpellMgr::LoadSpellPetAuras()
     }
 
     uint32 count = 0;
-
     do
     {
         Field* fields = result->Fetch();
@@ -2117,11 +2105,10 @@ void SpellMgr::LoadEnchantCustomAttr()
     uint32 size = sSpellItemEnchantmentStore.GetNumRows();
     mEnchantCustomAttr.resize(size);
 
-    uint32 count = 0;
-
     for (uint32 i = 0; i < size; ++i)
        mEnchantCustomAttr[i] = 0;
 
+    uint32 count = 0;
     for (uint32 i = 0; i < GetSpellInfoStoreSize(); ++i)
     {
         SpellInfo const* spellInfo = GetSpellInfo(i);
@@ -2157,17 +2144,16 @@ void SpellMgr::LoadSpellEnchantProcData()
 
     mSpellEnchantProcEventMap.clear();                             // need for reload case
 
-    uint32 count = 0;
-
     //                                                  0         1           2         3
     QueryResult result = WorldDatabase.Query("SELECT entry, customChance, PPMChance, procEx FROM spell_enchant_proc_data");
     if (!result)
     {
-        sLog->outString(">> Loaded %u spell enchant proc event conditions", count);
+        sLog->outString(">> Loaded 0 spell enchant proc event conditions. DB table `spell_enchant_proc_data` is empty.");
         sLog->outString();
         return;
     }
 
+    uint32 count = 0;
     do
     {
         Field* fields = result->Fetch();
@@ -2212,7 +2198,6 @@ void SpellMgr::LoadSpellLinked()
     }
 
     uint32 count = 0;
-
     do
     {
         Field* fields = result->Fetch();
@@ -2457,7 +2442,6 @@ void SpellMgr::LoadSpellAreas()
     }
 
     uint32 count = 0;
-
     do
     {
         Field* fields = result->Fetch();
