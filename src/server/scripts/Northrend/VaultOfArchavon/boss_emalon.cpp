@@ -182,7 +182,7 @@ class mob_tempest_minion : public CreatureScript
                 _events.Reset();
             }
 
-            void JustDied(Unit* /*Killer*/)
+            void JustDied(Unit* /*killer*/)
             {
                 if (!me->isSummon())
                     return;

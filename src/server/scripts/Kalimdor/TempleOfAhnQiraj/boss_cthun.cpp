@@ -948,7 +948,7 @@ public:
         uint32 KillSelfTimer;
         uint64 Portal;
 
-        void JustDied(Unit* /*who*/)
+        void JustDied(Unit* /*killer*/)
         {
             if (Unit* p = Unit::GetUnit(*me, Portal))
                 p->Kill(p);
@@ -1024,7 +1024,7 @@ public:
         uint32 EvadeTimer;
         uint64 Portal;
 
-        void JustDied(Unit* /*who*/)
+        void JustDied(Unit* /*killer*/)
         {
             if (Unit* p = Unit::GetUnit(*me, Portal))
                 p->Kill(p);
@@ -1135,7 +1135,7 @@ public:
         uint32 EvadeTimer;
         uint64 Portal;
 
-        void JustDied(Unit* /*who*/)
+        void JustDied(Unit* /*killer*/)
         {
             if (Unit* p = Unit::GetUnit(*me, Portal))
                 p->Kill(p);
@@ -1251,7 +1251,7 @@ public:
         uint32 BeamTimer;
         uint64 Portal;
 
-        void JustDied(Unit* /*who*/)
+        void JustDied(Unit* /*killer*/)
         {
             if (Unit* p = Unit::GetUnit(*me, Portal))
                 p->Kill(p);

@@ -183,7 +183,7 @@ class boss_kologarn : public CreatureScript
         //ScriptedAI::MoveInLineOfSight(who);
     }
 
-            void JustDied(Unit* /*victim*/)
+            void JustDied(Unit* /*killer*/)
             {
                 DoScriptText(SAY_DEATH, me);
                 DoCast(SPELL_KOLOGARN_PACIFY);

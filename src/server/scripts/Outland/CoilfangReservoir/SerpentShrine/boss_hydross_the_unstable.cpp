@@ -207,7 +207,7 @@ public:
             Summons.Despawn(summon);
         }
 
-        void JustDied(Unit* /*victim*/)
+        void JustDied(Unit* /*killer*/)
         {
             if (CorruptedForm)
                 DoScriptText(SAY_CORRUPT_DEATH, me);

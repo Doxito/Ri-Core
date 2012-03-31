@@ -206,6 +206,7 @@ class boss_hadronox : public CreatureScript
                 Reset();
             }
 
+<<<<<<< HEAD
             void UpdateAI(uint32 const diff)
             {
                 if (me->IsVisible() && !_movementStarted)
@@ -287,6 +288,13 @@ class boss_hadronox : public CreatureScript
 
                 DoMeleeAttackIfReady();
             }
+=======
+        void JustDied(Unit* /*killer*/)
+        {
+            if (instance)
+                instance->SetData(DATA_HADRONOX_EVENT, DONE);
+        }
+>>>>>>> d9088c0... Core/Script: Code style and some rewriting.
 
         private:
             InstanceScript* _instance;

@@ -447,7 +447,7 @@ class boss_kaelthas : public CreatureScript
 
             void SummonedCreatureDespawn(Creature* summon) {summons.Despawn(summon);}
 
-            void JustDied(Unit* /*Killer*/)
+            void JustDied(Unit* /*killer*/)
             {
                 me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                 me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
@@ -1134,7 +1134,7 @@ class boss_lord_sanguinar : public CreatureScript
                 DoScriptText(SAY_SANGUINAR_AGGRO, me);
             }
 
-            void JustDied(Unit* /*Killer*/)
+            void JustDied(Unit* /*killer*/)
             {
                 if (m_instance && m_instance->GetData(DATA_KAELTHASEVENT) == 3)
                     DoScriptText(SAY_SANGUINAR_DEATH, me);

@@ -335,7 +335,7 @@ class boss_flame_leviathan : public CreatureScript
                     DoScriptText(SAY_AGGRO, me);
             }
 
-            void JustDied(Unit* /*victim*/)
+            void JustDied(Unit* /*killer*/)
             {
                 _JustDied();
                 // Set Field Flags 67108928 = 64 | 67108864 = UNIT_FLAG_UNK_6 | UNIT_FLAG_SKINNABLE
@@ -920,7 +920,11 @@ class npc_colossus : public CreatureScript
                 _groundSlamTimer = urand(8, 10) *IN_MILLISECONDS;
             }
 
+<<<<<<< HEAD
             void JustDied(Unit* /*who*/)
+=======
+            void JustDied(Unit* /*killer*/)
+>>>>>>> d9088c0... Core/Script: Code style and some rewriting.
             {
                 if (me->GetHomePosition().IsInDist(Center, 50.f))
                     _instance->SetData(DATA_COLOSSUS, _instance->GetData(DATA_COLOSSUS) + 1);

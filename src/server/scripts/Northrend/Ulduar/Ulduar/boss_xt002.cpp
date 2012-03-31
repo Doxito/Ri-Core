@@ -250,7 +250,7 @@ class boss_xt002 : public CreatureScript
                 DoScriptText(RAND(SAY_SLAY_1, SAY_SLAY_2), me);
             }
 
-            void JustDied(Unit* /*victim*/)
+            void JustDied(Unit* /*killer*/)
             {
                 me->RemoveAllAuras();
                 DoScriptText(SAY_DEATH, me);

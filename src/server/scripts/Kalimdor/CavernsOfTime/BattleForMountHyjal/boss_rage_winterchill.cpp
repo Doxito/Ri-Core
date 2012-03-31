@@ -118,9 +118,9 @@ public:
             }
         }
 
-        void JustDied(Unit* victim)
+        void JustDied(Unit* killer)
         {
-            hyjal_trashAI::JustDied(victim);
+            hyjal_trashAI::JustDied(killer);
             if (instance && IsEvent)
                 instance->SetData(DATA_RAGEWINTERCHILLEVENT, DONE);
             DoPlaySoundToSet(me, SOUND_ONDEATH);

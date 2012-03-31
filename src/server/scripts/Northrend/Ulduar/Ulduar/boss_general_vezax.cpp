@@ -179,7 +179,7 @@ class boss_general_vezax : public CreatureScript
                     DoScriptText(RAND(SAY_SLAY_1, SAY_SLAY_2), me);
             }
 
-            void JustDied(Unit* /*who*/)
+            void JustDied(Unit* /*killer*/)
             {
                 DoScriptText(SAY_DEATH, me);
                 _JustDied();
@@ -241,8 +241,46 @@ class boss_general_vezax : public CreatureScript
 
                     return SelectRandomContainerElement(playerList);
                 }
+<<<<<<< HEAD
                 else
                     return NULL;
+=======
+
+                return NULL;
+            }
+        };
+
+        CreatureAI* GetAI(Creature* creature) const
+        {
+            return GetUlduarAI<boss_general_vezaxAI>(creature);
+        }
+};
+
+class boss_saronite_animus : public CreatureScript
+{
+    public:
+        boss_saronite_animus() : CreatureScript("npc_saronite_animus") { }
+
+        struct boss_saronite_animusAI : public ScriptedAI
+        {
+            boss_saronite_animusAI(Creature* creature) : ScriptedAI(creature)
+            {
+                instance = me->GetInstanceScript();
+                DoScriptText(EMOTE_BARRIER, me);
+            }
+
+            void Reset()
+            {
+                DoCast(me, SPELL_VISUAL_SARONITE_ANIMUS);
+                events.Reset();
+                events.ScheduleEvent(EVENT_PROFOUND_OF_DARKNESS, 3000);
+            }
+
+            void JustDied(Unit* /*killer*/)
+            {
+                if (Creature* Vezax = me->GetCreature(*me, instance->GetData64(BOSS_VEZAX)))
+                    Vezax->AI()->DoAction(ACTION_ANIMUS_DIE);
+>>>>>>> d9088c0... Core/Script: Code style and some rewriting.
             }
 
             void UpdateAI(uint32 const diff)

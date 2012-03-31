@@ -300,7 +300,12 @@ public:
             {
                 me->setFaction(35);
             }
+<<<<<<< HEAD
             else
+=======
+
+            void JustDied(Unit* /*killer*/)
+>>>>>>> d9088c0... Core/Script: Code style and some rewriting.
             {
                 if (pInstance)
                     pInstance->SetBossState(BOSS_FREYA, NOT_STARTED);
@@ -656,8 +661,12 @@ public:
                 else Ground_Tremor_Timer -= diff;	
             }
 
+<<<<<<< HEAD
             // Hardmode Elder Ironbranch
             if (bIsElderIronbranchAlive)
+=======
+            void JustDied(Unit* /*killer*/)
+>>>>>>> d9088c0... Core/Script: Code style and some rewriting.
             {
                 if (Iron_Roots_Timer <= diff)
                 {
@@ -743,13 +752,18 @@ public:
             uiExplosion_Timer = 10000;
         }
 
+<<<<<<< HEAD
         void UpdateAI(const uint32 diff)
         {
             if (uiExplosion_Timer < diff)
+=======
+            void JustDied(Unit* killer)
+>>>>>>> d9088c0... Core/Script: Code style and some rewriting.
             {
                 if (GameObject* go_bomb = me->FindNearestGameObject(ENTRY_GAMEOBJECT_NATURE_BOMB, 1.0f))
                     go_bomb->SetGoState(GO_STATE_ACTIVE);
 
+<<<<<<< HEAD
                 DoCast(RAID_MODE(SPELL_NATURE_BOMB_EXPLOSION, SPELL_NATURE_BOMB_EXPLOSION_H));
                 me->DespawnOrUnsummon(2000);
                 uiExplosion_Timer = 10000;
@@ -757,6 +771,12 @@ public:
         }
     };
 };
+=======
+                if (killer && killer->GetTypeId() == TYPEID_PLAYER)
+                {
+                    if (Creature* Ironbranch = ObjectAccessor::GetCreature(*me, instance->GetData64(BOSS_IRONBRANCH)))
+                        Ironbranch->AI()->DoAction(ACTION_ELDER_DEATH);
+>>>>>>> d9088c0... Core/Script: Code style and some rewriting.
 
 class spell_freya_natural_bomb_spell : public SpellScriptLoader
 {
@@ -896,6 +916,7 @@ public:
             }
         }
 
+<<<<<<< HEAD
         void JustDied(Unit* /*killer*/)
         {
             DoCast(me, RAID_MODE(SPELL_DETONATE_10, SPELL_DETONATE_25), true);
@@ -905,6 +926,17 @@ public:
         {
             if (m_pInstance && m_pInstance->GetBossState(BOSS_FREYA) != IN_PROGRESS)
                 me->DespawnOrUnsummon(2000);
+=======
+            void JustDied(Unit* killer)
+            {
+                _JustDied();
+                DoScriptText(SAY_STONEBARK_DEATH, me);
+
+                if (killer && killer->GetTypeId() == TYPEID_PLAYER)
+                {
+                    if (Creature* Ironbranch = ObjectAccessor::GetCreature(*me, instance->GetData64(BOSS_IRONBRANCH)))
+                        Ironbranch->AI()->DoAction(ACTION_ELDER_DEATH);
+>>>>>>> d9088c0... Core/Script: Code style and some rewriting.
 
             if (!UpdateVictim())
                 return;
@@ -1028,6 +1060,7 @@ public:
             Lightning_Lash_Timer = 6000;
             Stormbolt_Timer = 3000;
 
+<<<<<<< HEAD
             if (Unit* target = me->SelectNearbyTarget(me,100))
                 me->AI()->AttackStart(target);
         }
@@ -1037,6 +1070,14 @@ public:
             if (damage >= me->GetHealth())
             {
                 if (Creature* freya = me->GetCreature(*me, m_pInstance->GetData64(BOSS_FREYA)))
+=======
+            void JustDied(Unit* killer)
+            {
+                _JustDied();
+                DoScriptText(SAY_IRONBRANCH_DEATH, me);
+
+                if (killer && killer->GetTypeId() == TYPEID_PLAYER)
+>>>>>>> d9088c0... Core/Script: Code style and some rewriting.
                 {
                     if (!alreadyKilled)
                         DoCast(freya, SPELL_ATTUNED_TO_NATURE_REMOVE_10, true);
@@ -1254,7 +1295,22 @@ class mob_healthy_spore : public CreatureScript
                     _shrinkTimer = 3000;
                 }
                 else
+<<<<<<< HEAD
                     _shrinkTimer -= diff;
+=======
+                    tidalWaveTimer -= diff;
+
+                DoMeleeAttackIfReady();
+            }
+
+            void JustDied(Unit* /*killer*/)
+            {
+                if (Creature* Freya = ObjectAccessor::GetCreature(*me, instance->GetData64(BOSS_FREYA)))
+                {
+                    CAST_AI(boss_freya::boss_freyaAI, Freya->AI())->checkElementalAlive[waveCount] = false;
+                    CAST_AI(boss_freya::boss_freyaAI, Freya->AI())->LasherDead(1);
+                }
+>>>>>>> d9088c0... Core/Script: Code style and some rewriting.
             }
 
         private:
@@ -1414,9 +1470,13 @@ public:
             }
         }
 
+<<<<<<< HEAD
         void UpdateAI(const uint32 diff)
         {
             if (Unstable_Energy_Timer <= diff)
+=======
+            void JustDied(Unit* /*killer*/)
+>>>>>>> d9088c0... Core/Script: Code style and some rewriting.
             {
                 DoCast(me, RAID_MODE(SPELL_UNSTABLE_ENERGY_10, SPELL_UNSTABLE_ENERGY_25), true);
                 me->DespawnOrUnsummon(2000);
@@ -1482,7 +1542,11 @@ public:
             }
             else Impale_Timer -= diff;
 
+<<<<<<< HEAD
             if (Iron_Roots_Timer <= diff)
+=======
+            void JustDied(Unit* /*killer*/)
+>>>>>>> d9088c0... Core/Script: Code style and some rewriting.
             {
                 if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM))
                     target->CastSpell(target, RAID_MODE(SPELL_IRON_ROOTS_10, SPELL_IRON_ROOTS_25), true);
