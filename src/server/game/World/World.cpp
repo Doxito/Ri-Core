@@ -1242,6 +1242,11 @@ void World::LoadConfigSettings(bool reload)
     m_int_configs[CONFIG_OUTDOORPVP_WINTERGRASP_ANTIFARM_DEF]  = ConfigMgr::GetIntDefault("OutdoorPvP.Wintergrasp.Antifarm.Def", 5);
 
     sScriptMgr->OnConfigLoad(reload);
+
+    // call ScriptMgr if we're reloading the configuration
+    if (reload)
+        sScriptMgr->OnConfigLoad(reload);
+
 }
 
 extern void LoadGameObjectModelList();
@@ -1694,6 +1699,7 @@ void World::SetInitialWorldSettings()
 
     sLog->outString("Initializing Scripts...");
     sScriptMgr->Initialize();
+    sScriptMgr->OnConfigLoad(false);                                // must be done after the ScriptMgr has been properly initialized
 
     sLog->outString("Validating spell scripts...");
     sObjectMgr->ValidateSpellScripts();
