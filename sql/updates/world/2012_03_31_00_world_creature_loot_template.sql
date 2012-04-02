@@ -122,15 +122,15 @@ INSERT INTO `creature_loot_template` (`entry`,`item`,`ChanceOrQuestChance`,`loot
 -- ASSEMBLY OF IRON 10-man
 -- Stormcaller Brundir killed last
 (@Brundir10,1,100,1,0,-@Assembly10Ref,2), -- 2 items from reference loot
-(@Brundir10,47241,100,1,0,1,1), -- 1 Emblem of Triumph
+(@Brundir10,45624,100,1,0,1,1), -- 1 Emblem of Triumph
 -- Runemaster Molgeim killed last
 (@Molgeim10,1,100,1,0,-@Assembly10Ref,2), -- 2 items from reference loot
-(@Molgeim10,47241,100,1,0,2,2), -- 2 Emblem of Triumph
+(@Molgeim10,45624,100,1,0,2,2), -- 2 Emblem of Triumph
 (@Molgeim10,45506,100,2,0,1,1), -- Archivum Data Disc
 (@Molgeim10,45087,75,1,0,1,1), -- Runed Orb
 -- Steelbreaker killed last
 (@Steelbreaker10,1,100,1,0,-@Assembly10Ref,2), -- 2 items from reference loot
-(@Steelbreaker10,47241,100,1,0,2,2), -- 2 Emblem of Triumph
+(@Steelbreaker10,45624,100,1,0,2,2), -- 2 Emblem of Triumph
 (@Steelbreaker10,45087,75,1,0,1,1), -- Runed Orb
 (@Steelbreaker10,45506,100,1,0,1,1), -- Archivum Data Disc for Quest 
 (@Steelbreaker10,25455,0,1,1,1,1), -- Belt fo the Crystal Tree
@@ -144,20 +144,20 @@ INSERT INTO `creature_loot_template` (`entry`,`item`,`ChanceOrQuestChance`,`loot
 (@Brundir25,2,10,1,0,-34154,1), -- Chance on Recipe
 (@Brundir25,45038,8,1,0,1,1), -- Fragment of Val'anyr
 (@Brundir25,45087,75,1,0,1,1), -- Runed Orb
-(@Brundir25,47241,100,1,0,1,2), --  2 Emblems of Triumph
+(@Brundir25,45624,100,1,0,1,2), --  2 Emblems of Triumph
 -- Runemaster Molgeim killed last
 (@Molgeim25,1,100,1,0,-@Assembly25Ref,3), -- 3 items from reference loot
 (@Molgeim25,2,10,1,0,-34154,1), -- Chance on Recipe
 (@Molgeim25,45038,8,1,0,1,1), -- Fragment of Val'anyr
 (@Molgeim25,45087,75,1,0,1,1), -- Runed Orb
-(@Molgeim25,47241,100,1,0,2,2), -- 2 Emblems of Triumph
+(@Molgeim25,45624,100,1,0,2,2), -- 2 Emblems of Triumph
 (@Molgeim25,45506,100,1,0,1,1), -- Archivum Data Disc
 -- Steelbreaker killed last
 (@Steelbreaker25,1,100,1,0,-@Assembly25Ref,3), -- 3 items from reference loot
 (@Steelbreaker25,2,10,1,0,-34154,1), -- Chance on Recipe
 (@Steelbreaker25,45038,18,1,0,1,1), -- Fragment of Val'anyr
 (@Steelbreaker25,45087,75,1,0,2,2), -- 2x Runed Orb
-(@Steelbreaker25,47241,100,1,0,2,2), -- 2 Emblems of Triumph
+(@Steelbreaker25,45624,100,1,0,2,2), -- 2 Emblems of Triumph
 (@Steelbreaker25,45506,100,1,0,1,1), -- Archivum Data Disc
 (@Steelbreaker25,45241,0,1,1,1,1), -- Belt of Colossal Rage
 (@Steelbreaker25,45242,0,1,1,1,1), -- Drape of Mortal Downfall
@@ -170,22 +170,22 @@ DELETE FROM `gameobject_loot_template` WHERE `entry` IN (@CacheLivingStone10,@Ca
 INSERT INTO `gameobject_loot_template` (`entry`,`item`,`ChanceOrQuestChance`,`lootmode`,`groupid`,`mincountOrRef`,`maxcount`) VALUES
 -- KOLOGARN 10-man
 (@CacheLivingStone10,1,100,1,0,-@Kologarn10Ref,2), -- 2 items from reference loot
-(@CacheLivingStone10,47241,100,1,0,1,1), -- 1 Emblem of Triumph
+(@CacheLivingStone10,45624,100,1,0,1,1), -- 1 Emblem of Triumph
 -- KOLOGARN 25-Man
 (@CacheLivingStone25,1,100,1,0,-@Kologarn25Ref,3), -- 3 items from reference loot
 (@CacheLivingStone25,2,10,1,0,-34154,1), -- Chance on Recipe
 (@CacheLivingStone25,45038,8,1,0,1,1), -- Fragment of Val'anyr
 (@CacheLivingStone25,45087,50,1,0,1,1), -- Runed Orb
-(@CacheLivingStone25,47241,100,1,0,1,2); -- 2 Emblems of Triumph
+(@CacheLivingStone25,45624,100,1,0,1,2); -- 2 Emblems of Triumph
 
 DELETE FROM `creature_loot_template` WHERE `entry` IN (@Auriaya10,@Auriaya25);
 INSERT INTO `creature_loot_template` (`entry`,`item`,`ChanceOrQuestChance`,`lootmode`,`groupid`,`mincountOrRef`,`maxcount`) VALUES
 -- AURIAYA 10-man
 (@Auriaya10,1,100,1,0,-@Auriaya10Ref,2), -- 2 items from reference loot
-(@Auriaya10,47241,100,1,0,1,1), -- 1 Emblem of Triumph
+(@Auriaya10,45624,100,1,0,1,1), -- 1 Emblem of Triumph
 -- AURIAYA 25-man
 (@Auriaya25,1,100,1,0,-@Auriaya25Ref,3), -- 3 items from reference loot
 (@Auriaya25,2,10,1,0,-34154,1), -- Chance on Recipe
 (@Auriaya25,45038,8,1,0,1,1), -- Fragment of Val'anyr
 (@Auriaya25,45087,75,1,0,1,1), -- Runed Orb
-(@Auriaya25,47241,100,1,0,1,2); -- 2 Emblems of Triumph
+(@Auriaya25,45624,100,1,0,1,2); -- 2 Emblems of Triumph
