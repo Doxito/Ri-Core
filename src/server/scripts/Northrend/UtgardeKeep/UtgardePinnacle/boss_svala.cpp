@@ -94,6 +94,12 @@ enum SvalaPhase
     INTRO,
     NORMAL,
     SACRIFICING,
+    SVALADEAD
+};
+
+enum SvalaPoint
+{
+    POINT_FALL_GROUND = 1,
 };
 
 #define DATA_INCREDIBLE_HULK 2043
@@ -157,15 +163,12 @@ public:
             
             if (Phase > INTRO)
             {
-                me->SetFlying(true);
-                me->AddUnitMovementFlag(MOVEMENTFLAG_LEVITATING);
+                me->SetCanFly(true);
+                me->AddUnitMovementFlag(MOVEMENTFLAG_DISABLE_GRAVITY);
             }
-
 
             if (Phase > NORMAL)
                 Phase = NORMAL;
-
-            me->SetDisableGravity(Phase == NORMAL);
 
             introTimer = 1 * IN_MILLISECONDS;
             introPhase = 0;
@@ -177,20 +180,18 @@ public:
                 instance->SetData64(DATA_SACRIFICED_PLAYER, 0);
             }
         }
-
         
         void JustReachedHome()
         {
             if (Phase > INTRO)
             {
-                me->SetFlying(false);
-                me->RemoveUnitMovementFlag(MOVEMENTFLAG_LEVITATING);
+                me->SetCanFly(false);
+                me->RemoveUnitMovementFlag(MOVEMENTFLAG_DISABLE_GRAVITY);
                 me->SetOrientation(1.58f);
                 me->SendMovementFlagUpdate();
             }
         }
         
-
         void EnterCombat(Unit* /*who*/)
         {
            // Talk(SAY_AGGRO);
@@ -242,7 +243,6 @@ public:
             if (victim != me)
                DoScriptText(SAY_SLAY, me);
         }
-
         
         void DamageTaken(Unit* attacker, uint32 &damage)
         {
@@ -272,17 +272,16 @@ public:
         }
 
         void MovementInform(uint32 motionType, uint32 pointId)
-
         {
-            if (Phase == SACRIFICING)
-                SetEquipmentSlots(false, EQUIP_UNEQUIP, EQUIP_NO_CHANGE, EQUIP_NO_CHANGE);
+            if (motionType != EFFECT_MOTION_TYPE)
+                return;
 
-            me->HandleEmoteCommand(EMOTE_ONESHOT_FLYDEATH);
-
+            if (pointId == POINT_FALL_GROUND)
+                me->DealDamage(me, me->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
+        }
 
         void JustDied(Unit* killer)
         {
-
             summons.DespawnAll();
 
             if (instance)
@@ -330,10 +329,8 @@ public:
                             break;
                         case 2:
                             arthas->CastSpell(me, SPELL_TRANSFORMING_CHANNEL, false);
-
-                            me->SetFlying(true);
-                            me->AddUnitMovementFlag(MOVEMENTFLAG_LEVITATING);
-
+                            me->SetCanFly(true);
+                            me->AddUnitMovementFlag(MOVEMENTFLAG_DISABLE_GRAVITY);
                             pos.Relocate(me);
                             pos.m_positionZ += 8.0f;
                             me->GetMotionMaster()->MoveTakeoff(0, pos, 3.30078125f);
@@ -389,18 +386,14 @@ public:
                             introTimer = 13800;
                             break;
                         case 8:
-
-                            me->SetFlying(false);
-                            me->RemoveUnitMovementFlag(MOVEMENTFLAG_LEVITATING);
+                            me->SetCanFly(false);
+                            me->RemoveUnitMovementFlag(MOVEMENTFLAG_DISABLE_GRAVITY);
                             me->SendMovementFlagUpdate();
-
                             pos.Relocate(me);
                             pos.m_positionX = me->GetHomePosition().GetPositionX();
                             pos.m_positionY = me->GetHomePosition().GetPositionY();
                             pos.m_positionZ = 90.6065f;
                             me->GetMotionMaster()->MoveLand(0, pos, 6.247422f);
-                            me->SetDisableGravity(false, true);
-                            me->SetHover(true);
                             ++introPhase;
                             introTimer = 3000;
                             break;
@@ -414,8 +407,7 @@ public:
                             break;
                     }
                 }
-                else
-                    introTimer -= diff;
+                else introTimer -= diff;
 
                 return;
             }
@@ -426,37 +418,33 @@ public:
                 if (!UpdateVictim())
                     return;
 
-                if (me->IsWithinMeleeRange(me->getVictim()) && me->HasUnitMovementFlag(MOVEMENTFLAG_LEVITATING))
+                if (me->IsWithinMeleeRange(me->getVictim()) && me->HasUnitMovementFlag(MOVEMENTFLAG_DISABLE_GRAVITY))
                 {
-                    me->SetFlying(false);
-                    me->RemoveUnitMovementFlag(MOVEMENTFLAG_LEVITATING);
+                    me->SetCanFly(false);
+                    me->RemoveUnitMovementFlag(MOVEMENTFLAG_DISABLE_GRAVITY);
                     me->SendMovementFlagUpdate();
                 }
-
 
                 if (sinsterStrikeTimer <= diff)
                 {
                     DoCast(me->getVictim(), SPELL_SINSTER_STRIKE);
                     sinsterStrikeTimer = urand(5 * IN_MILLISECONDS, 9 * IN_MILLISECONDS);
-                }
-                else
-                    sinsterStrikeTimer -= diff;
+                } else sinsterStrikeTimer -= diff;
 
                 if (callFlamesTimer <= diff)
                 {
-                    if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, 100.0f, true))
+                    if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
                     {
                         DoCast(target, SPELL_CALL_FLAMES);
                         callFlamesTimer = urand(10 * IN_MILLISECONDS, 20 * IN_MILLISECONDS);
                     }
-                }
-                    else callFlamesTimer -= diff;
+                } else callFlamesTimer -= diff;
 
                 if (!sacrificed)
                 {
                     if (HealthBelowPct(50))
                     {
-                        if (Unit* sacrificeTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 80.0f, true))
+                        if (Unit* sacrificeTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 80, true))
                         {
                             if (instance)
                                 instance->SetData64(DATA_SACRIFICED_PLAYER, sacrificeTarget->GetGUID());
@@ -469,10 +457,8 @@ public:
                             //DoCast(sacrificeTarget, SPELL_RITUAL_PREPARATION);
 
                             SetCombatMovement(false);
-
-                            me->SetFlying(true);
-                            me->AddUnitMovementFlag(MOVEMENTFLAG_LEVITATING);
-
+                            me->SetCanFly(true);
+                            me->AddUnitMovementFlag(MOVEMENTFLAG_DISABLE_GRAVITY);
 
                             Phase = SACRIFICING;
                             sacrePhase = 0;

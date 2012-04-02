@@ -260,7 +260,7 @@ class npc_planar_anomaly : public CreatureScript
             {
                 me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_PACIFIED);
                 me->SetDisplayId(11686);
-                me->SetFlying(true);
+                me->SetCanFly(true);
 
                 DoCast(me, SPELL_PLANAR_ANOMALY_AGGRO, true);
                 DoCast(me, SPELL_PLANAR_DISTORTION, true);

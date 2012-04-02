@@ -24,7 +24,6 @@
 
 /* ScriptData
 SDName: boss_kologarn
-SD%Complete: 90
 SDComment: TODO: Achievements
 SDCategory: Ulduar
 EndScriptData */
@@ -58,10 +57,10 @@ EndScriptData */
 
 #define NPC_RUBBLE_STALKER          33809
 
-#define EMOTE_EYEBEAM           """\xc2\xa1""Kologarn est""\xC3\xA1"" mirando a alguien!"
+#define EMOTE_EYEBEAM           """\xc2\xa1""Kologarn ha fijado sus ojos en ti!"
 #define EMOTE_LEFT              """\xc2\xa1""El brazo izquierdo de Kologarn se ha regenerado!"
 #define EMOTE_RIGHT             """\xc2\xa1""El brazo derecho de Kologarn se ha regenerado!"
-#define EMOTE_STONE             """\xc2\xa1""¡Kologarn est""\xC3\xA1"" lanzando su aliento!"
+#define EMOTE_STONE             """\xc2\xa1""Kologarn usa Agarre P""\xC3\xA9""treo!"
 
 enum Events
 {
@@ -117,15 +116,26 @@ class boss_kologarn : public CreatureScript
 
                 me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                 me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISABLE_MOVE);
-
-                DoCast(SPELL_KOLOGARN_REDUCE_PARRY);
-                SetCombatMovement(false);
+               DoCast(SPELL_KOLOGARN_REDUCE_PARRY);
+               me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_STUNNED);
+                me->SetStandState(UNIT_STAND_STATE_SUBMERGED);
+       //  me->ApplySpellImmune(0, IMMUNITY_EFFECT, SPELL_EFFECT_KNOCK_BACK, true);
+        //me->ApplySpellImmune(0, IMMUNITY_ID, 49560, true);  // Death Grip
+              emerged = false;
+              SetCombatMovement(false);
                 Reset();
+
+                // should be triggered on caster?
+              //  SpellEntry* tempSpell;
+            //    tempSpell = GET_SPELL(SPELL_ARM_SWEEP);
+              //  if (tempSpell)
+                  //  tempSpell->EffectImplicitTargetA[0] = 1;
             }
 
             Vehicle* vehicle;
             bool left, right;
             bool _armDied;
+			bool emerged;
             uint64 eyebeamTarget;
             uint8 _rubbleCount;
 
@@ -160,6 +170,18 @@ class boss_kologarn : public CreatureScript
                 me->SetReactState(REACT_AGGRESSIVE);
                 _EnterCombat();
             }
+
+			 void MoveInLineOfSight(Unit *who)
+    {
+		
+        if (!emerged && me->IsWithinDistInMap(who, 40.0f) && who->GetTypeId() == TYPEID_PLAYER)
+        {
+            me->SetStandState(UNIT_STAND_STATE_STAND);
+            me->HandleEmoteCommand(EMOTE_ONESHOT_EMERGE);
+            emerged = true;
+        }
+        //ScriptedAI::MoveInLineOfSight(who);
+    }
 
             void JustDied(Unit* /*victim*/)
             {
@@ -255,7 +277,7 @@ class boss_kologarn : public CreatureScript
                         {
                             if (player->isDead() || player->HasAura(SPELL_STONE_GRIP_DOT) || player->isGameMaster())
                                 continue;
-
+                              
                             float Distance = player->GetDistance(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ());
                             if (Distance < 20.0f || Distance > 60.0f)
                                 continue;
@@ -305,7 +327,7 @@ class boss_kologarn : public CreatureScript
                     if (Unit* target = Unit::GetUnit(*summon, eyebeamTarget))
                     {
                         summon->Attack(target, false);
-                        summon->GetMotionMaster()->MoveChase(target);
+					    summon->GetMotionMaster()->MoveChase(target);
                     }
                 }
             }
@@ -340,30 +362,35 @@ class boss_kologarn : public CreatureScript
                 {
                     case EVENT_MELEE_CHECK:
                         if (!me->IsWithinMeleeRange(me->getVictim()))
-                            DoCast(SPELL_PETRIFY_BREATH);
+                          //  DoCast(SPELL_PETRIFY_BREATH);
+						  me->CastSpell(me->getVictim(), SPELL_PETRIFY_BREATH, true);
                         events.RepeatEvent(1000);
                         break;
                     case EVENT_SWEEP:
                         if (left)
                         {
-                            DoCast(SPELL_ARM_SWEEP);
+                           // me->DoCast(SPELL_ARM_SWEEP);
+							me->CastSpell(me,SPELL_ARM_SWEEP,true);
                             DoScriptText(SAY_SHOCKWAVE, me);
                         }
                         events.RepeatEvent(25000);
                         break;
                     case EVENT_SMASH:
                         if (left && right)
-                            DoCastVictim(SPELL_TWO_ARM_SMASH);
+                           me->CastSpell(me,SPELL_TWO_ARM_SMASH,true);
+							//DoCastVictim(SPELL_TWO_ARM_SMASH);
                         else if (left || right)
                             DoCastVictim(SPELL_ONE_ARM_SMASH);
                         events.RepeatEvent(15000);
                         break;
                     case EVENT_STONE_SHOUT:
-                        DoCast(SPELL_STONE_SHOUT);
+                        //DoCast(SPELL_STONE_SHOUT);
+						me->CastSpell(me,SPELL_STONE_SHOUT,true);
                         events.RepeatEvent(2000);
                         break;
                     case EVENT_ENRAGE:
-                        DoCast(SPELL_BERSERK);
+                        //DoCast(SPELL_BERSERK);
+						me->CastSpell(me,SPELL_BERSERK,true);
                         DoScriptText(SAY_BERSERK, me);
                         events.CancelEvent(EVENT_ENRAGE);
                         break;
@@ -386,6 +413,7 @@ class boss_kologarn : public CreatureScript
                         if (right)
                         {
                             DoCast(SPELL_STONE_GRIP);
+							//me->CastSpell(me,SPELL_STONE_GRIP,true);
                             me->MonsterTextEmote(EMOTE_STONE, 0, true);
                             DoScriptText(SAY_GRAB_PLAYER, me);
                         }

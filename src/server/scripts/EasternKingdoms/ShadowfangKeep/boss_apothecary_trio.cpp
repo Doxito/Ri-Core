@@ -201,7 +201,7 @@ class npc_apothecary_hummel : public CreatureScript
                             me->SetFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_LOOTABLE);
 
 
-				AchievementEntry const* AchievOnTheRocks = GetAchievementStore()->LookupEntry(4624);
+				AchievementEntry const* AchievOnTheRocks = sAchievementStore.LookupEntry(4624);
      
 
                             Map* map = me->GetMap();

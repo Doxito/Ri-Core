@@ -796,7 +796,7 @@ class npc_mechanolift : public CreatureScript
                         me->GetPosition(x, y, z);
                         z = me->GetMap()->GetHeight(x, y, MAX_HEIGHT);
 
-                        liquid->SetFlying(true);
+                        liquid->SetCanFly(true);
                         liquid->GetMotionMaster()->MovePoint(0, x, y, z);
                     }
 
@@ -1648,7 +1648,7 @@ class spell_anti_air_rocket : public SpellScriptLoader
                     if (Creature* temp = GetCaster()->SummonCreature(22515, *pos, TEMPSUMMON_TIMED_DESPAWN, 500))
                     {
                         temp->SetReactState(REACT_PASSIVE);
-                        temp->SetFlying(true);
+                        temp->SetCanFly(true);
                         temp->SetVisible(false);
                         std::list<Creature*> list;
                         GetCreatureListWithEntryInGrid(list, GetCaster(), NPC_MECHANOLIFT, 100.0f);

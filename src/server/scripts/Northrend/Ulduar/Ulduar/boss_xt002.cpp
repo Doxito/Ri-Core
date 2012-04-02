@@ -154,10 +154,12 @@ class boss_xt002 : public CreatureScript
             {
                 _Reset();
                 me->SetStandState(UNIT_STAND_STATE_STAND);
-                me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_1 | UNIT_FLAG_DISABLE_MOVE | UNIT_FLAG_NOT_SELECTABLE);
+                me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_1 | UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_STUNNED | UNIT_FLAG_PACIFIED | UNIT_FLAG_DISABLE_MOVE);
+				
                 me->ResetLootMode();
 
                 _searingLightTimer = 10*IN_MILLISECONDS;
+				position_check = 5000;
                 _gravityBombTimer = 20*IN_MILLISECONDS;
                 _heartPhaseTimer = 30*IN_MILLISECONDS;
                 _spawnAddTimer = 12*IN_MILLISECONDS;
@@ -269,6 +271,17 @@ class boss_xt002 : public CreatureScript
                     SetPhaseOne();
                     _enterHardMode = false;
                 }
+          
+				if (position_check <= diff)
+                    {
+                        if (me->GetPositionX() < 755)
+						    EnterEvadeMode();
+						   else
+					     position_check = 6000;
+                    }
+                    else
+                        position_check -= diff;
+
 
                 // Handles spell casting. These spells only occur during phase 1 or hard mode
                 if (_phase == 1 || _hardMode)
@@ -393,7 +406,8 @@ class boss_xt002 : public CreatureScript
                 me->RemoveAurasDueToSpell(SPELL_TYMPANIC_TANTRUM);
 
                 // Make untargetable
-                me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_1 | UNIT_FLAG_NOT_SELECTABLE);
+                me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_1 | UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_STUNNED | UNIT_FLAG_PACIFIED | UNIT_FLAG_DISABLE_MOVE);
+			
 
                 // Summon the heart npc
                 if (Creature* heart = me->SummonCreature(NPC_XT002_HEART, *me, TEMPSUMMON_TIMED_DESPAWN, 30*IN_MILLISECONDS))
@@ -434,7 +448,8 @@ class boss_xt002 : public CreatureScript
                     me->LowerPlayerDamageReq(_transferHealth);
                 }
 
-                me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_1 | UNIT_FLAG_NOT_SELECTABLE);
+                me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_1 | UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_STUNNED | UNIT_FLAG_PACIFIED | UNIT_FLAG_DISABLE_MOVE);
+			
                 _phase = 1;
             }
 
@@ -445,6 +460,7 @@ class boss_xt002 : public CreatureScript
             uint32 _heartPhaseTimer;
             uint32 _spawnAddTimer;
             uint32 _enrageTimer;
+			uint32 position_check;
 
             uint8 _phase;
             uint8 _heartExposed;

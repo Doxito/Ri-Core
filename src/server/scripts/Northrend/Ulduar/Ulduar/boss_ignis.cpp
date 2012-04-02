@@ -73,6 +73,7 @@ enum Events
     EVENT_CHANGE_POT,
     EVENT_CONSTRUCT,
     EVENT_BERSERK,
+	EVENT_POSITION_CHECK,
 
     ACTION_REMOVE_BUFF,
 
@@ -146,6 +147,7 @@ class boss_ignis : public CreatureScript
             {
                 _EnterCombat();
                 DoScriptText(SAY_AGGRO, me);
+				events.ScheduleEvent(EVENT_POSITION_CHECK, 3000);
                 events.ScheduleEvent(EVENT_JET, 30000);
                 events.ScheduleEvent(EVENT_SCORCH, 25000);
                 events.ScheduleEvent(EVENT_SLAG_POT, 35000, 1);
@@ -222,6 +224,14 @@ class boss_ignis : public CreatureScript
                             DoCast(SPELL_SCORCH);
                             events.ScheduleEvent(EVENT_SCORCH, 25000);
                             break;
+
+						case EVENT_POSITION_CHECK:
+                           if (me->GetPositionZ() > 375)
+						    EnterEvadeMode();
+						   else
+						    events.ScheduleEvent(EVENT_POSITION_CHECK, 5000);
+						   break;
+						   
                         case EVENT_CONSTRUCT:
                         {
                             DoScriptText(SAY_SUMMON, me);

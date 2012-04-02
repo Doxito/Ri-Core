@@ -68,14 +68,9 @@ public:
 
     struct boss_maexxnaAI : public BossAI
     {
-        boss_maexxnaAI(Creature* c) : BossAI(c, BOSS_MAEXXNA) {}
+        boss_maexxnaAI(Creature* creature) : BossAI(creature, BOSS_MAEXXNA) {}
 
         bool enraged;
-
-        void Reset()
-        {
-            _Reset();
-        }
 
         void EnterCombat(Unit* /*who*/)
         {
@@ -99,7 +94,6 @@ public:
                 events.ScheduleEvent(EVENT_FRENZY, 0); // will be cast immediately
             }
 
-            _DoAggroPulse(diff);
             events.Update(diff);
 
             while (uint32 eventId = events.ExecuteEvent())
@@ -122,25 +116,16 @@ public:
                         events.ScheduleEvent(EVENT_WRAP, 40000);
                         break;
                     case EVENT_SPRAY:
-                        if(!me->IsNonMeleeSpellCasted(false))
-                        {
-                            DoCastAOE(RAID_MODE(SPELL_WEB_SPRAY_10,SPELL_WEB_SPRAY_25));
-                            events.ScheduleEvent(EVENT_SPRAY, 40000);
-                        }
+                        DoCastAOE(RAID_MODE(SPELL_WEB_SPRAY_10, SPELL_WEB_SPRAY_25));
+                        events.ScheduleEvent(EVENT_SPRAY, 40000);
                         break;
                     case EVENT_SHOCK:
-                        if(!me->IsNonMeleeSpellCasted(false))
-                        {
-                            DoCastAOE(RAID_MODE(SPELL_POISON_SHOCK_10,SPELL_POISON_SHOCK_25));
-                            events.ScheduleEvent(EVENT_SHOCK, urand(10000,20000));
-                        }
+                        DoCastAOE(RAID_MODE(SPELL_POISON_SHOCK_10, SPELL_POISON_SHOCK_25));
+                        events.ScheduleEvent(EVENT_SHOCK, urand(10000, 20000));
                         break;
                     case EVENT_POISON:
-                        if(!me->IsNonMeleeSpellCasted(false))
-                        {
-                            DoCast(me->getVictim(), RAID_MODE(SPELL_NECROTIC_POISON_10,SPELL_NECROTIC_POISON_25));
-                            events.ScheduleEvent(EVENT_POISON, urand(10000, 20000));
-                        }
+                        DoCast(me->getVictim(), RAID_MODE(SPELL_NECROTIC_POISON_10, SPELL_NECROTIC_POISON_25));
+                        events.ScheduleEvent(EVENT_POISON, urand(10000, 20000));
                         break;
                     case EVENT_FRENZY:
                         DoCast(me, RAID_MODE(SPELL_FRENZY_10, SPELL_FRENZY_25), true);
@@ -174,7 +159,7 @@ public:
 
     struct mob_webwrapAI : public NullCreatureAI
     {
-        mob_webwrapAI(Creature* c) : NullCreatureAI(c), victimGUID(0) {}
+        mob_webwrapAI(Creature* creature) : NullCreatureAI(creature), victimGUID(0) {}
 
         uint64 victimGUID;
 

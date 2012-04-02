@@ -64,13 +64,7 @@ public:
 
     struct boss_razuviousAI : public BossAI
     {
-        boss_razuviousAI(Creature* c) : BossAI(c, BOSS_RAZUVIOUS) {}
-
-        void Reset()
-        {
-            _Reset();
-            me->ApplySpellImmune(0, IMMUNITY_ID, 20184, true);
-        }
+        boss_razuviousAI(Creature* creature) : BossAI(creature, BOSS_RAZUVIOUS) {}
 
         void KilledUnit(Unit* /*victim*/)
         {
@@ -92,15 +86,6 @@ public:
             _JustDied();
             DoPlaySoundToSet(me, SOUND_DEATH);
             me->CastSpell(me, SPELL_HOPELESS, true); // TODO: this may affect other creatures
-
-            std::list<Creature*> lList;
-            me->GetCreatureListWithEntryInGrid(lList , 29912, 200);
-
-            if (!lList.size())
-                return;
-
-            for (std::list<Creature*>::const_iterator i = lList.begin(); i != lList.end(); ++i)
-                (*i)->DealDamage((*i),(*i)->GetHealth());
         }
 
         void EnterCombat(Unit* /*who*/)
@@ -118,7 +103,6 @@ public:
             if (!UpdateVictim())
                 return;
 
-            _DoAggroPulse(diff);
             events.Update(diff);
 
             while (uint32 eventId = events.ExecuteEvent())

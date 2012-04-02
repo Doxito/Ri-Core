@@ -63,7 +63,7 @@ public:
 
     struct boss_anubrekhanAI : public BossAI
     {
-        boss_anubrekhanAI(Creature *c) : BossAI(c, BOSS_ANUBREKHAN) {}
+        boss_anubrekhanAI(Creature* creature) : BossAI(creature, BOSS_ANUBREKHAN) {}
 
         bool hasTaunted;
 
@@ -73,18 +73,16 @@ public:
 
             hasTaunted = false;
 
-            //if (getDifficulty() == RAID_DIFFICULTY_25MAN_NORMAL)
-            //{
-            Position pos;
-
-            // respawn guard using home position,
-            // otherwise, after a wipe, they respawn where boss was at wipe moment.
-            pos = me->GetHomePosition();
-            pos.m_positionY -= 10.0f;
-            me->SummonCreature(MOB_CRYPT_GUARD, pos, TEMPSUMMON_CORPSE_DESPAWN);
-
             if (GetDifficulty() == RAID_DIFFICULTY_25MAN_NORMAL)
             {
+                Position pos;
+
+                // respawn guard using home position,
+                // otherwise, after a wipe, they respawn where boss was at wipe moment.
+                pos = me->GetHomePosition();
+                pos.m_positionY -= 10.0f;
+                me->SummonCreature(MOB_CRYPT_GUARD, pos, TEMPSUMMON_CORPSE_DESPAWN);
+
                 pos = me->GetHomePosition();
                 pos.m_positionY += 10.0f;
                 me->SummonCreature(MOB_CRYPT_GUARD, pos, TEMPSUMMON_CORPSE_DESPAWN);
@@ -109,20 +107,19 @@ public:
             if (instance)
                 instance->DoStartTimedAchievement(ACHIEVEMENT_TIMED_TYPE_EVENT, ACHIEV_TIMED_START_EVENT);
         }
-
         void EnterCombat(Unit* /*who*/)
         {
             _EnterCombat();
             DoScriptText(SAY_AGGRO, me);
             events.ScheduleEvent(EVENT_IMPALE, urand(10000, 20000));
-            events.ScheduleEvent(EVENT_LOCUST, urand(80000,120000));
+            events.ScheduleEvent(EVENT_LOCUST, 90000);
             events.ScheduleEvent(EVENT_BERSERK, 600000);
 
-            //if (getDifficulty() == RAID_DIFFICULTY_10MAN_NORMAL)
-            events.ScheduleEvent(EVENT_SPAWN_GUARDIAN_NORMAL, urand(15000,20000));
+            if (GetDifficulty() == RAID_DIFFICULTY_10MAN_NORMAL)
+                events.ScheduleEvent(EVENT_SPAWN_GUARDIAN_NORMAL, urand(15000, 20000));
         }
 
-        void MoveInLineOfSight(Unit *who)
+        void MoveInLineOfSight(Unit* who)
         {
             if (!hasTaunted && me->IsWithinDistInMap(who, 60.0f) && who->GetTypeId() == TYPEID_PLAYER)
             {
@@ -132,7 +129,7 @@ public:
             ScriptedAI::MoveInLineOfSight(who);
         }
 
-        void SummonedCreatureDespawn(Creature *summon)
+        void SummonedCreatureDespawn(Creature* summon)
         {
             BossAI::SummonedCreatureDespawn(summon);
 
@@ -142,7 +139,6 @@ public:
 
             summon->CastSpell(summon, SPELL_SUMMON_CORPSE_SCARABS_MOB, true, NULL, NULL, me->GetGUID());
         }
-
 
         void UpdateAI(const uint32 diff)
         {
@@ -156,32 +152,25 @@ public:
                 switch (eventId)
                 {
                     case EVENT_IMPALE:
-                        if(!me->IsNonMeleeSpellCasted(false))
-                        {
-                            //Cast Impale on a random target
-                            //Do NOT cast it when we are afflicted by locust swarm
-                            if (!me->HasAura(RAID_MODE(SPELL_LOCUST_SWARM_10,SPELL_LOCUST_SWARM_25)))
-                                if (Unit *pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0))
-                                    DoCast(pTarget, RAID_MODE(SPELL_IMPALE_10,SPELL_IMPALE_25));
-                            events.ScheduleEvent(EVENT_IMPALE, urand(10000,20000));
-                        }
+                        //Cast Impale on a random target
+                        //Do NOT cast it when we are afflicted by locust swarm
+                        if (!me->HasAura(RAID_MODE(SPELL_LOCUST_SWARM_10, SPELL_LOCUST_SWARM_25)))
+                            if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0))
+                                DoCast(target, RAID_MODE(SPELL_IMPALE_10, SPELL_IMPALE_25));
+                        events.ScheduleEvent(EVENT_IMPALE, urand(10000, 20000));
                         break;
                     case EVENT_LOCUST:
-                        if(!me->IsNonMeleeSpellCasted(false))
-                        {
-                            // TODO : Add Text
-                            DoCast(me, RAID_MODE(SPELL_LOCUST_SWARM_10,SPELL_LOCUST_SWARM_25));
-                            DoSummon(MOB_CRYPT_GUARD, GuardSummonPos, 0, TEMPSUMMON_CORPSE_DESPAWN);
-                            events.ScheduleEvent(EVENT_LOCUST, urand(85000,95000));
-                        }
+                        // TODO : Add Text
+                        DoCast(me, RAID_MODE(SPELL_LOCUST_SWARM_10, SPELL_LOCUST_SWARM_25));
+                        DoSummon(MOB_CRYPT_GUARD, GuardSummonPos, 0, TEMPSUMMON_CORPSE_DESPAWN);
+                        events.ScheduleEvent(EVENT_LOCUST, 90000);
                         break;
                     case EVENT_SPAWN_GUARDIAN_NORMAL:
                         // TODO : Add Text
                         DoSummon(MOB_CRYPT_GUARD, GuardSummonPos, 0, TEMPSUMMON_CORPSE_DESPAWN);
                         break;
                     case EVENT_BERSERK:
-                        if (GetDifficulty() == RAID_DIFFICULTY_25MAN_NORMAL)
-                            DoCast(me, SPELL_BERSERK, true);
+                        DoCast(me, SPELL_BERSERK, true);
                         events.ScheduleEvent(EVENT_BERSERK, 600000);
                         break;
                 }
@@ -192,7 +181,6 @@ public:
     };
 
 };
-
 
 void AddSC_boss_anubrekhan()
 {

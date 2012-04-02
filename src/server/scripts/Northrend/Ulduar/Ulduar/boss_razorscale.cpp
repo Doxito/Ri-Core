@@ -325,7 +325,8 @@ class boss_razorscale : public CreatureScript
             {
                 // Do not let Razorscale be affected by Battle Shout buff
                 me->ApplySpellImmune(0, IMMUNITY_ID, RAID_MODE<uint32>(SPELL_BATTLE_SHOUT, SPELL_BATTLE_SHOUT_25), true);
-            }
+            
+			}
 
             Phases phase;
 
@@ -345,6 +346,7 @@ class boss_razorscale : public CreatureScript
                 summons.DoAction(MOLE_MACHINE_TRIGGER, ACTION_DESPAWN_ADDS);
                 _Reset();
                 me->SetCanFly(true);
+				me->SetDisableGravity(true);
                 me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                 me->SetReactState(REACT_PASSIVE);
                 PermaGround = false;
@@ -358,7 +360,7 @@ class boss_razorscale : public CreatureScript
                 _EnterCombat();
                 if (Creature* controller = ObjectAccessor::GetCreature(*me, instance ? instance->GetData64(DATA_RAZORSCALE_CONTROL) : 0))
                     controller->AI()->DoAction(ACTION_HARPOON_BUILD);
-                me->SetSpeed(MOVE_FLIGHT, 3.0f, true);
+               // me->SetSpeed(MOVE_FLIGHT, 3.0f, true);
                 me->SetReactState(REACT_PASSIVE);
                 phase = PHASE_GROUND;
                 events.SetPhase(PHASE_GROUND);
@@ -436,6 +438,8 @@ class boss_razorscale : public CreatureScript
                                 phase = PHASE_FLIGHT;
                                 events.SetPhase(PHASE_FLIGHT);
                                 me->SetCanFly(true);
+								me->SetDisableGravity(true);
+								me->SetSpeed(MOVE_FLIGHT, 3.0f, true);
                                 me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                                 me->RemoveAllAuras();
                                 me->SetReactState(REACT_PASSIVE);
@@ -448,6 +452,8 @@ class boss_razorscale : public CreatureScript
                                 return;
                             case EVENT_LAND:
                                 me->SetCanFly(false);
+								me->SetDisableGravity(false);
+								me->SetSpeed(MOVE_RUN, 1.5f, true);
                                 me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                                 me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_STUNNED | UNIT_FLAG_PACIFIED);
                                 if (Creature* commander = ObjectAccessor::GetCreature(*me, instance ? instance->GetData64(DATA_EXPEDITION_COMMANDER) : 0))
@@ -461,7 +467,7 @@ class boss_razorscale : public CreatureScript
                                 me->RemoveAurasDueToSpell(SPELL_HARPOON_TRIGGER);
                                 me->SetReactState(REACT_AGGRESSIVE);
                                 DoScriptText(EMOTE_BREATH, me, 0);
-                                DoCastAOE(SPELL_FLAMEBREATH);
+                                DoCastVictim(SPELL_FLAMEBREATH);
                                 events.CancelEvent(EVENT_BREATH);
                                 return;
                             case EVENT_BUFFET:
@@ -545,7 +551,7 @@ class boss_razorscale : public CreatureScript
 
                 me->SetReactState(REACT_AGGRESSIVE);
                 me->RemoveAurasDueToSpell(SPELL_HARPOON_TRIGGER);
-                me->SetSpeed(MOVE_FLIGHT, 1.0f, true);
+                me->SetSpeed(MOVE_RUN, 1.0f, true);
                 PermaGround = true;
                 DoCastAOE(SPELL_FLAMEBREATH);
                 events.ScheduleEvent(EVENT_FLAME, 15000, 0, PHASE_PERMAGROUND);

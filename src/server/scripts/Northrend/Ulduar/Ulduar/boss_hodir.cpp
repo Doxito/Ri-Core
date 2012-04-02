@@ -320,6 +320,7 @@ class boss_hodir : public CreatureScript
             {
                 _Reset();
                 me->SetReactState(REACT_PASSIVE);
+				me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE);
 
                 for (uint8 n = 0; n < FRIENDS_COUNT; ++n)
                     if (Creature* FrozenHelper = me->SummonCreature(Entry[n], SummonPositions[n], TEMPSUMMON_MANUAL_DESPAWN))
@@ -329,6 +330,9 @@ class boss_hodir : public CreatureScript
             void EnterCombat(Unit* /*who*/)
             {
                 _EnterCombat();
+
+				me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE);
+
                 DoScriptText(SAY_AGGRO, me);
                 DoCast(me, SPELL_BITING_COLD, true);
 
@@ -337,6 +341,8 @@ class boss_hodir : public CreatureScript
                 cheeseTheFreeze = true;
                 iHaveTheCoolestFriends = true;
                 iCouldSayThatThisCacheWasRare = true;
+
+				
 
                 events.ScheduleEvent(EVENT_ICICLE, 2000);
                 events.ScheduleEvent(EVENT_FREEZE, 25000);

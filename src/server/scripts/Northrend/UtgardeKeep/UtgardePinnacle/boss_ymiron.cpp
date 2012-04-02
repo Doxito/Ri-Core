@@ -238,7 +238,7 @@ public:
                         m_uiActivedCreatureGUID = pTemp->GetGUID();
                         pTemp->CastSpell(me, SPELL_CHANNEL_SPIRIT_TO_YMIRON, true);
                         pTemp->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-                        pTemp->SetLevitate(true);
+                        pTemp->SetDisableGravity(true);
 
                         switch (m_uiActiveOrder[m_uiActivedNumber])
                         {
