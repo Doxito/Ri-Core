@@ -162,7 +162,7 @@ class boss_ignis : public CreatureScript
                     instance->DoStartTimedAchievement(ACHIEVEMENT_TIMED_TYPE_EVENT, ACHIEVEMENT_TIMED_START_EVENT);
             }
 
-            void JustDied(Unit* /*killer*/)
+            void JustDied(Unit* /*victim*/)
             {
                 _JustDied();
                 DoScriptText(SAY_DEATH, me);

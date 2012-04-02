@@ -153,9 +153,9 @@ public:
                 SpellCorrupt_Timer = 3000;
         }
 
-        void JustDied(Unit* killer)
+        void JustDied(Unit* Killer)
         {
-            if (killer->GetEntry() == me->GetEntry())
+            if (Killer->GetEntry() == me->GetEntry())
                 return;
 
             DoScriptText(SAY_DEATH, me);

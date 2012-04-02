@@ -132,7 +132,7 @@ public:
             DoScriptText(RAND(YELL_KILL1, YELL_KILL2, YELL_KILL3), me);
         }
 
-        void JustDied(Unit* /*killer*/)
+        void JustDied(Unit* /*Killer*/)
         {
             DoScriptText(YELL_DEATH, me);
 

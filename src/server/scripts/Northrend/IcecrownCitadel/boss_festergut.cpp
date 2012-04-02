@@ -328,7 +328,7 @@ class npc_stinky_icc : public CreatureScript
                 DoMeleeAttackIfReady();
             }
 
-            void JustDied(Unit* /*killer*/)
+            void JustDied(Unit* /*who*/)
             {
                 if (Creature* festergut = me->GetCreature(*me, _instance->GetData64(DATA_FESTERGUT)))
                     if (festergut->isAlive())

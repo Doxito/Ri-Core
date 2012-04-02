@@ -64,7 +64,7 @@ public:
             events.ScheduleEvent(EVENT_THUNDERCLAP,    17 * IN_MILLISECONDS);
         }
 
-        void JustDied(Unit* /*killer*/)
+        void JustDied(Unit* /*who*/)
         {
             _JustDied();
         }

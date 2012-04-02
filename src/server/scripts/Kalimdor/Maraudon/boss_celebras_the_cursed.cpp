@@ -59,7 +59,7 @@ public:
 
         void EnterCombat(Unit* /*who*/) { }
 
-        void JustDied(Unit* /*killer*/)
+        void JustDied(Unit* /*Killer*/)
         {
             me->SummonCreature(13716, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), 0, TEMPSUMMON_TIMED_DESPAWN, 600000);
         }

@@ -137,7 +137,7 @@ class boss_warchief_kargath_bladefist : public CreatureScript
                 }
             }
 
-            void JustDied(Unit* /*killer*/)
+            void JustDied(Unit* /*Killer*/)
             {
                 DoScriptText(SAY_DEATH, me);
                 removeAdds();

@@ -79,7 +79,7 @@ class boss_doomwalker : public CreatureScript
                 Talk(SAY_SLAY);
             }
 
-            void JustDied(Unit* /*killer*/)
+            void JustDied(Unit* /*Killer*/)
             {
                 Talk(SAY_DEATH);
             }

@@ -306,26 +306,24 @@ public:
         void EnterCombat(Unit* /*who*/) { }
         void MoveInLineOfSight(Unit* /*who*/) { }
 
-        void JustDied(Unit* killer)
+        void JustDied(Unit* Killer)
         {
-            Player* player = killer->ToPlayer();
-            if (!player)
-                return;
-
-            if (player->GetQuestStatus(10873) == QUEST_STATUS_INCOMPLETE)
+            if (Killer->GetTypeId() == TYPEID_PLAYER)
             {
-                if (rand()%100 < 25)
+                if (CAST_PLR(Killer)->GetQuestStatus(10873) == QUEST_STATUS_INCOMPLETE)
                 {
-                    me->SummonCreature(QUEST_TARGET, 0.0f, 0.0f, 0.0f, 0.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 60000);
-                    player->KilledMonsterCredit(QUEST_TARGET, 0);
+                    if (rand()%100 < 25)
+                    {
+                        me->SummonCreature(QUEST_TARGET, 0.0f, 0.0f, 0.0f, 0.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 60000);
+                        CAST_PLR(Killer)->KilledMonsterCredit(QUEST_TARGET, 0);
+                    }
+                    else
+                        me->SummonCreature(netherwebVictims[rand()%6], 0.0f, 0.0f, 0.0f, 0.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 60000);
+
+                    if (rand()%100 < 75)
+                        me->SummonCreature(netherwebVictims[rand()%6], 0.0f, 0.0f, 0.0f, 0.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 60000);
+                    me->SummonCreature(netherwebVictims[rand()%6], 0.0f, 0.0f, 0.0f, 0.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 60000);
                 }
-                else
-                    me->SummonCreature(netherwebVictims[rand()%6], 0.0f, 0.0f, 0.0f, 0.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 60000);
-
-                if (rand()%100 < 75)
-                    me->SummonCreature(netherwebVictims[rand()%6], 0.0f, 0.0f, 0.0f, 0.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 60000);
-
-                me->SummonCreature(netherwebVictims[rand()%6], 0.0f, 0.0f, 0.0f, 0.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 60000);
             }
         }
     };

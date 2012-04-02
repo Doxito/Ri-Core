@@ -59,7 +59,7 @@ public:
             events.ScheduleEvent(EVENT_MOTHERS_MILK, 10 * IN_MILLISECONDS);
         }
 
-        void JustDied(Unit* /*killer*/)
+        void JustDied(Unit* /*who*/)
         {
             _JustDied();
         }

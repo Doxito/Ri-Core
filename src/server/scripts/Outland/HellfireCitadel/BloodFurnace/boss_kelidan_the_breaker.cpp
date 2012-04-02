@@ -183,7 +183,7 @@ class boss_kelidan_the_breaker : public CreatureScript
                 }
             }
 
-            void JustDied(Unit* /*killer*/)
+            void JustDied(Unit* /*Killer*/)
             {
                 DoScriptText(SAY_DIE, me);
 
@@ -324,10 +324,10 @@ class mob_shadowmoon_channeler : public CreatureScript
                 DoStartMovement(who);
             }
 
-            void JustDied(Unit* killer)
+            void JustDied(Unit* Killer)
             {
                if (Creature* Kelidan = me->FindNearestCreature(ENTRY_KELIDAN, 100))
-                   CAST_AI(boss_kelidan_the_breaker::boss_kelidan_the_breakerAI, Kelidan->AI())->ChannelerDied(killer);
+                   CAST_AI(boss_kelidan_the_breaker::boss_kelidan_the_breakerAI, Kelidan->AI())->ChannelerDied(Killer);
             }
 
             void UpdateAI(const uint32 diff)

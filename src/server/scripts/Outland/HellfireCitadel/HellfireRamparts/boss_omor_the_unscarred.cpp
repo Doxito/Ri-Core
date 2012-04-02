@@ -113,7 +113,7 @@ class boss_omor_the_unscarred : public CreatureScript
                 ++SummonedCount;
             }
 
-            void JustDied(Unit* /*killer*/)
+            void JustDied(Unit* /*Killer*/)
             {
                 DoScriptText(SAY_DIE, me);
             }

@@ -206,7 +206,7 @@ class boss_razorscale_controller : public CreatureScript
                 }
             }
 
-            void JustDied(Unit* /*killer*/)
+            void JustDied(Unit* /*who*/)
             {
                 _JustDied();
             }
@@ -370,7 +370,7 @@ class boss_razorscale : public CreatureScript
                 events.ScheduleEvent(EVENT_FLIGHT, 0, 0, PHASE_GROUND);
             }
 
-            void JustDied(Unit* /*killer*/)
+            void JustDied(Unit* /*who*/)
             {
                 _JustDied();
                 if (Creature* controller = ObjectAccessor::GetCreature(*me, instance ? instance->GetData64(DATA_RAZORSCALE_CONTROL) : 0))

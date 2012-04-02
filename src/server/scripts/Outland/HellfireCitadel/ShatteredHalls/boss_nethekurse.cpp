@@ -224,7 +224,7 @@ class boss_grand_warlock_nethekurse : public CreatureScript
                 DoScriptText(RAND(SAY_SLAY_1, SAY_SLAY_2), me);
             }
 
-            void JustDied(Unit* /*killer*/)
+            void JustDied(Unit* /*Killer*/)
             {
                 DoScriptText(SAY_DIE, me);
 
@@ -356,7 +356,7 @@ class mob_fel_orc_convert : public CreatureScript
                 }
             }
 
-            void JustDied(Unit* /*killer*/)
+            void JustDied(Unit* /*Killer*/)
             {
                 if (instance)
                 {

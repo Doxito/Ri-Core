@@ -101,7 +101,7 @@ class boss_anomalus : public CreatureScript
                     instance->SetData(DATA_ANOMALUS_EVENT, IN_PROGRESS);
             }
 
-            void JustDied(Unit* /*killer*/)
+            void JustDied(Unit* /*who*/)
             {
                 DoScriptText(SAY_DEATH, me);
 

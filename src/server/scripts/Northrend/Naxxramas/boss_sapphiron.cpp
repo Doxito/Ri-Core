@@ -145,7 +145,7 @@ public:
             }
         }
 
-        void JustDied(Unit* /*killer*/)
+        void JustDied(Unit* /*who*/)
         {
             _JustDied();
             me->CastSpell(me, SPELL_DIES, true);

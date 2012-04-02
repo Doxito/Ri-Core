@@ -75,7 +75,7 @@ public:
             ScriptedAI::MoveInLineOfSight(who);
         }
 
-        void JustDied(Unit* /*killer*/)
+        void JustDied(Unit* /*Killer*/)
         {
             me->SetDisplayId(MODEL_HUMAN);
         }

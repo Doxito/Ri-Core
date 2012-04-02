@@ -377,11 +377,10 @@ void hyjal_trashAI::UpdateAI(const uint32 /*diff*/)
     }
 }
 
-void hyjal_trashAI::JustDied(Unit* /*killer*/)
+void hyjal_trashAI::JustDied(Unit* /*victim*/)
 {
     if (!instance)
         return;
-
     if (IsEvent && !me->isWorldBoss())
         instance->SetData(DATA_TRASH, 0);//signal trash is dead
 
@@ -1194,7 +1193,7 @@ public:
             }
         }
 
-        void JustDied(Unit* /*killer*/)
+        void JustDied(Unit* /*victim*/)
         {
             if (instance && IsEvent)
                 instance->SetData(DATA_TRASH, 0);//signal trash is dead
@@ -1316,14 +1315,14 @@ public:
             }
         }
 
-        void JustDied(Unit* killer)
+        void JustDied(Unit* victim)
         {
             float x, y, z;
             me->GetPosition(x, y, z);
             z = me->GetMap()->GetHeight(me->GetPhaseMask(), x, y, z);
             me->GetMotionMaster()->MovePoint(0, x, y, z);
             me->SetPosition(x, y, z, 0);
-            hyjal_trashAI::JustDied(killer);
+            hyjal_trashAI::JustDied(victim);
         }
 
         void UpdateAI(const uint32 diff)
@@ -1424,7 +1423,7 @@ public:
 
         uint32 ExplodeTimer;
 
-        void JustDied(Unit* /*killer*/)
+        void JustDied(Unit* /*who*/)
         {
         }
 

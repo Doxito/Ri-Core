@@ -75,7 +75,7 @@ public:
             DoZoneInCombat();
         }
 
-        void JustDied(Unit* /*killer*/)
+        void JustDied(Unit* /*Killer*/)
         {
             DoScriptText(SAY_DEATH, me);
         }

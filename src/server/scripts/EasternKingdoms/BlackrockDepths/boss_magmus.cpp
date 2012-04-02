@@ -80,9 +80,9 @@ public:
             DoMeleeAttackIfReady();
         }
         // When he die open door to last chamber
-        void JustDied(Unit* killer)
+        void JustDied(Unit* who)
         {
-            if (InstanceScript* instance = killer->GetInstanceScript())
+            if (InstanceScript* instance = who->GetInstanceScript())
                 instance->HandleGameObject(instance->GetData64(DATA_THRONE_DOOR), true);
         }
     };

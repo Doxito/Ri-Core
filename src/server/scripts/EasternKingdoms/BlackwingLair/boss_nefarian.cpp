@@ -111,7 +111,7 @@ public:
             DoScriptText(SAY_SLAY, me, Victim);
         }
 
-        void JustDied(Unit* /*killer*/)
+        void JustDied(Unit* /*Killer*/)
         {
             DoScriptText(SAY_DEATH, me);
         }

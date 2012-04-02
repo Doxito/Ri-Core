@@ -133,12 +133,7 @@ class npc_zulaman_hostage : public CreatureScript
             uint64 PlayerGUID;
             void Reset() {}
             void EnterCombat(Unit* /*who*/) {}
-<<<<<<< HEAD
             void JustDied(Unit* /*who*/)
-=======
-
-            void JustDied(Unit* /*killer*/)
->>>>>>> d9088c0... Core/Script: Code style and some rewriting.
             {
                 Player* player = Unit::GetPlayer(*me, PlayerGUID);
                 if (player) player->SendLoot(me->GetGUID(), LOOT_CORPSE);

@@ -59,7 +59,7 @@ public:
         {
         }
 
-        void JustDied(Unit* killer)
+        void JustDied(Unit* Killer)
         {
             uint32 spawnCreatureID = 0;
 
@@ -67,8 +67,8 @@ public:
             {
                 case 0:
                     spawnCreatureID = 17681;
-                    if (Player* player = killer->ToPlayer())
-                        player->KilledMonsterCredit(spawnCreatureID, 0);
+                    if (Killer->GetTypeId() == TYPEID_PLAYER)
+                        CAST_PLR(Killer)->KilledMonsterCredit(spawnCreatureID, 0);
                     break;
                 case 1:
                 case 2:

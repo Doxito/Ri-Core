@@ -338,7 +338,7 @@ public:
             DoScriptText(RAND(SAY_SLAY_1, SAY_SLAY_2), me);
         }
 
-        void JustDied(Unit* /*killer*/)
+        void JustDied(Unit* /*Killer*/)
         {
             _JustDied();
             DoScriptText(SAY_DEATH, me);
@@ -760,7 +760,7 @@ class npc_kelthuzad_abomination : public CreatureScript
                 }
             }
 
-            void JustDied(Unit* /*killer*/)
+            void JustDied(Unit* /*who*/)
             {
                 if (instance)
                     instance->SetData(DATA_ABOMINATION_KILLED, instance->GetData(DATA_ABOMINATION_KILLED) + 1);

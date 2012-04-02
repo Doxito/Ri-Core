@@ -242,7 +242,7 @@ public:
             DoZoneInCombat();
         }
 
-        void JustDied(Unit* /*killer*/)
+        void JustDied(Unit* /*who*/)
         {
             for (int ni=0; ni<3; ++ni)
             {

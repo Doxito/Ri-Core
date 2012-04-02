@@ -152,7 +152,7 @@ public:
 
         InstanceScript* instance;
 
-        void JustDied(Unit* /*killer*/)
+        void JustDied(Unit* /*who*/)
         {
             if (instance)
             {

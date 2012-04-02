@@ -778,7 +778,7 @@ struct violet_hold_trashAI : public npc_escortAI
         }
     }
 
-    void JustDied(Unit* /*killer*/)
+    void JustDied(Unit* /*unit*/)
     {
         if (Creature* portal = Unit::GetCreature((*me), instance->GetData64(DATA_TELEPORTATION_PORTAL)))
             CAST_AI(npc_teleportation_portal_vh::npc_teleportation_portalAI, portal->AI())->SummonedMobDied(me);

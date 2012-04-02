@@ -290,7 +290,7 @@ class boss_hexlord_malacrass : public CreatureScript
                 }
             }
 
-            void JustDied(Unit* /*killer*/)
+            void JustDied(Unit* /*victim*/)
             {
                 if (instance)
                     instance->SetData(DATA_HEXLORDEVENT, DONE);

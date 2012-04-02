@@ -63,7 +63,7 @@ public:
             events.ScheduleEvent(EVENT_MIGHTY_BLOW, 14 * IN_MILLISECONDS);
         }
 
-        void JustDied(Unit* /*killer*/)
+        void JustDied(Unit* /*who*/)
         {
             _JustDied();
         }

@@ -168,7 +168,7 @@ public:
             Enraged = false;
         }
 
-        void JustDied(Unit* /*killer*/)
+        void JustDied(Unit* /*Killer*/)
         {
             if (instance)
             {
@@ -261,7 +261,7 @@ public:
             VemDead = false;
         }
 
-        void JustDied(Unit* /*killer*/)
+        void JustDied(Unit* /*Killer*/)
         {
             if (instance)
             {

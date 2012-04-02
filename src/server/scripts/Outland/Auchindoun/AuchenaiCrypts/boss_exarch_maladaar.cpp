@@ -233,7 +233,7 @@ public:
             DoScriptText(RAND(SAY_SLAY_1, SAY_SLAY_2), me);
         }
 
-        void JustDied(Unit* /*killer*/)
+        void JustDied(Unit* /*Killer*/)
         {
             DoScriptText(SAY_DEATH, me);
             //When Exarch Maladar is defeated D'ore appear.

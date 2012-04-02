@@ -356,22 +356,21 @@ public:
         void EnterCombat(Unit* /*who*/) {}
         void MoveInLineOfSight(Unit* /*who*/) {}
 
-        void JustDied(Unit* killer)
+        void JustDied(Unit* Killer)
         {
-            Player* player = killer->ToPlayer();
-            if (!player)
-                return;
-
-            if (player->GetQuestStatus(11611) == QUEST_STATUS_INCOMPLETE)
+            if (Killer->GetTypeId() == TYPEID_PLAYER)
             {
-                uint8 uiRand = urand(0, 99);
-                if (uiRand < 25)
+                if (CAST_PLR(Killer)->GetQuestStatus(11611) == QUEST_STATUS_INCOMPLETE)
                 {
-                    player->CastSpell(me, 45532, true);
-                    player->KilledMonsterCredit(WARSONG_PEON, 0);
+                    uint8 uiRand = urand(0, 99);
+                    if (uiRand < 25)
+                    {
+                        Killer->CastSpell(me, 45532, true);
+                        CAST_PLR(Killer)->KilledMonsterCredit(WARSONG_PEON, 0);
+                    }
+                    else if (uiRand < 75)
+                        Killer->CastSpell(me, nerubarVictims[urand(0, 2)], true);
                 }
-                else if (uiRand < 75)
-                    player->CastSpell(me, nerubarVictims[urand(0, 2)], true);
             }
         }
     };
@@ -592,7 +591,7 @@ public:
         void EnterCombat(Unit* /*who*/) {}
         void MoveInLineOfSight(Unit* /*who*/) {}
 
-        void JustDied(Unit* /*killer*/)
+        void JustDied(Unit* /*who*/)
         {
             if (GameObject* go_caribou = me->GetMap()->GetGameObject(go_caribouGUID))
                 go_caribou->SetLootState(GO_JUST_DEACTIVATED);
@@ -1450,8 +1449,8 @@ public:
             pLeryssa->SetWalk(false);
             pLeryssa->GetMotionMaster()->MovePoint(0, 3722.114502f, 3564.201660f, 477.441437f);
 
-            if (Player* player = killer->ToPlayer())
-                player->RewardPlayerAndGroupAtEvent(NPC_PRINCE_VALANAR, 0);
+            if (killer->GetTypeId() == TYPEID_PLAYER)
+                CAST_PLR(killer)->RewardPlayerAndGroupAtEvent(NPC_PRINCE_VALANAR, 0);
         }
     };
 
@@ -1632,10 +1631,7 @@ public:
                 StartFollow(pCaster->ToPlayer(), 0, NULL);
                 me->UpdateEntry(NPC_CAPTURED_BERLY_SORCERER, TEAM_NEUTRAL);
                 DoCast(me, SPELL_COSMETIC_ENSLAVE_CHAINS_SELF, true);
-
-                if (Player* player = pCaster->ToPlayer())
-                    player->KilledMonsterCredit(NPC_CAPTURED_BERLY_SORCERER, 0);
-
+                CAST_PLR(pCaster)->KilledMonsterCredit(NPC_CAPTURED_BERLY_SORCERER, 0);
                 bEnslaved = true;
             }
         }
@@ -2122,17 +2118,14 @@ public:
 
         void JustDied(Unit* killer)
         {
-            Player* player = killer->ToPlayer();
-            if (!player)
-                return;
-
-            if (player->GetQuestStatus(QUEST_YOU_RE_NOT_SO_BIG_NOW) == QUEST_STATUS_INCOMPLETE &&
+            if (killer->GetTypeId() == TYPEID_PLAYER &&
+                CAST_PLR(killer)->GetQuestStatus(QUEST_YOU_RE_NOT_SO_BIG_NOW) == QUEST_STATUS_INCOMPLETE &&
                 (me->HasAura(SPELL_AURA_NOTSOBIG_1) || me->HasAura(SPELL_AURA_NOTSOBIG_2) ||
                 me->HasAura(SPELL_AURA_NOTSOBIG_3) || me->HasAura(SPELL_AURA_NOTSOBIG_4)))
             {
                 Quest const* qInfo = sObjectMgr->GetQuestTemplate(QUEST_YOU_RE_NOT_SO_BIG_NOW);
                 if (qInfo)
-                    player->KilledMonsterCredit(qInfo->RequiredNpcOrGo[0], 0);
+                    CAST_PLR(killer)->KilledMonsterCredit(qInfo->RequiredNpcOrGo[0], 0);
             }
         }
     };

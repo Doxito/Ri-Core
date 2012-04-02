@@ -117,7 +117,7 @@ public:
             }
         }
 
-        void JustDied(Unit* killer)
+        void JustDied(Unit* Killer)
         {
             if (!ghost && instance)
             {
@@ -141,7 +141,7 @@ public:
                         if (temp)
                         {
                             temp->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-                            temp->AI()->AttackStart(killer);
+                            temp->AI()->AttackStart(Killer);
                         }
                     }
                 }
@@ -278,7 +278,7 @@ public:
             }
         }
 
-        void JustDied(Unit* killer)
+        void JustDied(Unit* Killer)
         {
             if (!ghost && instance)
             {
@@ -303,7 +303,7 @@ public:
                         if (temp)
                         {
                             temp->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-                            temp->AI()->AttackStart(killer);
+                            temp->AI()->AttackStart(Killer);
                         }
                     }
                 }

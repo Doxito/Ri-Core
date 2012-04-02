@@ -84,7 +84,7 @@ public:
             DoScriptText(SAY_AGGRO, me);
         }
 
-         void JustDied(Unit* /*killer*/)
+         void JustDied(Unit* /*Killer*/)
          {
              DoScriptText(SAY_DEATH, me);
          }

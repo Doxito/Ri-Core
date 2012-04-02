@@ -105,7 +105,7 @@ public:
                 me->UpdateEntry(NPC_DATHROHAN);
         }
 
-        void JustDied(Unit* /*killer*/)
+        void JustDied(Unit* /*Victim*/)
         {
             static uint32 uiCount = sizeof(m_aSummonPoint)/sizeof(SummonDef);
 

@@ -276,7 +276,7 @@ class boss_nalorakk : public CreatureScript
                 DoZoneInCombat();
             }
 
-            void JustDied(Unit* /*killer*/)
+            void JustDied(Unit* /*Killer*/)
             {
                 if (instance)
                     instance->SetData(DATA_NALORAKKEVENT, DONE);

@@ -124,7 +124,7 @@ public:
             summon->AI()->DoZoneInCombat();
         }
 
-        void JustDied(Unit* /*killer*/)
+        void JustDied(Unit* /*Killer*/)
         {
             _JustDied();
             DoScriptText(SAY_DEATH, me);

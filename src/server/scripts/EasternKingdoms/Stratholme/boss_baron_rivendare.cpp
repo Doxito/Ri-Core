@@ -126,7 +126,7 @@ public:
                 summoned->AI()->AttackStart(target);
         }
 
-         void JustDied(Unit* /*killer*/)
+         void JustDied(Unit* /*Killer*/)
          {
              if (instance)
                  instance->SetData(TYPE_BARON, DONE);

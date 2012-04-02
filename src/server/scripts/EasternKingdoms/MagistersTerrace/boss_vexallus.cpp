@@ -101,7 +101,7 @@ public:
             DoScriptText(SAY_KILL, me);
         }
 
-        void JustDied(Unit* /*killer*/)
+        void JustDied(Unit* /*victim*/)
         {
             if (instance)
                 instance->SetData(DATA_VEXALLUS_EVENT, DONE);

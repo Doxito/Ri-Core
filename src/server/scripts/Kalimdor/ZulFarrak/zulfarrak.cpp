@@ -322,7 +322,7 @@ public:
             AttackStartCaster(victim, 10);//keep back & toss bombs/shoot
         }
 
-        void JustDied(Unit* /*killer*/)
+        void JustDied(Unit* /*victim*/)
         {
             /*if (instance)
                 instance->SetData(0, DONE);*/

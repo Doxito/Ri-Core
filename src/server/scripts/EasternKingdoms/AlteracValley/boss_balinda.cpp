@@ -139,7 +139,7 @@ public:
             summons.Summon(summoned);
         }
 
-        void JustDied(Unit* /*killer*/)
+        void JustDied(Unit* /*Killer*/)
         {
             summons.DespawnAll();
         }

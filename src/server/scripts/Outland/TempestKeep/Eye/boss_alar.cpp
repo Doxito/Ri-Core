@@ -145,7 +145,7 @@ class boss_alar : public CreatureScript
                 me->setActive(true);
             }
 
-            void JustDied(Unit* /*killer*/)
+            void JustDied(Unit* /*victim*/)
             {
                 if (instance)
                     instance->SetData(DATA_ALAREVENT, DONE);

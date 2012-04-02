@@ -247,7 +247,7 @@ public:
                     CAST_PLR(Killed)->FailQuest(QUEST_SECOND_TRIAL);
         }
 
-        void JustDied(Unit* killer);
+        void JustDied(Unit* Killer);
     };
 };
 

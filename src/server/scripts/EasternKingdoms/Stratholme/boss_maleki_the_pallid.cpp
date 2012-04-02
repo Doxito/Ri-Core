@@ -65,7 +65,7 @@ public:
         {
         }
 
-        void JustDied(Unit* /*killer*/)
+        void JustDied(Unit* /*Killer*/)
         {
             if (instance)
                 instance->SetData(TYPE_PALLID, IN_PROGRESS);

@@ -334,9 +334,9 @@ public:
             ++SoulChargeCount;
         }
 
-        void JustDied(Unit* killer)
+        void JustDied(Unit* victim)
         {
-            hyjal_trashAI::JustDied(killer);
+            hyjal_trashAI::JustDied(victim);
             DoScriptText(SAY_DEATH, me);
 
             if (instance)

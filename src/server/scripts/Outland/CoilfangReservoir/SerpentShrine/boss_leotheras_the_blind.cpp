@@ -109,7 +109,7 @@ public:
             return 0;
         }
 
-        void JustDied(Unit* /*killer*/)
+        void JustDied(Unit* /*victim*/)
         {
             Unit* unit = Unit::GetUnit((*me), victimGUID);
             if (unit && unit->HasAura(SPELL_INSIDIOUS_WHISPER))
@@ -398,7 +398,7 @@ public:
             }
         }
 
-        void JustDied(Unit* /*killer*/)
+        void JustDied(Unit* /*victim*/)
         {
             DoScriptText(SAY_DEATH, me);
 
@@ -640,7 +640,7 @@ public:
             DoScriptText(RAND(SAY_DEMON_SLAY1, SAY_DEMON_SLAY2, SAY_DEMON_SLAY3), me);
         }
 
-        void JustDied(Unit* /*killer*/)
+        void JustDied(Unit* /*victim*/)
         {
             //invisibility (blizzlike, at the end of the fight he doesn't die, he disappears)
             DoCast(me, 8149, true);
