@@ -356,11 +356,7 @@ class spell_varos_energize_core_area_enemy : public SpellScriptLoader
                 float rborder = CAST_AI(boss_varos::boss_varosAI, varos->AI())->GetCoreEnergizeOrientation(false);
                 std::list<Unit*> tempList;
 
-<<<<<<< HEAD
                 for (std::list<Unit*>::iterator itr = targetList.begin(); itr != targetList.end(); ++itr)
-=======
-                for (std::list<Unit*>::iterator itr = targetList.begin(); itr != targetList.end();)
->>>>>>> e050945... Core/Script: Code style and remove unused core.
                 {
                     float angle = varos->GetAngle((*itr)->GetPositionX(), (*itr)->GetPositionY());
 
@@ -412,11 +408,7 @@ class spell_varos_energize_core_area_entry : public SpellScriptLoader
                 float rborder = CAST_AI(boss_varos::boss_varosAI, varos->AI())->GetCoreEnergizeOrientation(false);
                 std::list<Unit*> tempList;
 
-<<<<<<< HEAD
                 for (std::list<Unit*>::iterator itr = targetList.begin(); itr != targetList.end(); ++itr)
-=======
-                for (std::list<Unit*>::iterator itr = targetList.begin(); itr != targetList.end();)
->>>>>>> e050945... Core/Script: Code style and remove unused core.
                 {
                     float angle = varos->GetAngle((*itr)->GetPositionX(), (*itr)->GetPositionY());
 
