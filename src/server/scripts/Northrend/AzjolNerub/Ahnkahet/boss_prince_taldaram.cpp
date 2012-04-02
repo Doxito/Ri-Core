@@ -36,8 +36,7 @@ enum Spells
     SPELL_VANISH                                  = 55964,
     CREATURE_FLAME_SPHERE                         = 30106,
     H_CREATURE_FLAME_SPHERE_1                     = 31686,
-    H_CREATURE_FLAME_SPHERE_2                     = 31687,
-    SPELL_HOVER_FALL                              = 60425
+    H_CREATURE_FLAME_SPHERE_2                     = 31687
 };
 enum Misc
 {
@@ -46,17 +45,18 @@ enum Misc
     DATA_SPHERE_DISTANCE                          =    15
 };
 #define DATA_SPHERE_ANGLE_OFFSET            0.7f
-#define DATA_GROUND_POSITION_Z             11.30809f
+#define DATA_GROUND_POSITION_Z             11.4f
 
 enum Yells
 {
-    SAY_1                                         = 0,
-    SAY_WARNING                                   = 1,
-    SAY_AGGRO                                     = 2,
-    SAY_SLAY                                      = 3,
-    SAY_DEATH                                     = 4,
-    SAY_FEED                                      = 5,
-    SAY_VANISH                                    = 6,
+    SAY_AGGRO                                     = -1619021,
+    SAY_SLAY_1                                    = -1619022,
+    SAY_SLAY_2                                    = -1619023,
+    SAY_DEATH                                     = -1619024,
+    SAY_FEED_1                                    = -1619025,
+    SAY_FEED_2                                    = -1619026,
+    SAY_VANISH_1                                  = -1619027,
+    SAY_VANISH_2                                  = -1619028
 };
 enum CombatPhase
 {
@@ -81,14 +81,9 @@ public:
     {
         boss_taldaramAI(Creature* c) : ScriptedAI(c)
         {
-<<<<<<< HEAD
             instance = c->GetInstanceScript();
             me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC);
             me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-=======
-            instance = creature->GetInstanceScript();
-            me->SetDisableGravity(true);
->>>>>>> dae8211... Scripts/Ahn'kahet/Prince Taldaram:
         }
 
         uint32 uiBloodthirstTimer;
@@ -123,7 +118,7 @@ public:
         {
             if (instance)
                 instance->SetData(DATA_PRINCE_TALDARAM_EVENT, IN_PROGRESS);
-            Talk(SAY_AGGRO);
+            DoScriptText(SAY_AGGRO, me);
         }
 
         void UpdateAI(const uint32 diff)
@@ -185,8 +180,7 @@ public:
                         break;
                     case VANISHED:
                         if (Unit* pEmbraceTarget = GetEmbraceTarget())
-                            DoCast(pEmbraceTarget, DUNGEON_MODE(SPELL_EMBRACE_OF_THE_VAMPYR, H_SPELL_EMBRACE_OF_THE_VAMPYR));
-                        Talk(SAY_FEED);
+                            DoCast(pEmbraceTarget, SPELL_EMBRACE_OF_THE_VAMPYR);
                         me->GetMotionMaster()->Clear();
                         me->SetSpeed(MOVE_WALK, 1.0f, true);
                         me->GetMotionMaster()->MoveChase(me->getVictim());
@@ -208,7 +202,7 @@ public:
                         if (uiFlamesphereTimer <= diff)
                         {
                             // because TARGET_UNIT_TARGET_ENEMY we need a target selected to cast
-                            DoCastVictim(SPELL_CONJURE_FLAME_SPHERE);
+                            DoCast(me->getVictim(), SPELL_CONJURE_FLAME_SPHERE);
                             Phase = CASTING_FLAME_SPHERES;
                             uiPhaseTimer = 3*IN_MILLISECONDS + diff;
                             uiFlamesphereTimer = 15*IN_MILLISECONDS;
@@ -231,7 +225,7 @@ public:
                             //He only vanishes if there are 3 or more alive players
                             if (target_list.size() > 2)
                             {
-                                Talk(SAY_VANISH);
+                                DoScriptText(RAND(SAY_VANISH_1, SAY_VANISH_2), me);
                                 DoCast(me, SPELL_VANISH);
                                 Phase = JUST_VANISHED;
                                 uiPhaseTimer = 500;
@@ -267,7 +261,7 @@ public:
 
         void JustDied(Unit* /*killer*/)
         {
-            Talk(SAY_DEATH);
+            DoScriptText(SAY_DEATH, me);
 
             if (instance)
                 instance->SetData(DATA_PRINCE_TALDARAM_EVENT, DONE);
@@ -285,7 +279,7 @@ public:
                 uiPhaseTimer = 0;
                 uiEmbraceTarget = 0;
             }
-            Talk(SAY_SLAY);
+            DoScriptText(RAND(SAY_SLAY_1, SAY_SLAY_2), me);
         }
 
         bool CheckSpheres()
@@ -321,13 +315,12 @@ public:
         {
             if (!instance)
                 return;
+            me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC);
+            me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
             me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             me->RemoveAurasDueToSpell(SPELL_BEAM_VISUAL);
+            me->SetUnitMovementFlags(MOVEMENTFLAG_WALKING);
             me->SetHomePosition(me->GetPositionX(), me->GetPositionY(), DATA_GROUND_POSITION_Z, me->GetOrientation());
-            DoCast(SPELL_HOVER_FALL);
-            me->SetDisableGravity(false);
-            me->GetMotionMaster()->MovePoint(0, me->GetHomePosition());
-            Talk(SAY_WARNING);
             uint64 prison_GUID = instance->GetData64(DATA_PRINCE_TALDARAM_PLATFORM);
             instance->HandleGameObject(prison_GUID, true);
         }
@@ -410,20 +403,8 @@ public:
 
             switch (pGO->GetEntry())
             {
-<<<<<<< HEAD
                 case GO_SPHERE1: instance->SetData(DATA_SPHERE1_EVENT, IN_PROGRESS); break;
                 case GO_SPHERE2: instance->SetData(DATA_SPHERE2_EVENT, IN_PROGRESS); break;
-=======
-                case GO_SPHERE1:
-                    instance->SetData(DATA_SPHERE1_EVENT, IN_PROGRESS);
-                    pPrinceTaldaram->AI()->Talk(SAY_1);
-                    break;
-
-                case GO_SPHERE2:
-                    instance->SetData(DATA_SPHERE2_EVENT, IN_PROGRESS);
-                    pPrinceTaldaram->AI()->Talk(SAY_1);
-                    break;
->>>>>>> dae8211... Scripts/Ahn'kahet/Prince Taldaram:
             }
 
             CAST_AI(boss_taldaram::boss_taldaramAI, pPrinceTaldaram->AI())->CheckSpheres();
