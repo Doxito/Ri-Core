@@ -754,7 +754,8 @@ void Battleground::EndBattleground(uint32 winner)
                 else
                 {
                     maxChartID = (*result)[0].GetUInt32();
-                    result.release();
+                    //result.release(); //-- El nuevo guardado de memoria puede ocasionar errores al remast.
+					                    // Por ahora esta función queda desactivada, pendiente de una nueva del nuevo P.ACE
                 }
                 uint32 gameID = maxChartID+1;
                 for(BattlegroundScoreMap::const_iterator itr = PlayerScores.begin(); itr != PlayerScores.end(); ++itr)
