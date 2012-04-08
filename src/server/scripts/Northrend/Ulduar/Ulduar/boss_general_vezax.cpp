@@ -239,8 +239,7 @@ class boss_general_vezax : public CreatureScript
                     if (size < PlayersMin)
                         return NULL;
 
-                    return SelectRandomContainerElement(playerList);
-                }
+               }
                 else
                     return NULL;
             }

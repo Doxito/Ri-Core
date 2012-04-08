@@ -142,7 +142,7 @@ class boss_emalon : public CreatureScript
                             DoCast(SPELL_OVERCHARGE);
                             DoScriptText(EMOTE_OVERCHARGE, me);
                             events.ScheduleEvent(EVENT_OVERCHARGE, 45000);
-                            break;
+                           break;
                         case EVENT_BERSERK:
                             DoCast(me, SPELL_BERSERK, true);
                             DoScriptText(EMOTE_BERSERK, me);
