@@ -1,20 +1,20 @@
 /*
- * Copyright (C) 2008-2012 TrinityCore <http://www.trinitycore.org/>
- * Copyright (C) 2006-2009 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; either version 2 of the License, or (at your
- * option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program. If not, see <http://www.gnu.org/licenses/>.
- */
+* Copyright (C) 2008-2012 TrinityCore <http://www.trinitycore.org/>
+* Copyright (C) 2006-2009 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+*
+* This program is free software; you can redistribute it and/or modify it
+* under the terms of the GNU General Public License as published by the
+* Free Software Foundation; either version 2 of the License, or (at your
+* option) any later version.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+* FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+* more details.
+*
+* You should have received a copy of the GNU General Public License along
+* with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 
 /* ScriptData
 SDName: Boss_Shade_of_Akama
@@ -26,14 +26,14 @@ EndScriptData */
 #include "ScriptPCH.h"
 #include "black_temple.h"
 
-#define SAY_DEATH                   -1564013
-#define SAY_LOW_HEALTH              -1564014
+#define SAY_DEATH -1564013
+#define SAY_LOW_HEALTH -1564014
 // Ending cinematic text
-#define SAY_FREE                    -1564015
-#define SAY_BROKEN_FREE_01          -1564016
-#define SAY_BROKEN_FREE_02          -1564017
+#define SAY_FREE -1564015
+#define SAY_BROKEN_FREE_01 -1564016
+#define SAY_BROKEN_FREE_02 -1564017
 
-#define GOSSIP_ITEM                 "We are ready to fight alongside you, Akama"
+#define GOSSIP_ITEM "We are ready to fight alongside you, Akama"
 
 struct Location
 {
@@ -43,12 +43,12 @@ struct Location
 /* Not used
 static Location ChannelerLocations[]=
 {
-    {463.161285f, 401.219757f, 3.141592f, 0.0f},
-    {457.377625f, 391.227661f, 2.106461f, 0.0f},
-    {446.012421f, 391.227661f, 1.071904f, 0.0f},
-    {439.533783f, 401.219757f, 0.000000f, 0.0f},
-    {446.012421f, 411.211853f, 5.210546f, 0.0f},
-    {457.377625f, 411.211853f, 4.177494f, 0.0f}
+{463.161285f, 401.219757f, 3.141592f, 0.0f},
+{457.377625f, 391.227661f, 2.106461f, 0.0f},
+{446.012421f, 391.227661f, 1.071904f, 0.0f},
+{439.533783f, 401.219757f, 0.000000f, 0.0f},
+{446.012421f, 411.211853f, 5.210546f, 0.0f},
+{457.377625f, 411.211853f, 4.177494f, 0.0f}
 };
 */
 
@@ -66,10 +66,10 @@ static Location AkamaWP[]=
 
 static Location BrokenCoords[]=
 {
-    {541.375916f, 401.439575f, M_PI, 112.783997f},             // The place where Akama channels
-    {534.130005f, 352.394531f, 2.164150f, 112.783737f},         // Behind a 'pillar' which is behind the east alcove
-    {499.621185f, 341.534729f, 1.652856f, 112.783730f},         // East Alcove
-    {499.151093f, 461.036438f, 4.770888f, 112.78370f},          // West Alcove
+    {541.375916f, 401.439575f, M_PI, 112.783997f}, // The place where Akama channels
+    {534.130005f, 352.394531f, 2.164150f, 112.783737f}, // Behind a 'pillar' which is behind the east alcove
+    {499.621185f, 341.534729f, 1.652856f, 112.783730f}, // East Alcove
+    {499.151093f, 461.036438f, 4.770888f, 112.78370f}, // West Alcove
 };
 
 static Location BrokenWP[]=
@@ -81,31 +81,31 @@ static Location BrokenWP[]=
 };
 
 // Locations
-#define Z1              118.543144f
-#define Z2              120.783768f
-#define Z_SPAWN         113.537949f
-#define AGGRO_X         482.793182f
-#define AGGRO_Y         401.270172f
-#define AGGRO_Z         112.783928f
-#define AKAMA_X         514.583984f
-#define AKAMA_Y         400.601013f
-#define AKAMA_Z         112.783997f
+#define Z1 118.543144f
+#define Z2 120.783768f
+#define Z_SPAWN 113.537949f
+#define AGGRO_X 482.793182f
+#define AGGRO_Y 401.270172f
+#define AGGRO_Z 112.783928f
+#define AKAMA_X 514.583984f
+#define AKAMA_Y 400.601013f
+#define AKAMA_Z 112.783997f
 
 // Spells
-#define SPELL_VERTEX_SHADE_BLACK    39833
-#define SPELL_SHADE_SOUL_CHANNEL    40401
-#define SPELL_DESTRUCTIVE_POISON    40874
-#define SPELL_LIGHTNING_BOLT        42024
-#define SPELL_AKAMA_SOUL_CHANNEL    40447
-#define SPELL_AKAMA_SOUL_RETRIEVE   40902
-#define AKAMA_SOUL_EXPEL            40855
-#define SPELL_SHADE_SOUL_CHANNEL_2  40520
+#define SPELL_VERTEX_SHADE_BLACK 39833
+#define SPELL_SHADE_SOUL_CHANNEL 40401
+#define SPELL_DESTRUCTIVE_POISON 40874
+#define SPELL_LIGHTNING_BOLT 42024
+#define SPELL_AKAMA_SOUL_CHANNEL 40447
+#define SPELL_AKAMA_SOUL_RETRIEVE 40902
+#define AKAMA_SOUL_EXPEL 40855
+#define SPELL_SHADE_SOUL_CHANNEL_2 40520
 
 // Channeler entry
-#define CREATURE_CHANNELER          23421
-#define CREATURE_SORCERER           23215
-#define CREATURE_DEFENDER           23216
-#define CREATURE_BROKEN             23319
+#define CREATURE_CHANNELER 23421
+#define CREATURE_SORCERER 23215
+#define CREATURE_DEFENDER 23216
+#define CREATURE_BROKEN 23319
 
 const uint32 spawnEntries[4]= { 23523, 23318, 23524 };
 
@@ -223,7 +223,7 @@ public:
         uint32 ReduceHealthTimer;
         uint32 SummonTimer;
         uint32 ResetTimer;
-        uint32 DefenderTimer;                                   // They are on a flat 15 second timer, independant of the other summon Creature timer.
+        uint32 DefenderTimer; // They are on a flat 15 second timer, independant of the other summon Creature timer.
 
         bool IsBanished;
         bool HasKilledAkama;
@@ -326,7 +326,7 @@ public:
                 DoStartMovement(who);
         }
 
-        void IncrementDeathCount(uint64 guid = 0)               // If guid is set, will remove it from list of sorcerer
+        void IncrementDeathCount(uint64 guid = 0) // If guid is set, will remove it from list of sorcerer
         {
             if (reseting)
                 return;
@@ -338,7 +338,7 @@ public:
             {
                 if (Sorcerers.empty())
                     sLog->outError("SD2 ERROR: Shade of Akama - attempt to remove guid " UI64FMTD " from Sorcerers list but list is already empty", guid);
-                else  Sorcerers.remove(guid);
+                else Sorcerers.remove(guid);
             }
         }
 
@@ -478,7 +478,7 @@ public:
                     }
                 }
             }
-            else                                                // No longer banished, let's fight Akama now
+            else // No longer banished, let's fight Akama now
             {
                 if (ReduceHealthTimer <= diff)
                 {
@@ -544,7 +544,7 @@ public:
     bool OnGossipSelect(Player* player, Creature* creature, uint32 /*sender*/, uint32 action)
     {
         player->PlayerTalkClass->ClearMenus();
-        if (action == GOSSIP_ACTION_INFO_DEF + 1)               //Fight time
+        if (action == GOSSIP_ACTION_INFO_DEF + 1) //Fight time
         {
             player->CLOSE_GOSSIP_MENU();
             CAST_AI(npc_akama_shade::npc_akamaAI, creature->AI())->BeginEvent(player);
@@ -622,7 +622,7 @@ public:
 
             if (!EventBegun)
             {
-                me->SetUInt32Value(UNIT_NPC_FLAGS, 0);      // Database sometimes has very very strange values
+                me->SetUInt32Value(UNIT_NPC_FLAGS, 0); // Database sometimes has very very strange values
                 me->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
             }
             summons.DespawnAll();

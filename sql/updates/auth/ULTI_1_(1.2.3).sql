@@ -52,3 +52,4 @@ ALTER TABLE `uptime`
  CHANGE `uptime` `uptime` INT(10) UNSIGNED DEFAULT 0 NOT NULL,
  ROW_FORMAT=DEFAULT ENGINE=INNODB;
 ALTER TABLE `realmlist` CHANGE `address` `address` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '127.0.0.1';
+ALTER TABLE `realmlist` CHANGE `address` `address` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '127.0.0.1';
