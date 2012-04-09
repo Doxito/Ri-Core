@@ -19,7 +19,12 @@
 /* ScriptData
 SDName: Boss_Shade_of_Akama
 SD%Complete: 90
-SDComment: Seems to be complete.
+SDComment: 
+RI:
+Últimos errores reparados:
+ - Evitado que los canalizadores quedaran inatacables en el primer intento.
+ - Los NPC'S circundantes, antes de iniciar el evento, ahora serán hostiles.
+
 SDCategory: Black Temple
 EndScriptData */
 
@@ -33,7 +38,7 @@ EndScriptData */
 #define SAY_BROKEN_FREE_01 -1564016
 #define SAY_BROKEN_FREE_02 -1564017
 
-#define GOSSIP_ITEM "We are ready to fight alongside you, Akama"
+#define GOSSIP_ITEM "Estamos preparados para luchar contigo, Akama."
 
 struct Location
 {
@@ -121,7 +126,10 @@ public:
 
     struct mob_ashtongue_channelerAI : public ScriptedAI
     {
-        mob_ashtongue_channelerAI(Creature* c) : ScriptedAI(c) {ShadeGUID = 0;}
+        mob_ashtongue_channelerAI(Creature* creature) : ScriptedAI(creature)
+        {
+            ShadeGUID = 0;
+        }
 
         uint64 ShadeGUID;
 
@@ -147,7 +155,10 @@ public:
 
     struct mob_ashtongue_sorcererAI : public ScriptedAI
     {
-        mob_ashtongue_sorcererAI(Creature* c) : ScriptedAI(c) {ShadeGUID = 0;}
+        mob_ashtongue_sorcererAI(Creature* creature) : ScriptedAI(creature)
+        {
+            ShadeGUID = 0;
+        }
 
         uint64 ShadeGUID;
         uint32 CheckTimer;
@@ -202,9 +213,9 @@ public:
 
     struct boss_shade_of_akamaAI : public ScriptedAI
     {
-        boss_shade_of_akamaAI(Creature* c) : ScriptedAI(c), summons(me)
+        boss_shade_of_akamaAI(Creature* creature) : ScriptedAI(creature), summons(me)
         {
-            instance = c->GetInstanceScript();
+            instance = creature->GetInstanceScript();
             AkamaGUID = instance ? instance->GetData64(DATA_AKAMA_SHADE) : 0;
             me->setActive(true);//if view distance is too low
             me->ApplySpellImmune(0, IMMUNITY_STATE, SPELL_AURA_MOD_TAUNT, true);
@@ -320,7 +331,8 @@ public:
 
         void AttackStart(Unit* who)
         {
-            if (!who || IsBanished) return;
+            if (!who || IsBanished)
+                return;
 
             if (who->isTargetableForAttack() && who != me)
                 DoStartMovement(who);
@@ -571,11 +583,11 @@ public:
 
     struct npc_akamaAI : public ScriptedAI
     {
-        npc_akamaAI(Creature* c) : ScriptedAI(c), summons(me)
+        npc_akamaAI(Creature* creature) : ScriptedAI(creature), summons(me)
         {
             ShadeHasDied = false;
             StartCombat = false;
-            instance = c->GetInstanceScript();
+            instance = creature->GetInstanceScript();
             if (instance)
                 ShadeGUID = instance->GetData64(DATA_SHADEOFAKAMA);
             else
@@ -653,6 +665,10 @@ public:
             Creature* Shade = (Unit::GetCreature((*me), ShadeGUID));
             if (Shade)
             {
+				//Reinicia el BOSS, para evitar que alguno de los invocadores
+				// quede inatacable.
+				CAST_AI(boss_shade_of_akama::boss_shade_of_akamaAI, Shade->AI())->Reset();
+
                 instance->SetData(DATA_SHADEOFAKAMAEVENT, IN_PROGRESS);
                 // Prevent players from trying to restart event
                 me->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
@@ -662,7 +678,8 @@ public:
                 me->CombatStart(Shade);
                 Shade->SetUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_STATE_NONE);
                 Shade->SetTarget(me->GetGUID());
-                if (player) Shade->AddThreat(player, 1.0f);
+                if (player)
+                    Shade->AddThreat(player, 1.0f);
                 DoZoneInCombat(Shade);
                 EventBegun = true;
             }
@@ -675,17 +692,19 @@ public:
 
             switch (id)
             {
-            case 0: ++WayPointId; break;
+                case 0:
+                    ++WayPointId;
+                    break;
 
-            case 1:
-                if (Creature* Shade = Unit::GetCreature(*me, ShadeGUID))
-                {
-                    me->SetTarget(ShadeGUID);
-                    DoCast(Shade, SPELL_AKAMA_SOUL_RETRIEVE);
-                    EndingTalkCount = 0;
-                    SoulRetrieveTimer = 16000;
-                }
-                break;
+                case 1:
+                    if (Creature* Shade = Unit::GetCreature(*me, ShadeGUID))
+                    {
+                        me->SetTarget(ShadeGUID);
+                        DoCast(Shade, SPELL_AKAMA_SOUL_RETRIEVE);
+                        EndingTalkCount = 0;
+                        SoulRetrieveTimer = 16000;
+                    }
+                    break;
             }
         }
 
@@ -878,7 +897,6 @@ public:
             DoMeleeAttackIfReady();
         }
     };
-
 };
 
 void AddSC_boss_shade_of_akama()

@@ -156,6 +156,8 @@ public:
         uint32 Counter;
         uint32 Timer;
 
+		bool combat;
+
         uint32 SoulCount;
         uint32 SoulDeathCount;
 
@@ -174,11 +176,26 @@ public:
             }
 
             Phase = 0;
+			combat = false;
 
             me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             me->SetUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_ONESHOT_NONE);
             me->RemoveAurasDueToSpell(SPELL_SUBMERGE);
         }
+
+
+		// Fix para hacer que entre en combate correctamente.
+	 void MoveInLineOfSight(Unit *who)
+    {
+     if (!combat && me->IsWithinDistInMap(who, 60.0f) && who->GetTypeId() == TYPEID_PLAYER)
+        {
+		    EnterCombat(who);
+            combat = true;
+        }
+        //ScriptedAI::MoveInLineOfSight(who);
+    }
+
+
 
         void EnterCombat(Unit* who)
         {

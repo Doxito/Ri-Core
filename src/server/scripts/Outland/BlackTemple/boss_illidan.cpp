@@ -1,20 +1,20 @@
 /*
- * Copyright (C) 2008-2012 TrinityCore <http://www.trinitycore.org/>
- * Copyright (C) 2006-2009 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; either version 2 of the License, or (at your
- * option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program. If not, see <http://www.gnu.org/licenses/>.
- */
+* Copyright (C) 2008-2012 TrinityCore <http://www.trinitycore.org/>
+* Copyright (C) 2006-2009 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+*
+* This program is free software; you can redistribute it and/or modify it
+* under the terms of the GNU General Public License as published by the
+* Free Software Foundation; either version 2 of the License, or (at your
+* option) any later version.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+* FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+* more details.
+*
+* You should have received a copy of the GNU General Public License along
+* with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 
 /* ScriptData
 SDName: boss_illidan_stormrage
@@ -26,207 +26,207 @@ EndScriptData */
 #include "ScriptPCH.h"
 #include "black_temple.h"
 
-#define GETGO(obj, guid)      GameObject* obj = instance->instance->GetGameObject(guid)
-#define GETUNIT(unit, guid)   Unit* unit = Unit::GetUnit(*me, guid)
-#define GETCRE(cre, guid)     Creature* cre = Unit::GetCreature(*me, guid)
+#define GETGO(obj, guid) GameObject* obj = instance->instance->GetGameObject(guid)
+#define GETUNIT(unit, guid) Unit* unit = Unit::GetUnit(*me, guid)
+#define GETCRE(cre, guid) Creature* cre = Unit::GetCreature(*me, guid)
 
 /************* Quotes and Sounds ***********************/
 // Gossip for when a player clicks Akama
-#define GOSSIP_ITEM           "We are ready to face Illidan"
+#define GOSSIP_ITEM "We are ready to face Illidan"
 
 // Yells for/by Akama
-#define SAY_AKAMA_BEWARE      "Be wary friends, The Betrayer meditates in the court just beyond."
-#define SOUND_AKAMA_BEWARE    11388
-#define SAY_AKAMA_MINION      "Come, my minions. Deal with this traitor as he deserves!"
-#define SOUND_AKAMA_MINION    11465
-#define SAY_AKAMA_LEAVE       "I'll deal with these mongrels. Strike now, friends! Strike at the betrayer!"
-#define SOUND_AKAMA_LEAVE     11390
+#define SAY_AKAMA_BEWARE "Be wary friends, The Betrayer meditates in the court just beyond."
+#define SOUND_AKAMA_BEWARE 11388
+#define SAY_AKAMA_MINION "Come, my minions. Deal with this traitor as he deserves!"
+#define SOUND_AKAMA_MINION 11465
+#define SAY_AKAMA_LEAVE "I'll deal with these mongrels. Strike now, friends! Strike at the betrayer!"
+#define SOUND_AKAMA_LEAVE 11390
 
 // Self explanatory
-const char*  SAY_KILL1        = "Who shall be next to taste my blades?!";
-#define SOUND_KILL1           11473
-const char*  SAY_KILL2        = "This is too easy!";
-#define SOUND_KILL2           11472
+const char* SAY_KILL1 = "Who shall be next to taste my blades?!";
+#define SOUND_KILL1 11473
+const char* SAY_KILL2 = "This is too easy!";
+#define SOUND_KILL2 11472
 
 // I think I'll fly now and let my subordinates take you on
-#define SAY_TAKEOFF           "I will not be touched by rabble such as you!"
-#define SOUND_TAKEOFF         11479
-#define SAY_SUMMONFLAMES      "Behold the flames of Azzinoth!"
-#define SOUND_SUMMONFLAMES    11480
+#define SAY_TAKEOFF "I will not be touched by rabble such as you!"
+#define SOUND_TAKEOFF 11479
+#define SAY_SUMMONFLAMES "Behold the flames of Azzinoth!"
+#define SOUND_SUMMONFLAMES 11480
 
 // When casting Eye Blast. Demon Fire will be appear on places that he casts this
-#define SAY_EYE_BLAST         "Stare into the eyes of the Betrayer!"
-#define SOUND_EYE_BLAST       11481
+#define SAY_EYE_BLAST "Stare into the eyes of the Betrayer!"
+#define SOUND_EYE_BLAST 11481
 
 // kk, I go big, dark and demon on you.
-#define SAY_MORPH             "Behold the power... of the demon within!"
-#define SOUND_MORPH           11475
+#define SAY_MORPH "Behold the power... of the demon within!"
+#define SOUND_MORPH 11475
 
 // I KILL!
-#define SAY_ENRAGE            "You've wasted too much time mortals, now you shall fall!"
-#define SOUND_ENRAGE          11474
+#define SAY_ENRAGE "You've wasted too much time mortals, now you shall fall!"
+#define SOUND_ENRAGE 11474
 
 enum Spells
 // Normal Form
 {
-    SPELL_SHEAR                     =   37335, // 41032 is bugged, cannot be block/dodge/parry// Reduces Max. Health by 60% for 7 seconds. Can stack 19 times. 1.5f second cast
-    SPELL_FLAME_CRASH               =   40832,
-    SPELL_DRAW_SOUL                 =   40904,
-    SPELL_PARASITIC_SHADOWFIEND     =   41917,
-    SPELL_PARASITIC_SHADOWFIEND2    =   41914,
-    SPELL_SUMMON_PARASITICS         =   41915,
-    SPELL_AGONIZING_FLAMES          =   40932,
-    SPELL_ENRAGE                    =   40683,
+    SPELL_SHEAR = 37335, // 41032 is bugged, cannot be block/dodge/parry// Reduces Max. Health by 60% for 7 seconds. Can stack 19 times. 1.5f second cast
+    SPELL_FLAME_CRASH = 40832,
+    SPELL_DRAW_SOUL = 40904,
+    SPELL_PARASITIC_SHADOWFIEND = 41917,
+    SPELL_PARASITIC_SHADOWFIEND2 = 41914,
+    SPELL_SUMMON_PARASITICS = 41915,
+    SPELL_AGONIZING_FLAMES = 40932,
+    SPELL_ENRAGE = 40683,
 // Flying (Phase 2)
-    SPELL_THROW_GLAIVE              =   39635,
-    SPELL_THROW_GLAIVE2             =   39849, // Animation for the spell above
-    SPELL_GLAIVE_RETURNS            =   39873,
-    SPELL_FIREBALL                  =   40598,
-    SPELL_DARK_BARRAGE              =   40585,
+    SPELL_THROW_GLAIVE = 39635,
+    SPELL_THROW_GLAIVE2 = 39849, // Animation for the spell above
+    SPELL_GLAIVE_RETURNS = 39873,
+    SPELL_FIREBALL = 40598,
+    SPELL_DARK_BARRAGE = 40585,
 // Demon Form
-    SPELL_DEMON_TRANSFORM_1         =   40511,
-    SPELL_DEMON_TRANSFORM_2         =   40398,
-    SPELL_DEMON_TRANSFORM_3         =   40510,
-    SPELL_DEMON_FORM                =   40506,
-    SPELL_SHADOW_BLAST              =   41078,
-    SPELL_FLAME_BURST               =   41126,
-    SPELL_FLAME_BURST_EFFECT        =   41131, // The actual damage. Have each player cast it on itself (workaround)
+    SPELL_DEMON_TRANSFORM_1 = 40511,
+    SPELL_DEMON_TRANSFORM_2 = 40398,
+    SPELL_DEMON_TRANSFORM_3 = 40510,
+    SPELL_DEMON_FORM = 40506,
+    SPELL_SHADOW_BLAST = 41078,
+    SPELL_FLAME_BURST = 41126,
+    SPELL_FLAME_BURST_EFFECT = 41131, // The actual damage. Have each player cast it on itself (workaround)
 // Other Illidan spells
-    SPELL_KNEEL                     =   39656, // Before beginning encounter, this is how he appears (talking to skully).
-    SPELL_SHADOW_PRISON             =   40647,
-    SPELL_DEATH                     =   41220,
-    SPELL_BERSERK                   =   45078,
-    SPELL_DUAL_WIELD                =   42459,
+    SPELL_KNEEL = 39656, // Before beginning encounter, this is how he appears (talking to skully).
+    SPELL_SHADOW_PRISON = 40647,
+    SPELL_DEATH = 41220,
+    SPELL_BERSERK = 45078,
+    SPELL_DUAL_WIELD = 42459,
 // Phase Normal spells
-    SPELL_FLAME_CRASH_EFFECT        =   40836,
-    SPELL_SUMMON_SHADOWDEMON        =   41117,
-    SPELL_SHADOWFIEND_PASSIVE       =   41913,
-    SPELL_SHADOW_DEMON_PASSIVE      =   41079,
-    SPELL_CONSUME_SOUL              =   41080,
-    SPELL_PARALYZE                  =   41083,
-    SPELL_PURPLE_BEAM               =   39123,
+    SPELL_FLAME_CRASH_EFFECT = 40836,
+    SPELL_SUMMON_SHADOWDEMON = 41117,
+    SPELL_SHADOWFIEND_PASSIVE = 41913,
+    SPELL_SHADOW_DEMON_PASSIVE = 41079,
+    SPELL_CONSUME_SOUL = 41080,
+    SPELL_PARALYZE = 41083,
+    SPELL_PURPLE_BEAM = 39123,
 // Phase Flight spells
-    SPELL_AZZINOTH_CHANNEL          =   39857, // Glaives cast it on Flames. Not sure if this is the right spell.
-    SPELL_EYE_BLAST_TRIGGER         =   40017,
-    SPELL_EYE_BLAST                 =   39908,
-    SPELL_BLAZE_EFFECT              =   40610,
-    SPELL_BLAZE_SUMMON              =   40637,
-    SPELL_DEMON_FIRE                =   40029,
-    SPELL_FLAME_BLAST               =   40631,
-    SPELL_CHARGE                    =   41581,
-    SPELL_FLAME_ENRAGE              =   45078,
+    SPELL_AZZINOTH_CHANNEL = 39857, // Glaives cast it on Flames. Not sure if this is the right spell.
+    SPELL_EYE_BLAST_TRIGGER = 40017,
+    SPELL_EYE_BLAST = 39908,
+    SPELL_BLAZE_EFFECT = 40610,
+    SPELL_BLAZE_SUMMON = 40637,
+    SPELL_DEMON_FIRE = 40029,
+    SPELL_FLAME_BLAST = 40631,
+    SPELL_CHARGE = 41581,
+    SPELL_FLAME_ENRAGE = 45078,
 // Akama spells
-    SPELL_AKAMA_DOOR_CHANNEL        =   41268,
-    SPELL_DEATHSWORN_DOOR_CHANNEL   =   41269,
-    SPELL_AKAMA_DOOR_FAIL           =   41271, // Not sure where this is really used...
-    SPELL_HEALING_POTION            =   40535,
-    SPELL_CHAIN_LIGHTNING           =   40536,
+    SPELL_AKAMA_DOOR_CHANNEL = 41268,
+    SPELL_DEATHSWORN_DOOR_CHANNEL = 41269,
+    SPELL_AKAMA_DOOR_FAIL = 41271, // Not sure where this is really used...
+    SPELL_HEALING_POTION = 40535,
+    SPELL_CHAIN_LIGHTNING = 40536,
 // Maiev spells
-    SPELL_CAGE_TRAP_DUMMY           =   40761, // Put this in DB for cage trap GO.
-    SPELL_CAGED                     =   40695,
-    SPELL_CAGE_TRAP_SUMMON          =   40694, // Summons a Cage Trap GO (bugged) on the ground along with a Cage Trap Disturb Trigger mob (working)
-    SPELL_CAGE_TRAP_BEAM            =   40713,
-    SPELL_TELEPORT_VISUAL           =   41232,
-    SPELL_SHADOW_STRIKE             =   40685,
-    SPELL_THROW_DAGGER              =   41152,
-    SPELL_FAN_BLADES                =   39954, // bugged visual
+    SPELL_CAGE_TRAP_DUMMY = 40761, // Put this in DB for cage trap GO.
+    SPELL_CAGED = 40695,
+    SPELL_CAGE_TRAP_SUMMON = 40694, // Summons a Cage Trap GO (bugged) on the ground along with a Cage Trap Disturb Trigger mob (working)
+    SPELL_CAGE_TRAP_BEAM = 40713,
+    SPELL_TELEPORT_VISUAL = 41232,
+    SPELL_SHADOW_STRIKE = 40685,
+    SPELL_THROW_DAGGER = 41152,
+    SPELL_FAN_BLADES = 39954, // bugged visual
 };
 
 // Other defines
-#define CENTER_X            676.740f
-#define CENTER_Y            305.297f
-#define CENTER_Z            353.192f
+#define CENTER_X 676.740f
+#define CENTER_Y 305.297f
+#define CENTER_Z 353.192f
 
-#define FLAME_ENRAGE_DISTANCE   30
-#define FLAME_CHARGE_DISTANCE   50
+#define FLAME_ENRAGE_DISTANCE 30
+#define FLAME_CHARGE_DISTANCE 50
 
-#define EQUIP_ID_MAIN_HAND  32837
-#define EQUIP_ID_OFF_HAND   32838
+#define EQUIP_ID_MAIN_HAND 32837
+#define EQUIP_ID_OFF_HAND 32838
 
 /**** Creature Summon and Recognition IDs ****/
 enum CreatureEntry
 {
-    EMPTY                   =       0,
-    AKAMA                   =   22990,
-    ILLIDAN_STORMRAGE       =   22917,
-    BLADE_OF_AZZINOTH       =   22996,
-    FLAME_OF_AZZINOTH       =   22997,
-    MAIEV_SHADOWSONG        =   23197,
-    SHADOW_DEMON            =   23375,
-    DEMON_FIRE              =   23069,
-    FLAME_CRASH             =   23336,
-    ILLIDAN_DOOR_TRIGGER    =   23412,
-    SPIRIT_OF_OLUM          =   23411,
-    SPIRIT_OF_UDALO         =   23410,
-    ILLIDARI_ELITE          =   23226,
-    PARASITIC_SHADOWFIEND   =   23498,
-    CAGE_TRAP_TRIGGER       =   23292,
+    EMPTY = 0,
+    AKAMA = 22990,
+    ILLIDAN_STORMRAGE = 22917,
+    BLADE_OF_AZZINOTH = 22996,
+    FLAME_OF_AZZINOTH = 22997,
+    MAIEV_SHADOWSONG = 23197,
+    SHADOW_DEMON = 23375,
+    DEMON_FIRE = 23069,
+    FLAME_CRASH = 23336,
+    ILLIDAN_DOOR_TRIGGER = 23412,
+    SPIRIT_OF_OLUM = 23411,
+    SPIRIT_OF_UDALO = 23410,
+    ILLIDARI_ELITE = 23226,
+    PARASITIC_SHADOWFIEND = 23498,
+    CAGE_TRAP_TRIGGER = 23292,
 };
 
 /*** Phase Names ***/
 enum PhaseIllidan
 {
-    PHASE_ILLIDAN_NULL          =   0,
-    PHASE_NORMAL                =   1,
-    PHASE_FLIGHT                =   2,
-    PHASE_NORMAL_2              =   3,
-    PHASE_DEMON                 =   4,
-    PHASE_NORMAL_MAIEV          =   5,
-    PHASE_TALK_SEQUENCE         =   6,
-    PHASE_FLIGHT_SEQUENCE       =   7,
-    PHASE_TRANSFORM_SEQUENCE    =   8,
-    PHASE_ILLIDAN_MAX           =   9,
+    PHASE_ILLIDAN_NULL = 0,
+    PHASE_NORMAL = 1,
+    PHASE_FLIGHT = 2,
+    PHASE_NORMAL_2 = 3,
+    PHASE_DEMON = 4,
+    PHASE_NORMAL_MAIEV = 5,
+    PHASE_TALK_SEQUENCE = 6,
+    PHASE_FLIGHT_SEQUENCE = 7,
+    PHASE_TRANSFORM_SEQUENCE = 8,
+    PHASE_ILLIDAN_MAX = 9,
 }; // Maiev uses the same phase
 
 enum PhaseAkama
 {
-    PHASE_AKAMA_NULL        =   0,
-    PHASE_CHANNEL           =   1,
-    PHASE_WALK              =   2,
-    PHASE_TALK              =   3,
-    PHASE_FIGHT_ILLIDAN     =   4,
-    PHASE_FIGHT_MINIONS     =   5,
-    PHASE_RETURN            =   6,
+    PHASE_AKAMA_NULL = 0,
+    PHASE_CHANNEL = 1,
+    PHASE_WALK = 2,
+    PHASE_TALK = 3,
+    PHASE_FIGHT_ILLIDAN = 4,
+    PHASE_FIGHT_MINIONS = 5,
+    PHASE_RETURN = 6,
 };
 
 enum EventIllidan
 {
-    EVENT_NULL                  =   0,
-    EVENT_BERSERK               =   1,
+    EVENT_NULL = 0,
+    EVENT_BERSERK = 1,
     // normal phase
-    EVENT_TAUNT                 =   2,
-    EVENT_SHEAR                 =   3,
-    EVENT_FLAME_CRASH           =   4,
-    EVENT_PARASITIC_SHADOWFIEND =   5,
-    EVENT_PARASITE_CHECK        =   6,
-    EVENT_DRAW_SOUL             =   7,
-    EVENT_AGONIZING_FLAMES      =   8,
-    EVENT_TRANSFORM_NORMAL      =   9,
-    EVENT_ENRAGE                =   10,
+    EVENT_TAUNT = 2,
+    EVENT_SHEAR = 3,
+    EVENT_FLAME_CRASH = 4,
+    EVENT_PARASITIC_SHADOWFIEND = 5,
+    EVENT_PARASITE_CHECK = 6,
+    EVENT_DRAW_SOUL = 7,
+    EVENT_AGONIZING_FLAMES = 8,
+    EVENT_TRANSFORM_NORMAL = 9,
+    EVENT_ENRAGE = 10,
     // flight phase
-    EVENT_FIREBALL              =   2,
-    EVENT_DARK_BARRAGE          =   3,
-    EVENT_EYE_BLAST             =   4,
-    EVENT_MOVE_POINT            =   5,
+    EVENT_FIREBALL = 2,
+    EVENT_DARK_BARRAGE = 3,
+    EVENT_EYE_BLAST = 4,
+    EVENT_MOVE_POINT = 5,
     // demon phase
-    EVENT_SHADOW_BLAST          =   2,
-    EVENT_FLAME_BURST           =   3,
-    EVENT_SHADOWDEMON           =   4,
-    EVENT_TRANSFORM_DEMON       =   5,
+    EVENT_SHADOW_BLAST = 2,
+    EVENT_FLAME_BURST = 3,
+    EVENT_SHADOWDEMON = 4,
+    EVENT_TRANSFORM_DEMON = 5,
     // sequence phase
-    EVENT_TALK_SEQUENCE         =   2,
-    EVENT_FLIGHT_SEQUENCE       =   2,
-    EVENT_TRANSFORM_SEQUENCE    =   2,
+    EVENT_TALK_SEQUENCE = 2,
+    EVENT_FLIGHT_SEQUENCE = 2,
+    EVENT_TRANSFORM_SEQUENCE = 2,
 };
 
 enum EventMaiev
 {
-    EVENT_MAIEV_NULL            =   0,
-    EVENT_MAIEV_STEALTH         =   1,
-    EVENT_MAIEV_TAUNT           =   2,
-    EVENT_MAIEV_SHADOW_STRIKE   =   3,
-    EVENT_MAIEV_THROW_DAGGER    =   4,
-    EVENT_MAIEV_TRAP            =   4,
+    EVENT_MAIEV_NULL = 0,
+    EVENT_MAIEV_STEALTH = 1,
+    EVENT_MAIEV_TAUNT = 2,
+    EVENT_MAIEV_SHADOW_STRIKE = 3,
+    EVENT_MAIEV_THROW_DAGGER = 4,
+    EVENT_MAIEV_TRAP = 4,
 };
 
 static const EventIllidan MaxTimer[9] =
@@ -254,15 +254,15 @@ static const Yells Conversation[22] =
 
 {
     {11463, "Akama... your duplicity is hardly surprising. I should have slaughtered you and your malformed brethren long ago.", ILLIDAN_STORMRAGE, 8000, 0, true},
-    {0,     "", ILLIDAN_STORMRAGE, 5000, 396, true},
+    {0, "", ILLIDAN_STORMRAGE, 5000, 396, true},
     {11389, "We've come to end your reign, Illidan. My people and all of Outland shall be free!", AKAMA, 7000, 25, true},
-    {0,     "", AKAMA, 5000, 66, true},
+    {0, "", AKAMA, 5000, 66, true},
     {11464, "Boldly said. But I remain unconvinced.", ILLIDAN_STORMRAGE, 8000, 396, true},
     {11380, "The time has come! The moment is at hand!", AKAMA, 3000, 22, true},
-    {0,     "", AKAMA, 2000, 15, true},
+    {0, "", AKAMA, 2000, 15, true},
     {11466, "You are not prepared!", ILLIDAN_STORMRAGE, 3000, 406, true},
-    {0,     "", EMPTY, 1000, 0, true},
-    {0,     "", EMPTY, 0, 0, false}, // 9
+    {0, "", EMPTY, 1000, 0, true},
+    {0, "", EMPTY, 0, 0, false}, // 9
     {11476, "Is this it, mortals? Is this all the fury you can muster?", ILLIDAN_STORMRAGE, 8000, 0, true},
     {11491, "Their fury pales before mine, Illidan. We have some unsettled business between us.", MAIEV_SHADOWSONG, 8000, 5, true},
     {11477, "Maiev... How is this even possible?", ILLIDAN_STORMRAGE, 5000, 1, true},
@@ -275,7 +275,7 @@ static const Yells Conversation[22] =
     {11498, "", MAIEV_SHADOWSONG, 5000, 0, true},
     {11498, "", EMPTY, 1000, 0, true}, // 19 Maiev disappear
     {11387, "The Light will fill these dismal halls once again. I swear it.", AKAMA, 8000, 0, true},
-    {0,     "", EMPTY, 1000, 0, false} // 21
+    {0, "", EMPTY, 1000, 0, false} // 21
 };
 
 static const Yells RandomTaunts[4]=
@@ -335,7 +335,7 @@ static const Locations AkamaWP[13]=
     {738.11f, 365.44f, 353.00f}, // in front of the door-thingy (the other one!)
     {792.18f, 366.62f, 341.42f}, // Down the first flight of stairs
     {796.84f, 304.89f, 319.76f}, // Down the second flight of stairs
-    {782.01f, 304.55f, 319.76f}  // Final location - back at the initial gates. This is where he will fight the minions! (12)
+    {782.01f, 304.55f, 319.76f} // Final location - back at the initial gates. This is where he will fight the minions! (12)
 };
 // 755.762f, 304.0747f, 312.1769f -- This is where Akama should be spawned
 static const Locations SpiritSpawns[2]=
@@ -364,7 +364,7 @@ static const Animation DemonTransformation[10]=
     {0, SPELL_DEMON_TRANSFORM_3, 0, 0, 0, 8, true}
 };
 
-#define EMOTE_SETS_GAZE_ON     "%s sets its gaze on $N!"
+#define EMOTE_SETS_GAZE_ON "%s sets its gaze on $N!"
 #define EMOTE_UNABLE_TO_SUMMON "%s is unable to summon Maiev Shadowsong and enter Phase 4. Resetting Encounter."
 
 class mob_flame_of_azzinoth : public CreatureScript
@@ -379,7 +379,7 @@ public:
 
     struct flame_of_azzinothAI : public ScriptedAI
     {
-        flame_of_azzinothAI(Creature* c) : ScriptedAI(c) {}
+        flame_of_azzinothAI(Creature* creature) : ScriptedAI(creature) {}
 
         uint32 FlameBlastTimer;
         uint32 CheckTimer;
@@ -392,7 +392,10 @@ public:
             GlaiveGUID = 0;
         }
 
-        void EnterCombat(Unit* /*who*/) {DoZoneInCombat();}
+        void EnterCombat(Unit* /*who*/)
+        {
+            DoZoneInCombat();
+        }
 
         void ChargeCheck()
         {
@@ -430,7 +433,10 @@ public:
             }
         }
 
-        void SetGlaiveGUID(uint64 guid){ GlaiveGUID = guid; }
+        void SetGlaiveGUID(uint64 guid)
+        {
+            GlaiveGUID = guid;
+        }
 
         void UpdateAI(const uint32 diff)
         {
@@ -471,9 +477,9 @@ public:
 
     struct boss_illidan_stormrageAI : public ScriptedAI
     {
-        boss_illidan_stormrageAI(Creature* c) : ScriptedAI(c), Summons(me)
+        boss_illidan_stormrageAI(Creature* creature) : ScriptedAI(creature), Summons(me)
         {
-            instance = c->GetInstanceScript();
+            instance = creature->GetInstanceScript();
             DoCast(me, SPELL_DUAL_WIELD, true);
         }
 
@@ -566,7 +572,9 @@ public:
 
         void KilledUnit(Unit* victim)
         {
-            if (victim == me) return;
+            if (victim == me)
+                return;
+
             // TODO: Find better way to handle emote
             switch (urand(0, 1))
             {
@@ -747,7 +755,8 @@ public:
             final.y = 2 * final.y - initial.y;
 
             Creature* Trigger = me->SummonCreature(23069, initial.x, initial.y, initial.z, 0, TEMPSUMMON_TIMED_DESPAWN, 13000);
-            if (!Trigger) return;
+            if (!Trigger)
+                return;
 
             Trigger->SetSpeed(MOVE_WALK, 3);
             Trigger->SetWalk(true);
@@ -856,7 +865,7 @@ public:
                 {
                     if (GlaiveGUID[i])
                     {
-                        Unit* Glaive = Unit::GetUnit((*me), GlaiveGUID[i]);
+                        Unit* Glaive = Unit::GetUnit(*me, GlaiveGUID[i]);
                         if (Glaive)
                         {
                             Glaive->CastSpell(me, SPELL_GLAIVE_RETURNS, false); // Make it look like the Glaive flies back up to us
@@ -1157,7 +1166,7 @@ public:
 
     struct boss_maievAI : public ScriptedAI
     {
-        boss_maievAI(Creature* c) : ScriptedAI(c) {};
+        boss_maievAI(Creature* creature) : ScriptedAI(creature) {};
 
         uint64 IllidanGUID;
 
@@ -1181,7 +1190,11 @@ public:
         void EnterCombat(Unit* /*who*/) {}
         void MoveInLineOfSight(Unit* /*who*/) {}
         void EnterEvadeMode() {}
-        void GetIllidanGUID(uint64 guid) { IllidanGUID = guid; }
+
+        void GetIllidanGUID(uint64 guid)
+        {
+            IllidanGUID = guid;
+        }
 
         void DamageTaken(Unit* done_by, uint32 &damage)
         {
@@ -1372,9 +1385,9 @@ public:
 
     struct npc_akama_illidanAI : public ScriptedAI
     {
-        npc_akama_illidanAI(Creature* c) : ScriptedAI(c)
+        npc_akama_illidanAI(Creature* creature) : ScriptedAI(creature)
         {
-            instance = c->GetInstanceScript();
+            instance = creature->GetInstanceScript();
             JustCreated = true;
         }
         bool JustCreated;
@@ -1479,7 +1492,7 @@ public:
             std::vector<Unit*> eliteList;
             for (std::list<HostileReference*>::const_iterator itr = threatList.begin(); itr != threatList.end(); ++itr)
             {
-                Unit* unit = Unit::GetUnit((*me), (*itr)->getUnitGuid());
+                Unit* unit = Unit::GetUnit(*me, (*itr)->getUnitGuid());
                 if (unit && unit->GetEntry() == ILLIDARI_ELITE)
                     eliteList.push_back(unit);
             }
@@ -1636,9 +1649,9 @@ public:
             Unit* Channel = NULL, *Spirit[2] = { NULL, NULL };
             if (ChannelCount <= 5)
             {
-                Channel = Unit::GetUnit((*me), ChannelGUID);
-                Spirit[0] = Unit::GetUnit((*me), SpiritGUID[0]);
-                Spirit[1] = Unit::GetUnit((*me), SpiritGUID[1]);
+                Channel = Unit::GetUnit(*me, ChannelGUID);
+                Spirit[0] = Unit::GetUnit(*me, SpiritGUID[0]);
+                Spirit[1] = Unit::GetUnit(*me, SpiritGUID[1]);
                 if (!Channel || !Spirit[0] || !Spirit[1])
                     return;
             }
@@ -2019,7 +2032,7 @@ public:
 
     struct cage_trap_triggerAI : public ScriptedAI
     {
-        cage_trap_triggerAI(Creature* c) : ScriptedAI(c) {}
+        cage_trap_triggerAI(Creature* creature) : ScriptedAI(creature) {}
 
         uint64 IllidanGUID;
         uint32 DespawnTimer;
@@ -2059,7 +2072,7 @@ public:
                             who->RemoveAurasDueToSpell(SPELL_ENRAGE); // Dispel his enrage
                         // if (GameObject* CageTrap = instance->instance->GetGameObject(instance->GetData64(CageTrapGUID)))
 
-                        //    CageTrap->SetLootState(GO_JUST_DEACTIVATED);
+                        // CageTrap->SetLootState(GO_JUST_DEACTIVATED);
                     }
                 }
             }
@@ -2076,14 +2089,13 @@ public:
 
                 // if (IllidanGUID && !SummonedBeams)
                 // {
-                //    if (Unit* Illidan = Unit::GetUnit(*me, IllidanGUID)
-                //    {
-                //        // TODO: Find proper spells and properly apply 'caged' Illidan effect
-                //    }
+                // if (Unit* Illidan = Unit::GetUnit(*me, IllidanGUID)
+                // {
+                // // TODO: Find proper spells and properly apply 'caged' Illidan effect
+                // }
                 // }
         }
     };
-
 };
 
 class gameobject_cage_trap : public GameObjectScript
@@ -2102,7 +2114,6 @@ public:
         go->SetGoState(GO_STATE_ACTIVE);
         return true;
     }
-
 };
 
 class mob_shadow_demon : public CreatureScript
@@ -2117,11 +2128,14 @@ public:
 
     struct shadow_demonAI : public ScriptedAI
     {
-        shadow_demonAI(Creature* c) : ScriptedAI(c) {}
+        shadow_demonAI(Creature* creature) : ScriptedAI(creature) {}
 
         uint64 TargetGUID;
 
-        void EnterCombat(Unit* /*who*/) {DoZoneInCombat();}
+        void EnterCombat(Unit* /*who*/)
+        {
+            DoZoneInCombat();
+        }
 
         void Reset()
         {
@@ -2131,15 +2145,17 @@ public:
 
         void JustDied(Unit* /*killer*/)
         {
-            if (Unit* target = Unit::GetUnit((*me), TargetGUID))
+            if (Unit* target = Unit::GetUnit(*me, TargetGUID))
                 target->RemoveAurasDueToSpell(SPELL_PARALYZE);
         }
 
         void UpdateAI(const uint32 /*diff*/)
         {
-            if (!UpdateVictim()) return;
+            if (!UpdateVictim())
+                return;
 
-            if (me->getVictim()->GetTypeId() != TYPEID_PLAYER) return; // Only cast the below on players.
+            if (me->getVictim()->GetTypeId() != TYPEID_PLAYER)
+                return; // Only cast the below on players.
 
             if (!me->getVictim()->HasAura(SPELL_PARALYZE))
             {
@@ -2153,7 +2169,6 @@ public:
                 DoCast(me->getVictim(), SPELL_CONSUME_SOUL);
         }
     };
-
 };
 
 class mob_blade_of_azzinoth : public CreatureScript
@@ -2168,7 +2183,7 @@ public:
 
     struct blade_of_azzinothAI : public NullCreatureAI
     {
-        blade_of_azzinothAI(Creature* c) : NullCreatureAI(c) {}
+        blade_of_azzinothAI(Creature* creature) : NullCreatureAI(creature) {}
 
         void SpellHit(Unit* /*caster*/, const SpellInfo* spell)
         {
@@ -2192,9 +2207,9 @@ public:
     // Shadowfiends interact with Illidan, setting more targets in Illidan's hashmap
     struct mob_parasitic_shadowfiendAI : public ScriptedAI
     {
-        mob_parasitic_shadowfiendAI(Creature* c) : ScriptedAI(c)
+        mob_parasitic_shadowfiendAI(Creature* creature) : ScriptedAI(creature)
         {
-            instance = c->GetInstanceScript();
+            instance = creature->GetInstanceScript();
         }
 
         InstanceScript* instance;
@@ -2212,7 +2227,10 @@ public:
             DoCast(me, SPELL_SHADOWFIEND_PASSIVE, true);
         }
 
-        void EnterCombat(Unit* /*who*/) { DoZoneInCombat(); }
+        void EnterCombat(Unit* /*who*/)
+        {
+            DoZoneInCombat();
+        }
 
         void DoMeleeAttackIfReady()
         {
@@ -2258,7 +2276,6 @@ public:
             DoMeleeAttackIfReady();
         }
     };
-
 };
 
 void AddSC_boss_illidan()
