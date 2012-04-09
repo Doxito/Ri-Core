@@ -343,7 +343,9 @@ class boss_razorscale : public CreatureScript
                     controller->AI()->DoAction(ACTION_REMOVE_HARPOON);
                     controller->AI()->DoAction(ACTION_PLACE_BROKEN_HARPOON);
                 }
-                summons.DoAction(MOLE_MACHINE_TRIGGER, ACTION_DESPAWN_ADDS);
+                
+				EntryCheckPredicate pred(MOLE_MACHINE_TRIGGER);
+                summons.DoAction(ACTION_DESPAWN_ADDS, pred);
                 _Reset();
                 me->SetCanFly(true);
 				me->SetDisableGravity(true);

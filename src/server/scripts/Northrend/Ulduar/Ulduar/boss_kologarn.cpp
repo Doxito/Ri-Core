@@ -289,7 +289,7 @@ class boss_kologarn : public CreatureScript
                     if (playerList.empty())
                         return NULL;
 
-                    return SelectRandomContainerElement(playerList);
+                    return Trinity::Containers::SelectRandomContainerElement(playerList);
                 }
                 else
                     return NULL;

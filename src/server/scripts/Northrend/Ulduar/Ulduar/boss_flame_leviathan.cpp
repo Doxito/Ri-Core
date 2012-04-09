@@ -1733,14 +1733,14 @@ class spell_pursued : public SpellScriptLoader
                 if (!tempList.empty())
                 {
                     // found one or more vehicles, select a random one
-                    _target = SelectRandomContainerElement(tempList);
+                    _target = Trinity::Containers::SelectRandomContainerElement(tempList);
                     unitList.clear();
                     unitList.push_back(_target);
                 }
                 else
                 {
                     // found no vehicles, select a random player or pet
-                    _target = SelectRandomContainerElement(unitList);
+                    _target = Trinity::Containers::SelectRandomContainerElement(unitList);
                     unitList.clear();
                     unitList.push_back(_target);
                 }
