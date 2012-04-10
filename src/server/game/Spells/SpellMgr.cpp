@@ -3278,13 +3278,91 @@ void SpellMgr::LoadDbcDataCorrections()
                 break;
             // ULDUAR SPELLS
             //
+			case 62016: // Thorim - Cargar Orbe
+                spellInfo->MaxAffectedTargets = 1;
+                spellInfo->AttributesEx6 |= SPELL_ATTR6_CAN_TARGET_UNTARGETABLE;
+                break;
+			case 64206: // XT-002 - Consumption
+                spellInfo->EffectRadiusIndex[0] = EFFECT_RADIUS_5_YARDS;
+                break;
             case 62374: // Pursued (Flame Leviathan)
                 spellInfo->EffectRadiusIndex[0] = EFFECT_RADIUS_50000_YARDS;   // 50000yd
+                break;
+			case 63802: // Sara - Link cerebros
+                spellInfo->MaxAffectedTargets = 2;
+                break;
+			case 62488: // Ignis - Activar minion (visual)
+            case 65301: // Sara - Psychosis
+            case 63830: // Sara - Inducir mente
+            case 64465: // Yogg Saron - Shadow Beacon
+            case 63342: // kologarn - Focus rayo
+                spellInfo->MaxAffectedTargets = 1;
                 break;
             case 63342: // Focused Eyebeam Summon Trigger (Kologarn)
                 spellInfo->MaxAffectedTargets = 1;
                 break;
-            case 62716: // Growth of Nature (Freya)
+			case 62017: // Thorim - Relam Shock
+            case 62042: // Thorim - Martillo
+                spellInfo->AttributesEx2 |= SPELL_ATTR2_CAN_TARGET_NOT_IN_LOS;
+                break;
+			case 62039: // Hodir - Frio intenso - Remover al moverse
+                spellInfo->AuraInterruptFlags |= AURA_INTERRUPT_FLAG_MOVE;
+                break;
+			case 62968: // Brightleaf's Esencia
+            case 65761: // Brightleaf's Esencia
+                spellInfo->EffectImplicitTargetA[1] = TARGET_UNIT_CASTER;
+                spellInfo->EffectImplicitTargetB[1] = 0;
+                break;
+			case 62716: // Growth of Nature (Freya)
+            case 65584: // Growth of Nature (Freya)
+            case 64381: // Strength of the Pack (Auriaya)
+            case 62505: // Arpones Stack
+                spellInfo->AttributesEx3 |= SPELL_ATTR3_STACK_FOR_DIFF_CASTERS;
+                break;
+			case 62899: // Tajoescama - Duración de las máquinas
+            case 64600: // Freya - Duración de las bombas
+                spellInfo->DurationIndex = 38; // 11 seconds
+                break;
+			case 62056: // Kologarn - Stone gryp: SPELL_ATTR1_IGNORE_IMMUNITY (NYI?)
+            case 63985:
+            case 64224:
+            case 64225:
+            case 62287: // Tar
+                spellInfo->Attributes |= SPELL_ATTR0_UNAFFECTED_BY_INVULNERABILITY;
+                break;
+			case 63716: // Kologarn - grito de piedra
+            case 64005:
+                spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_CASTER;
+                break;
+			case 62711: // Ignis - Meter caldera
+                spellInfo->Attributes |= SPELL_ATTR0_UNAFFECTED_BY_INVULNERABILITY;
+                spellInfo->AttributesEx |= SPELL_ATTR1_CANT_BE_REFLECTED;
+                break;
+			case 62470: // Trueno ensordecedor - Evade si speed > 0
+                spellInfo->speed = 0;
+                break;
+            case 62311: // Algalon - Machaque cósmico - Máximo 13 yardas
+            case 64596: // Algalon - Machaque cósmico - Máximo 13 yardas
+                spellInfo->rangeIndex = 13;
+                break;  
+			case 61915: // Remolino de relámpagos - interrupción (Brundir)
+            case 63483: // Remolino de relámpagos - interrupción (Brundir)
+                spellInfo->InterruptFlags |= SPELL_INTERRUPT_FLAG_INTERRUPT;
+                break;
+			case 64444: // Mimiron - Magnetic Core - Rango de efecto 6 yardas
+                spellInfo->rangeIndex = 6; // 100yd la habilidad
+                break;
+			case 63414: // Mimiron - Tromba de laseres
+            case 63274: // Mimiron - Tromba de laseres 2
+                // Retirado el flag de canalizado pues parece dar problemas al castearla
+                spellInfo->AttributesEx &= ~SPELL_ATTR1_CHANNELED_1;
+                break;
+			case 63241: // Freya Ent 10 - Tranquilidad - Casteo sólo a aliados
+            case 63554: // Freya Ent 25 - Tranquilidad - Casteo sólo a aliados
+                spellInfo->EffectImplicitTargetA[0] = TARGET_SRC_CASTER;
+                spellInfo->EffectImplicitTargetB[0] = TARGET_UNIT_SRC_AREA_ALLY;
+                break;
+			case 62716: // Growth of Nature (Freya)
             case 65584: // Growth of Nature (Freya)
             case 64381: // Strength of the Pack (Auriaya)
                 spellInfo->AttributesEx3 |= SPELL_ATTR3_STACK_FOR_DIFF_CASTERS;
@@ -3321,6 +3399,19 @@ void SpellMgr::LoadDbcDataCorrections()
                 break;
             // ENDOF ULDUAR SPELLS
             //
+// TRIAL OF THE CHAMPION SPELLS
+            case 67705: // Raise Arelas Birhgtstar
+            case 67715: // Raise Jaeren Sunworn
+                spellInfo->AttributesEx2 |= SPELL_ATTR2_CAN_TARGET_DEAD;
+                break;
+            case 67782: // Profanación
+                spellInfo->rangeIndex = EFFECT_RADIUS_2_YARDS;
+                spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_SRC_AREA_ENEMY;
+                break;
+            case 66545:
+                spellInfo->EffectImplicitTargetB[0] = TARGET_UNIT_CASTER;
+                break;
+            // END OF TRIAL OF THE CHAMPION SPELLS
             // TRIAL OF THE CRUSADER SPELLS
             //
             case 66258: // Infernal Eruption (10N)
