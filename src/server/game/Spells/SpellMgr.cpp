@@ -3296,9 +3296,7 @@ void SpellMgr::LoadDbcDataCorrections()
             case 63830: // Sara - Inducir mente
             case 64465: // Yogg Saron - Shadow Beacon
             case 63342: // kologarn - Focus rayo
-                spellInfo->MaxAffectedTargets = 1;
-                break;
-            case 63342: // Focused Eyebeam Summon Trigger (Kologarn)
+			case 64599: // Algalon - Tromba ARcana
                 spellInfo->MaxAffectedTargets = 1;
                 break;
 			case 62017: // Thorim - Relam Shock
@@ -3312,12 +3310,6 @@ void SpellMgr::LoadDbcDataCorrections()
             case 65761: // Brightleaf's Esencia
                 spellInfo->EffectImplicitTargetA[1] = TARGET_UNIT_CASTER;
                 spellInfo->EffectImplicitTargetB[1] = 0;
-                break;
-			case 62716: // Growth of Nature (Freya)
-            case 65584: // Growth of Nature (Freya)
-            case 64381: // Strength of the Pack (Auriaya)
-            case 62505: // Arpones Stack
-                spellInfo->AttributesEx3 |= SPELL_ATTR3_STACK_FOR_DIFF_CASTERS;
                 break;
 			case 62899: // Tajoescama - Duración de las máquinas
             case 64600: // Freya - Duración de las bombas
@@ -3365,6 +3357,7 @@ void SpellMgr::LoadDbcDataCorrections()
 			case 62716: // Growth of Nature (Freya)
             case 65584: // Growth of Nature (Freya)
             case 64381: // Strength of the Pack (Auriaya)
+			case 62505: // Arpones Stack
                 spellInfo->AttributesEx3 |= SPELL_ATTR3_STACK_FOR_DIFF_CASTERS;
                 break;
             case 63018: // Searing Light (XT-002)
@@ -3399,7 +3392,7 @@ void SpellMgr::LoadDbcDataCorrections()
                 break;
             // ENDOF ULDUAR SPELLS
             //
-// TRIAL OF THE CHAMPION SPELLS
+            // TRIAL OF THE CHAMPION SPELLS
             case 67705: // Raise Arelas Birhgtstar
             case 67715: // Raise Jaeren Sunworn
                 spellInfo->AttributesEx2 |= SPELL_ATTR2_CAN_TARGET_DEAD;
