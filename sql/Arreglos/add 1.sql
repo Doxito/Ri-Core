@@ -20,7 +20,7 @@ insert into `creature_template` (`entry`, `difficulty_entry_1`, `difficulty_entr
 UPDATE creature_template SET unit_flags = '8', vehicleid = '0' WHERE entry = "30174";
 
 /* Tabla creature */
-DELETE FROM creature WHERE id = '30174'
+DELETE FROM creature WHERE id = '30174';
 insert into `creature` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`) values('214434','30174','571','1','1','0','0','6946.58','-1672.34','810.82','2.95513','60','0','0','12600','0','0','0','0','0');
 insert into `creature` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`) values('214433','30174','571','1','1','0','0','6953.77','-1660.12','810.82','1.90977','60','0','0','12600','0','0','0','0','0');
 insert into `creature` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`) values('214432','30174','571','1','1','0','0','6964.68','-1666.78','810.82','0.965718','60','0','0','12600','0','0','0','0','0');
