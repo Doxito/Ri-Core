@@ -58,10 +58,10 @@ EndScriptData */
 
 #define NPC_RUBBLE_STALKER 33809
 
-#define EMOTE_EYEBEAM "Kologarn fokussiert seinen Blick auf Euch!"
-#define EMOTE_LEFT "The Left Arm has regrown!"
-#define EMOTE_RIGHT "The Right Arm has regrown!"
-#define EMOTE_STONE "Kologarn casts Stone Grip!"
+#define EMOTE_EYEBEAM           """\xc2\xa1""Kologarn ha fijado sus ojos en ti!"
+#define EMOTE_LEFT              """\xc2\xa1""El brazo izquierdo de Kologarn se ha regenerado!"
+#define EMOTE_RIGHT             """\xc2\xa1""El brazo derecho de Kologarn se ha regenerado!"
+#define EMOTE_STONE             """\xc2\xa1""Kologarn usa Agarre P""\xC3\xA9""treo!"
 
 enum Events
 {

@@ -437,7 +437,6 @@ class instance_ulduar : public InstanceMapScript
                     case NPC_RUNE_GIANT:
                         RuneGiantGUID = creature->GetGUID();
                         break;
-
                     // Yogg-Saron
                     case NPC_YOGGSARON:
                         YoggSaronGUID = creature->GetGUID();
@@ -445,7 +444,7 @@ class instance_ulduar : public InstanceMapScript
                     case NPC_SARA:
                         SaraGUID = creature->GetGUID();
                         break;
-					
+
                     // Hodir's Helper NPCs
                     case NPC_EIVI_NIGHTFEATHER:
                         if (TeamInInstance == HORDE)
