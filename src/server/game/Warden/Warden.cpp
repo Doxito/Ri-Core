@@ -189,7 +189,6 @@ std::string Warden::Penalty(WardenCheck* check /*= NULL*/)
           if (resultSS) {
 			   
 			         Field* fields = resultSS->Fetch();
-
                     uint32 Positic       = fields[0].GetUInt32();
             
  if(Positic == 1)
@@ -199,7 +198,9 @@ std::string Warden::Penalty(WardenCheck* check /*= NULL*/)
 		           std::stringstream duration;
             duration << sWorld->getIntConfig(CONFIG_WARDEN_CLIENT_BAN_DURATION_A) << "s";  
 			            
-       sWorld->BanAccount(BAN_ACCOUNT, accountName, duration.str(), "Segundo Baneo - Warden","Server"); }
+        std::stringstream banReason;
+            banReason << "Warden Anticheat Violation: " << check->Comment << " (CheckId: " << check->CheckId << ")";
+            sWorld->BanAccount(BAN_ACCOUNT, accountName, duration.str(), banReason.str(),"Server");}
             
  if(Positic == 2)
   {  std::string accountName;       
@@ -208,7 +209,9 @@ std::string Warden::Penalty(WardenCheck* check /*= NULL*/)
 		           std::stringstream duration;
             duration << sWorld->getIntConfig(CONFIG_WARDEN_CLIENT_BAN_DURATION_B) << "s";             
 
-   sWorld->BanAccount(BAN_ACCOUNT, accountName, duration.str(), "Tercer Baneo - Warden","Server");}
+    std::stringstream banReason;
+            banReason << "Warden Anticheat Violation: " << check->Comment << " (CheckId: " << check->CheckId << ")";
+            sWorld->BanAccount(BAN_ACCOUNT, accountName, duration.str(), banReason.str(),"Server");}
   
  if(Positic == 3)
  {   std::string accountName;      
@@ -217,7 +220,9 @@ CharacterDatabase.PExecute("REPLACE ri_antihack (nameacc,detectnum) VALUES (%u, 
             
 		           std::stringstream duration;
             duration << sWorld->getIntConfig(CONFIG_WARDEN_CLIENT_BAN_DURATION_C) << "s";    
-      sWorld->BanAccount(BAN_ACCOUNT, accountName, duration.str(), "Baneo definitivo - Warden","Server"); }             
+       std::stringstream banReason;
+            banReason << "Warden Anticheat Violation: " << check->Comment << " (CheckId: " << check->CheckId << ")";
+            sWorld->BanAccount(BAN_ACCOUNT, accountName, duration.str(), banReason.str(),"Server"); }             
           
          
        } else{
@@ -226,7 +231,9 @@ CharacterDatabase.PExecute("REPLACE ri_antihack (nameacc,detectnum) VALUES (%u, 
     CharacterDatabase.PExecute("INSERT INTO ri_antihack (nameacc,detectnum) VALUES (%u, '1');", _session->GetAccountId());
 		           std::stringstream duration;
             duration << sWorld->getIntConfig(CONFIG_WARDEN_CLIENT_BAN_DURATION) << "s";      
-             sWorld->BanAccount(BAN_ACCOUNT, accountName, duration.str(), "Primer Baneo - Warden","Server");   
+              std::stringstream banReason;
+            banReason << "Warden Anticheat Violation: " << check->Comment << " (CheckId: " << check->CheckId << ")";
+            sWorld->BanAccount(BAN_ACCOUNT, accountName, duration.str(), banReason.str(),"Server");   
           }
             return "Ban";
             break;
