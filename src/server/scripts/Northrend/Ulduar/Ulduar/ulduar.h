@@ -19,7 +19,11 @@
 #define DEF_ULDUAR_H
 
 #include "ObjectMgr.h"
+#include "Creature.h"
+#include "GameObject.h"
 #define UlduarScriptName "instance_ulduar"
+
+extern Position const AlgalonLandPos;
 
 enum UlduarBosses
 {
@@ -81,46 +85,59 @@ enum UlduarNPCs
     NPC_BRANN_ALGALON            = 34064,
 
     // Mimiron
-    NPC_LEVIATHAN_MKII           = 33432,
-    NPC_VX_001                   = 33651,
-    NPC_AERIAL_COMMAND_UNIT      = 33670,
+    NPC_LEVIATHAN_MKII                      = 33432,
+    NPC_VX_001                              = 33651,
+    NPC_AERIAL_COMMAND_UNIT                 = 33670,
 
     // Thorim
     NPC_RUNIC_COLOSSUS          = 32872,
     NPC_RUNE_GIANT              = 32873,	
 
     // Freya's Keepers
-    NPC_IRONBRANCH               = 32913,
-    NPC_BRIGHTLEAF               = 32915,
-    NPC_STONEBARK                = 32914,
+    NPC_IRONBRANCH                          = 32913,
+    NPC_BRIGHTLEAF                          = 32915,
+    NPC_STONEBARK                           = 32914,
 
     // Hodir's Helper NPCs
-    NPC_TOR_GREYCLOUD            = 32941,
-    NPC_KAR_GREYCLOUD            = 33333,
-    NPC_EIVI_NIGHTFEATHER        = 33325,
-    NPC_ELLIE_NIGHTFEATHER       = 32901,
-    NPC_SPIRITWALKER_TARA        = 33332,
-    NPC_SPIRITWALKER_YONA        = 32950,
-    NPC_ELEMENTALIST_MAHFUUN     = 33328,
-    NPC_ELEMENTALIST_AVUUN       = 32900,
-    NPC_AMIRA_BLAZEWEAVER        = 33331,
-    NPC_VEESHA_BLAZEWEAVER       = 32946,
-    NPC_MISSY_FLAMECUFFS         = 32893,
-    NPC_SISSY_FLAMECUFFS         = 33327,
-    NPC_BATTLE_PRIEST_ELIZA      = 32948,
-    NPC_BATTLE_PRIEST_GINA       = 33330,
-    NPC_FIELD_MEDIC_PENNY        = 32897,
-    NPC_FIELD_MEDIC_JESSI        = 33326,
+    NPC_TOR_GREYCLOUD                       = 32941,
+    NPC_KAR_GREYCLOUD                       = 33333,
+    NPC_EIVI_NIGHTFEATHER                   = 33325,
+    NPC_ELLIE_NIGHTFEATHER                  = 32901,
+    NPC_SPIRITWALKER_TARA                   = 33332,
+    NPC_SPIRITWALKER_YONA                   = 32950,
+    NPC_ELEMENTALIST_MAHFUUN                = 33328,
+    NPC_ELEMENTALIST_AVUUN                  = 32900,
+    NPC_AMIRA_BLAZEWEAVER                   = 33331,
+    NPC_VEESHA_BLAZEWEAVER                  = 32946,
+    NPC_MISSY_FLAMECUFFS                    = 32893,
+    NPC_SISSY_FLAMECUFFS                    = 33327,
+    NPC_BATTLE_PRIEST_ELIZA                 = 32948,
+    NPC_BATTLE_PRIEST_GINA                  = 33330,
+    NPC_FIELD_MEDIC_PENNY                   = 32897,
+    NPC_FIELD_MEDIC_JESSI                   = 33326,
 
     // Freya's trash NPCs
-    NPC_CORRUPTED_SERVITOR       = 33354,
-    NPC_MISGUIDED_NYMPH          = 33355,
-    NPC_GUARDIAN_LASHER          = 33430,
-    NPC_FOREST_SWARMER           = 33431,
-    NPC_MANGROVE_ENT             = 33525,
-    NPC_IRONROOT_LASHER          = 33526,
-    NPC_NATURES_BLADE            = 33527,
-    NPC_GUARDIAN_OF_LIFE         = 33528,
+    NPC_CORRUPTED_SERVITOR                  = 33354,
+    NPC_MISGUIDED_NYMPH                     = 33355,
+    NPC_GUARDIAN_LASHER                     = 33430,
+    NPC_FOREST_SWARMER                      = 33431,
+    NPC_MANGROVE_ENT                        = 33525,
+    NPC_IRONROOT_LASHER                     = 33526,
+    NPC_NATURES_BLADE                       = 33527,
+    NPC_GUARDIAN_OF_LIFE                    = 33528,
+
+    // Algalon the Observer
+    NPC_BRANN_BRONZBEARD_ALG                = 34064,
+    NPC_AZEROTH                             = 34246,
+    NPC_LIVING_CONSTELLATION                = 33052,
+    NPC_ALGALON_STALKER                     = 33086,
+    NPC_COLLAPSING_STAR                     = 32955,
+    NPC_BLACK_HOLE                          = 32953,
+    NPC_WORM_HOLE                           = 34099,
+    NPC_ALGALON_VOID_ZONE_VISUAL_STALKER    = 34100,
+    NPC_ALGALON_STALKER_ASTEROID_TARGET_01  = 33104,
+    NPC_ALGALON_STALKER_ASTEROID_TARGET_02  = 33105,
+    NPC_UNLEASHED_DARK_MATTER               = 34097,
 };
 
 enum UlduarGameObjects
@@ -163,16 +180,30 @@ enum UlduarGameObjects
     GO_YOGGBRAIN_DOOR_1                   = 194635,
     GO_YOGGBRAIN_DOOR_2                   = 194636,
     GO_YOGGBRAIN_DOOR_3                   = 194637,
-    GO_ALGALON_DOOR                       = 194767,
+  /*  GO_ALGALON_DOOR                       = 194767,
     GO_ALGALON_FLOOR_COM                  = 194715,
     GO_ALGALON_FLOOR_OOC                  = 194716,
     GO_ALGALON_GLOBE                      = 194148,
     GO_ALGALON_BRIDGE                     = 194253,
     GO_ALGALON_INVISDOOR                  = 194910,
     GO_ALGALON_CONSOLE                    = 194628,
-    GO_GIFT_OF_THE_OBSERVER               = 194821,
+    GO_GIFT_OF_THE_OBSERVER               = 194821,*/
     GO_IRON_COUNCIL_ENTRANCE              = 194554,
     GO_XT002_DOOR                         = 194631,
+
+    // Algalon the Observer
+    GO_CELESTIAL_PLANETARIUM_ACCESS_10      = 194628,
+    GO_CELESTIAL_PLANETARIUM_ACCESS_25      = 194752,
+    GO_DOODAD_UL_SIGILDOOR_01               = 194767,
+    GO_DOODAD_UL_SIGILDOOR_02               = 194911,
+    GO_DOODAD_UL_SIGILDOOR_03               = 194910,
+    GO_DOODAD_UL_UNIVERSEFLOOR_01           = 194715,
+    GO_DOODAD_UL_UNIVERSEFLOOR_02           = 194716,
+    GO_DOODAD_UL_UNIVERSEGLOBE01            = 194148,
+    GO_DOODAD_UL_ULDUAR_TRAPDOOR_03         = 194253,
+    GO_GIFT_OF_THE_OBSERVER_10              = 194821,
+    GO_GIFT_OF_THE_OBSERVER_25              = 194822,
+
 };
 
 enum UlduarSharedActions
@@ -193,6 +224,7 @@ enum UlduarAchievementCriteriaIds
 {
     CRITERIA_CON_SPEED_ATORY    = 21597,
     CRITERIA_DISARMED           = 21687,
+    CRITERIA_HERALD_OF_TITANS   = 10678,
 };
 
 enum UlduarData
@@ -227,10 +259,21 @@ enum UlduarData
     // Hodir
     DATA_HODIR_RARE_CACHE,
 	
-    //Algalon
+	 // Algalon the Observer
+    DATA_ALGALON_SUMMON_STATE,
+    DATA_SIGILDOOR_01,
+    DATA_SIGILDOOR_02,
+    DATA_SIGILDOOR_03,
+    DATA_UNIVERSE_FLOOR_01,
+    DATA_UNIVERSE_FLOOR_02,
+    DATA_UNIVERSE_GLOBE,
+    DATA_ALGALON_TRAPDOOR,
+    DATA_BRANN_BRONZEBEARD_ALG,
+
+   /* //Algalon
     DATA_ALGALON_INTRO,
     DATA_ALGALON_TIMER,
-    DATA_BRANN_ALGALON,
+    DATA_BRANN_ALGALON,*/
 	
     //Yogg Saron
     TYPE_SARA,
@@ -242,10 +285,17 @@ enum UlduarData
     DATA_PORTAL_PHASE = 1,
 };
 
-enum UlduarWorldStates
+/*enum UlduarWorldStates
 {
     WORLDSTATE_SHOW_TIMER                 = 4132,
     WORLDSTATE_ALGALON_TIMER              = 4131
+};*/
+
+enum UlduarWorldStates
+{
+    WORLD_STATE_ALGALON_DESPAWN_TIMER   = 4131,
+    WORLD_STATE_ALGALON_TIMER_ENABLED   = 4132,
+
 };
 
 enum UlduarAchievements
@@ -332,12 +382,21 @@ enum UlduarBossDeadFlags
     DEAD_MIMIRON                        = 0x0400,
     DEAD_VEZAX                          = 0x0800,
     DEAD_YOGGSARON                      = 0x1000
-};
+
 
 enum UlduarAchievementData
 {
     // FL Achievement boolean
     DATA_UNBROKEN = 29052906, // 2905, 2906 are achievement IDs,
+    MAX_HERALD_ARMOR_ITEMLEVEL  = 226,
+    MAX_HERALD_WEAPON_ITEMLEVEL = 232,
+};
+
+enum UlduarEvents
+{
+    EVENT_DESPAWN_ALGALON       = 1,
+    EVENT_UPDATE_ALGALON_TIMER  = 2,
+    ACTION_INIT_ALGALON         = 6,
 };
 
 template<class AI>
@@ -347,6 +406,17 @@ CreatureAI* GetUlduarAI(Creature* creature)
         if (instance->GetInstanceScript())
             if (instance->GetScriptId() == sObjectMgr->GetScriptId(UlduarScriptName))
                 return new AI(creature);
+
+    return NULL;
+}
+
+template<class AI>
+GameObjectAI* GetUlduarAI(GameObject* go)
+{
+    if (InstanceMap* instance = go->GetMap()->ToInstanceMap())
+        if (instance->GetInstanceScript())
+            if (instance->GetScriptId() == sObjectMgr->GetScriptId(UlduarScriptName))
+                return new AI(go);
 
     return NULL;
 }

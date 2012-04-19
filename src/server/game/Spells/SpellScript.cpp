@@ -408,7 +408,7 @@ GameObject* SpellScript::GetHitGObj()
     return m_spell->gameObjTarget;
 }
 
-WorldLocation const* SpellScript::GetHitDest()
+WorldLocation* SpellScript::GetHitDest()
 {
     if (!IsInEffectHook())
     {
