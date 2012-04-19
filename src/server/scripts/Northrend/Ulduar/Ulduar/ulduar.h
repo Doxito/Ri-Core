@@ -22,6 +22,7 @@
 #include "Creature.h"
 #include "GameObject.h"
 
+
 #define UlduarScriptName "instance_ulduar"
 
 extern Position const AlgalonLandPos;
