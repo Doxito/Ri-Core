@@ -1104,6 +1104,71 @@ public:
         return new spell_q12987_read_pronouncement_AuraScript();
     }
 };
+/*
+RI: Soporte para la quest: "¿Retroceso? ¿Qué Retroceso?"
+ · Cuatro posibilidades de impacto.
+   a) Fallar el disparo.
+   b) Golpear en la cara al gnomo.
+   c) Dispararte a ti mismo en el ojo.
+   d) Acertar el blanco y ganar el KillCredit.
+·Dox
+*/
+class spell_q12589_shoot_RJR: public SpellScriptLoader
+{
+    public:
+        spell_q12589_shoot_RJR() : SpellScriptLoader("spell_q12589_shoot_RJR") { }
+
+        class spell_q12589_shoot_RJR_SpellScript : public SpellScript
+        {
+            PrepareSpellScript(spell_q12589_shoot_RJR_SpellScript)
+
+            bool Validate(SpellInfo const* /*SpellEntry*/)
+            {
+                if (!sSpellMgr->GetSpellInfo(65577) || !sSpellMgr->GetSpellInfo(61866))
+                    return false;
+                return true;
+            }
+
+            void HandleDummy(SpellEffIndex /* effIndex */)
+            {
+                Unit* caster = GetCaster();
+                 
+
+                int32 r = irand(0, 100);
+                if (r < 30)             //Fallo - Le da al Gnomo
+				{
+					if (Creature* gnomo = caster->FindNearestCreature(28054, 40.0f))
+                    caster->CastSpell(gnomo, 61866, true);
+				}
+                else if (r < 70)                     // Fallo
+				{
+					if (Creature* gnomo = caster->FindNearestCreature(28054, 40.0f))
+                    caster->CastSpell(gnomo, 61862, true);
+				}
+                else if (r < 90)                     // Te das en la cara!
+				  caster->CastSpell(caster, 65578, true);
+				else if (r < 101)                     // Por fin!
+				{
+				   if (Creature* manzana = caster->FindNearestCreature(28053, 40.0f))
+				  caster->CastSpell(manzana, 61866, true);
+				  if(caster->GetTypeId() == TYPEID_PLAYER)
+				   ((Player*)caster)->KilledMonsterCredit(28053, 0);
+				}
+				
+
+            }
+
+            void Register()
+            {
+                OnEffectHitTarget += SpellEffectFn(spell_q12589_shoot_RJR_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+            }
+        };
+
+        SpellScript* GetSpellScript() const
+        {
+            return new spell_q12589_shoot_RJR_SpellScript();
+        }
+};
 
 void AddSC_quest_spell_scripts()
 {
@@ -1131,4 +1196,5 @@ void AddSC_quest_spell_scripts()
     new spell_q14112_14145_chum_the_water();
     new spell_q9452_cast_net();
     new spell_q12987_read_pronouncement();
+	new spell_q12589_shoot_RJR();
 }
