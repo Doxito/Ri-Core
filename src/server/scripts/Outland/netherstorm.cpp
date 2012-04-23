@@ -1068,6 +1068,739 @@ class go_captain_tyralius_prison : public GameObjectScript
         }
 };
 
+/*######                                 #######
+## Dimensius el Devoratodo    ###    RI-Core  ##
+######                                 #######*/ 
+/*
+- Recreado el evento con Dimensius.
+- Dimensius sólo utilizará Shadow Vault cuando su objetivo sea un jugador.
+- Modificado a 4 la cantidad de esbirros que invoca.
+
+· Dox
+*/
+
+#define GOSSIP_TEXT1  "Estoy listo para ir a por Dimensius."
+
+class q_Defensores_Dimens : public CreatureScript
+{
+public:
+    q_Defensores_Dimens() : CreatureScript("q_Defensores_Dimens") { }
+
+
+CreatureAI* GetAI(Creature* creature) const
+    {
+        return new q_Defensores_DimensAI (creature);
+    }
+
+ struct q_Defensores_DimensAI : public ScriptedAI
+    {
+        q_Defensores_DimensAI(Creature* creature) : ScriptedAI(creature)
+        {
+	
+		}
+
+        uint32 TorturaMental;
+		uint32 ChoqueSagr;
+		uint32 Guja;
+		bool NoMove;
+
+		void Reset()
+		{
+			NoMove = false;
+			TorturaMental = urand(3000,5000);
+			ChoqueSagr = 3000;
+			Guja = 3000;
+			
+			 
+		}
+
+		void UpdateAI(const uint32 diff)
+		{
+
+if (!UpdateVictim())
+return;
+
+
+          switch (me->GetEntry())
+          {
+            case 20984:
+			 if (TorturaMental <= diff)
+		      {
+				  if(me->getVictim())
+                    me->CastSpell(me->getVictim(),23953,true);
+			   
+				  TorturaMental = urand(16000,19000);
+               }else TorturaMental -= diff;
+			  break;
+
+			case 21783:
+             if (ChoqueSagr <= diff)
+		      {
+				  if(me->getVictim())
+                    DoCast(me->getVictim(),34232);
+			   
+				  ChoqueSagr = urand(2700,3000);
+               }else ChoqueSagr -= diff;
+			 break;
+
+			case 21805:
+		     if (Guja <= diff)
+		      {
+				  if(me->getVictim())
+                    me->CastSpell(me->getVictim(),38560,true);
+			   
+				  Guja = urand(3000,5000);
+               }else Guja -= diff;
+			 break;
+
+   }}
+ };
+};
+
+
+
+// Dimensius
+
+#define SPELL_SHADOW_SPIRAL 37500
+#define SPELL_SHADOW_VAULT 37412
+#define SPELL_DIMENSIUS_FEEDING 37450
+
+class q_Dimensius : public CreatureScript
+{
+public:
+    q_Dimensius() : CreatureScript("q_Dimensius") { }
+
+
+CreatureAI* GetAI(Creature* creature) const
+    {
+        return new q_DimensiusAI (creature);
+    }
+
+ struct q_DimensiusAI : public ScriptedAI
+    {
+        q_DimensiusAI(Creature* creature) : ScriptedAI(creature)
+        {
+		}
+
+		 bool ComienzoEv;
+		 uint32 ShadowSpiral;
+		 uint32 ShadowVault;
+		 uint32 SummonTiempo;
+		 bool BerkMode;
+		 uint32 TimerCount;
+		 uint32 TimerPhase;
+		  
+		void Reset()
+		  {
+	    me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISABLE_MOVE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_SELECTABLE);
+		ComienzoEv = false;
+		ShadowSpiral = urand(8000,12000);
+		ShadowVault = 10000;
+		SummonTiempo = 30000;
+		SetCombatMovement(false);
+		BerkMode = false;
+	    }
+
+void DespawnDefs(uint32 entry, uint32 segs)
+		{
+            std::list<Creature*> defensores;
+            me->GetCreatureListWithEntryInGrid(defensores,entry,40.0f);
+            
+			if(!defensores.empty())
+            {
+                for(std::list<Creature*>::iterator itr = defensores.begin(); itr != defensores.end(); itr++)
+                {
+				 if (Creature* df = *itr)
+				 {
+				  df->DespawnOrUnsummon(segs);
+                
+                        
+
+				 }}}}
+
+
+  void JustDied(Unit* /*killer*/)
+            {
+             
+DespawnDefs(20985,15000);
+DespawnDefs(20984,10000);
+DespawnDefs(21805,10000);
+DespawnDefs(21783,10000);
+
+            }
+
+
+void AgroDefensores(uint32 entry, uint32 mudf)
+		{
+            std::list<Creature*> defensores;
+            me->GetCreatureListWithEntryInGrid(defensores,entry,40.0f);
+            
+			if(!defensores.empty())
+            {
+                for(std::list<Creature*>::iterator itr = defensores.begin(); itr != defensores.end(); itr++)
+                {
+				 if (Creature* df = *itr)
+				 {
+				   
+                    switch (df->GetEntry())
+                    {
+                        case 20985:
+                            if (Creature* Creat = me->SummonCreature(20985, df->GetPositionX(), df->GetPositionY(), df->GetPositionZ(), 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 0))
+                           {
+							   df->DespawnOrUnsummon();
+							   Creat->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+							   Creat->CombatStart(me);
+                               Creat->AddThreat(me, 1000.0f);
+							   Creat->DespawnOrUnsummon(300000);
+							 //  Creat->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISABLE_MOVE);
+							   me->AddThreat(Creat, 100.0f);
+							}
+                            break;
+                        case 20984:
+                        if (Creature* Creat = me->SummonCreature(20984, df->GetPositionX(), df->GetPositionY(), df->GetPositionZ(), 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 0))
+                           {
+							   df->DespawnOrUnsummon();
+							   Creat->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISABLE_MOVE);
+							   Creat->CombatStart(me);
+                               Creat->AddThreat(me, 1000.0f);
+							   Creat->DespawnOrUnsummon(300000);
+							   
+							   me->AddThreat(Creat, 1000.0f);
+							}
+                            break;
+                        case 21805:
+                        if (Creature* Creat = me->SummonCreature(21805, df->GetPositionX(), df->GetPositionY(), df->GetPositionZ(), 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 0))
+                           {
+							   df->DespawnOrUnsummon();
+							   Creat->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISABLE_MOVE);
+							   Creat->CombatStart(me);
+                               Creat->AddThreat(me, 1000.0f);
+							   Creat->DespawnOrUnsummon(300000);
+							   
+							   me->AddThreat(Creat, 1000.0f);
+							}
+                            break;
+                        case 21783:
+                        if (Creature* Creat = me->SummonCreature(21783, df->GetPositionX(), df->GetPositionY(), df->GetPositionZ(), 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 0))
+                           {
+							   df->DespawnOrUnsummon();
+							   Creat->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISABLE_MOVE);
+							   Creat->CombatStart(me);
+                               Creat->AddThreat(me, 1000.0f);
+							   Creat->DespawnOrUnsummon(300000);
+							
+							   me->AddThreat(Creat, 1000.0f);
+							}
+                            break;
+                    }
+
+
+                        
+
+				 }}}}
+
+
+void BattleIN()
+{
+AgroDefensores(20985,1);
+AgroDefensores(20984,1);
+AgroDefensores(21805,2);
+AgroDefensores(21783,2);
+ComienzoEv = true;
+me->DespawnOrUnsummon(300000);
+
+}
+
+		void UpdateAI(const uint32 diff)
+		{
+
+			if(ComienzoEv)
+			{
+          
+				if (me->isInCombat())
+				{
+
+	if(!me->HasAura(SPELL_DIMENSIUS_FEEDING))
+	{
+          if (ShadowSpiral <= diff)
+		  {
+			  if(me->getVictim())
+          DoCast(me->getVictim(), SPELL_SHADOW_SPIRAL);
+			  
+		ShadowSpiral = urand(4000,8000);
+          }else ShadowSpiral -= diff;
+
+
+          if (ShadowVault <= diff)
+		  {
+			  if(me->getVictim())
+          DoCast(me->getVictim(), SPELL_SHADOW_VAULT);
+			  
+		ShadowVault = urand(5000,14000);
+          }else ShadowVault -= diff;
+
+
+
+	if (SummonTiempo <= diff)
+		  {
+			  TimerCount = 4000;
+		      TimerPhase = 1;
+          me->SummonCreature(21780, 3904.895f, 2013.1589f, 257.812f, TEMPSUMMON_MANUAL_DESPAWN);
+		  me->SummonCreature(21780, 3923.9f, 1972.766f, 257.812f, TEMPSUMMON_MANUAL_DESPAWN);
+		  me->SummonCreature(21780, 3966.4f, 1988.784f, 257.812f, TEMPSUMMON_MANUAL_DESPAWN);
+		  me->SummonCreature(21780, 3948.91f, 2034.351f, 257.812f, TEMPSUMMON_MANUAL_DESPAWN);
+         SummonTiempo = 60000;
+          }else SummonTiempo -= diff;
+	
+
+	if(me->HasAura(37399))
+me->RemoveAurasDueToSpell(37399);
+    if(me->HasAura(37409))
+me->RemoveAurasDueToSpell(37409);
+	if(me->HasAura(37396))
+me->RemoveAurasDueToSpell(37396);
+	if(me->HasAura(37397))
+me->RemoveAurasDueToSpell(37397);
+	if(me->HasAura(37405))
+me->RemoveAurasDueToSpell(37405);
+
+	
+	}
+	else
+	{
+
+			if (TimerCount <= diff)
+		  {
+           switch (TimerPhase)
+		   {
+		   case 1:
+		   if(me->HasAura(37399))
+		   me->RemoveAurasDueToSpell(37399);
+             me->CastSpell(me,37409,true);
+			 SummonTiempo = 78000;
+			 TimerCount=6500;
+			 TimerPhase=2;
+           break;
+
+		   case 2:
+			 if(me->HasAura(37409))
+		    me->RemoveAurasDueToSpell(37409);
+             me->CastSpell(me,37396,true);
+			 SummonTiempo = 78000;
+			 TimerCount=5000;
+			 TimerPhase=3;
+           break;
+
+		   case 3:
+		   if(me->HasAura(37396))
+		   me->RemoveAurasDueToSpell(37396);
+             me->CastSpell(me,37397,true);
+			 SummonTiempo = 78000;
+			 TimerCount=4000;
+			 TimerPhase=4;
+           break;
+
+		   case 4:
+		   if(me->HasAura(37397))
+		   me->RemoveAurasDueToSpell(37397);
+             me->CastSpell(me,37405,true);
+			 SummonTiempo = 78000;
+			 TimerCount=4000;
+			 TimerPhase=5;
+           break;
+
+		   case 5:
+		   if(me->HasAura(37405))
+		   me->RemoveAurasDueToSpell(37405);
+             me->CastSpell(me,37399,true);
+			 SummonTiempo = 78000;
+			 TimerCount=2500;
+			 TimerPhase=1;
+           break;
+		   }
+
+			}else TimerCount -= diff;
+
+
+
+	}
+}else
+me->DespawnOrUnsummon();
+}}
+ 
+   };
+};
+
+
+
+
+class q_capitan_Saeed : public CreatureScript
+{
+public:
+    q_capitan_Saeed() : CreatureScript("q_capitan_Saeed") { }
+
+ 
+	bool OnGossipHello(Player* player, Creature* creature)
+        { 
+           if (player->GetQuestStatus(10439) == QUEST_STATUS_INCOMPLETE)
+            {
+                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_TEXT1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+       
+            }
+		   player->SEND_GOSSIP_MENU(player->GetGossipTextId(creature), creature->GetGUID());
+            return true;
+        }
+
+        bool OnGossipSelect(Player* player, Creature* creature, uint32 /*sender*/, uint32 action)
+        {
+            player->PlayerTalkClass->ClearMenus();
+
+            switch(action)
+            {
+                case GOSSIP_ACTION_INFO_DEF + 1: 
+               player->CLOSE_GOSSIP_MENU();
+               CAST_AI(q_capitan_Saeed::q_capitan_SaeedAI, creature->AI())->Inicio();
+               break;                
+            }
+            return true;
+        }
+
+
+ CreatureAI* GetAI(Creature* creature) const
+    {
+        return new q_capitan_SaeedAI (creature);
+    }
+
+ struct q_capitan_SaeedAI : public ScriptedAI
+    {
+        q_capitan_SaeedAI(Creature* creature) : ScriptedAI(creature)
+        {
+            me->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+        }
+
+		 bool evento;
+		 uint32 uiPhaseTimer;
+		 uint32 Phase;
+		 bool batalla;
+		 bool SldBT;
+		 uint32 FTAR;
+		 uint8 ism;
+		  
+		void Reset()
+		  {
+			  evento = false;
+	          me->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+			  uiPhaseTimer = 2000;
+			  Phase = 0;
+			  batalla = false;
+			  SldBT = false;
+			
+
+		
+		}
+
+		void Inicio()
+		{
+			me->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+			evento = true;
+			uiPhaseTimer = 2000;
+			ism = 0;
+			
+			Phase = 1;
+		}
+
+		void SeguirDefensores(uint32 entry, uint32 mult)
+		{
+            std::list<Creature*> defensores;
+            me->GetCreatureListWithEntryInGrid(defensores,entry,40.0f);
+            
+			if(!defensores.empty())
+            {
+                for(std::list<Creature*>::iterator itr = defensores.begin(); itr != defensores.end(); itr++)
+                {
+				 if (Creature* df = *itr)
+				 {
+					 df->SetWalk(false);
+                   df->SetSpeed(MOVE_RUN, 1.2f, true);
+			           df->setFaction(35);
+
+				   ism++;
+				   
+				     switch (ism)
+                            {
+                                case 1: df->GetMotionMaster()->MoveFollow(me, 1.0f + mult, M_PI); break;
+                                case 2: df->GetMotionMaster()->MoveFollow(me, 2.0f + 2*mult, M_PI); break;
+                                case 3: df->GetMotionMaster()->MoveFollow(me, 3.0f + 3*mult, M_PI); break;
+                                case 4: df->GetMotionMaster()->MoveFollow(me, 1.0f + mult, M_PI / 2); break;
+								case 5: df->GetMotionMaster()->MoveFollow(me, 2.0f + 2*mult, M_PI / 2); break;
+								case 6: df->GetMotionMaster()->MoveFollow(me, 3.0f + 3*mult, M_PI / 2); break;
+								case 7: df->GetMotionMaster()->MoveFollow(me, 1.0f + mult, M_PI / 2 + M_PI); break;
+								case 8: df->GetMotionMaster()->MoveFollow(me, 2.0f + 2*mult, M_PI / 2 + M_PI); break;
+								case 9: df->GetMotionMaster()->MoveFollow(me, 3.0f + 3*mult, M_PI / 2 + M_PI); break;
+								case 10: df->GetMotionMaster()->MoveFollow(me, 5.0f + 2*mult, M_PI); break;
+								case 11: df->GetMotionMaster()->MoveFollow(me, 7.0f, M_PI); break;
+                            }	
+				   				 }}}}
+
+		void LinealDefenser(uint32 entry, bool Mass)
+		{
+            std::list<Creature*> defensores;
+            me->GetCreatureListWithEntryInGrid(defensores,entry,40.0f);
+            
+			if(!defensores.empty())
+            {
+                for(std::list<Creature*>::iterator itr = defensores.begin(); itr != defensores.end(); itr++)
+                {
+				 if (Creature* df = *itr)
+				 {
+                   
+				   
+                      if(!Mass)
+					  {
+						  ism++;
+				     switch (ism)
+                            {
+                                case 1: df->GetMotionMaster()->MoveFollow(me, 1.0f, M_PI); break;
+                                case 2: df->GetMotionMaster()->MoveFollow(me, 2.0f, M_PI); break;
+                                case 3: df->GetMotionMaster()->MoveFollow(me, 3.0f, M_PI); break;
+                                case 4: df->GetMotionMaster()->MoveFollow(me, 4.0f, M_PI); break;
+								case 5: df->GetMotionMaster()->MoveFollow(me, 5.0f, M_PI); break;
+								case 6: df->GetMotionMaster()->MoveFollow(me, 6.0f, M_PI); break;
+								case 7: df->GetMotionMaster()->MoveFollow(me, 7.0f, M_PI); break;
+								case 8: df->GetMotionMaster()->MoveFollow(me, 8.0f, M_PI); break;
+								case 9: df->GetMotionMaster()->MoveFollow(me, 9.0f, M_PI); break;
+								case 10: df->GetMotionMaster()->MoveFollow(me, 10.0f, M_PI); break;
+								case 11: df->GetMotionMaster()->MoveFollow(me, 11.0f, M_PI); break;
+                            }	
+					  }
+
+         }}}}
+		
+		void UpdateAI(const uint32 diff)
+		{		
+	    if(evento)
+		{
+
+			if(!SldBT && !batalla && me->isInCombat())
+			{ 
+			  FTAR = Phase;
+			  SldBT=true;
+			}
+
+			if(SldBT && !batalla && !me->isInCombat())
+			{
+					Phase = FTAR;
+				    uiPhaseTimer = 7000;
+			}
+
+          if (uiPhaseTimer <= diff)
+		  {
+           switch (Phase)
+		   {
+		   case 1:
+			   DoScriptText(-1000030, me);
+			   me->setFaction(35);
+			   uiPhaseTimer = 8000;
+                Phase = 2;
+			    break;
+		   case 2:
+			   me->SetWalk(false);
+			   me->SetSpeed(MOVE_RUN, 1.2f, true);
+			   me->GetMotionMaster()->MovePoint(0, 4242.35f, 2124.63f, 145.41f);
+               
+			   uiPhaseTimer = 1000;
+                Phase = 3;
+				break;
+		   case 3:
+			   ism = 0;
+			   SeguirDefensores(20984,0);
+			   SeguirDefensores(21805,0);
+			   SeguirDefensores(21783,0);
+               
+			   uiPhaseTimer = 6000;
+                Phase = 4;
+				break;
+		   case 4:
+			   me->GetMotionMaster()->MovePoint(0, 4201.36f, 2172.486f, 151.077f);
+             
+			   uiPhaseTimer = 8000;
+                Phase = 5;
+				break;
+		   case 5:
+			   me->GetMotionMaster()->MovePoint(0, 4187.68f, 2137.94f, 155.111f);
+                
+			   uiPhaseTimer = 7000;
+                Phase = 6;
+				break;	  
+		   case 6:
+			   me->GetMotionMaster()->MovePoint(0, 4187.95f, 2092.789f, 159.177f);
+               
+			   uiPhaseTimer = 7000;
+                Phase = 7;
+				break;	 
+		   case 7:
+			   me->GetMotionMaster()->MovePoint(0, 4172.53f, 2062.655f, 167.302f);
+               
+			   uiPhaseTimer = 6000;
+                Phase = 8;
+				break;
+		   case 8:
+			   me->GetMotionMaster()->MovePoint(0, 4187.749f, 2028.315f, 182.627f);
+               
+			   uiPhaseTimer = 5000;
+                Phase = 9;
+				break;	
+		   case 9:
+			   me->GetMotionMaster()->MovePoint(0, 4173.355f, 1990.116f, 205.659f);
+                
+			   uiPhaseTimer = 7000;
+                Phase = 10;
+				break;	
+		   case 10:
+			   me->GetMotionMaster()->MovePoint(0, 4129.799f, 1969.9f, 221.14f);
+              
+			   uiPhaseTimer = 8000;
+                Phase = 11;
+				break;
+		   case 11:
+			   me->GetMotionMaster()->MovePoint(0, 4093.86f, 2026.225f, 236.116f);
+               
+			   uiPhaseTimer = 8000;
+                Phase = 12;
+				break;
+		   case 12:
+			   me->GetMotionMaster()->MovePoint(0, 4054.147f, 2060.93f, 251.453f);
+                
+			   uiPhaseTimer = 12000;
+                Phase = 13;
+				break;
+		   case 13:
+			   me->GetMotionMaster()->MovePoint(0, 4008.409f, 2096.97f, 254.302f);
+               
+			   uiPhaseTimer = 7000;
+                Phase = 14;
+				break;
+		   case 14:
+			   me->GetMotionMaster()->MovePoint(0, 3988.82f, 2083.117f, 256.404f);
+			  	 ism = 0;
+			   LinealDefenser(20984,false);
+			   LinealDefenser(21805,false);
+			   LinealDefenser(21783,false);
+			  
+			   uiPhaseTimer = 4000;
+                Phase = 15;
+				break;
+		   case 15:
+			   me->GetMotionMaster()->MovePoint(0, 3949.692f, 2023.207f, 256.697f);
+               
+			   uiPhaseTimer = 7700;
+                Phase = 16;
+				break;
+		   case 16:
+			   ism = 0;
+			   SeguirDefensores(20984,1);
+			   SeguirDefensores(21805,1);
+			   SeguirDefensores(21783,1);
+               
+			   uiPhaseTimer = 6000;
+                Phase = 17;
+				break;
+		   case 17:
+                DoScriptText(-1000031, me);
+                uiPhaseTimer = 6000;
+                Phase = 18;
+				break;
+		   case 18:
+              if (Creature* dimensius = me->FindNearestCreature(19554, 60.0f))
+				  DoScriptText(-1000032, dimensius);
+               	uiPhaseTimer = 5000;
+                Phase = 19;
+				break;
+		   case 19:
+				  DoScriptText(-1000033, me);
+				   if (Creature* dimensius = me->FindNearestCreature(19554, 60.0f))
+				  dimensius->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NOT_SELECTABLE);
+               
+			   uiPhaseTimer = 2000;
+                Phase = 20;
+				break;
+		   case 20:
+			   batalla = true;
+			   me->setFaction(1806);
+			    if (Creature* dimensius = me->FindNearestCreature(19554, 60.0f))
+				CAST_AI(q_Dimensius::q_DimensiusAI, dimensius->AI())->BattleIN();
+                uiPhaseTimer = 100;
+                Phase = 21;
+				break;
+		  
+		  }
+
+		  }else uiPhaseTimer -= diff;
+		}
+		 DoMeleeAttackIfReady();
+
+} //UPD
+
+};
+};
+
+
+class q_Spawn_Dimensius : public CreatureScript
+{
+public:
+    q_Spawn_Dimensius() : CreatureScript("q_Spawn_Dimensius") { }
+
+
+CreatureAI* GetAI(Creature* creature) const
+    {
+        return new q_Spawn_DimensiusAI (creature);
+    }
+
+ struct q_Spawn_DimensiusAI : public ScriptedAI
+    {
+        q_Spawn_DimensiusAI(Creature* creature) : ScriptedAI(creature)
+        {
+		}
+
+		uint32 Canalizado;
+		bool Channel;
+  
+		void Reset()
+		  {
+        me->ApplySpellImmune(0, IMMUNITY_MECHANIC, MECHANIC_GRIP, true);
+		me->ApplySpellImmune(0, IMMUNITY_MECHANIC, MECHANIC_STUN, true);
+		me->ApplySpellImmune(0, IMMUNITY_MECHANIC, MECHANIC_INTERRUPT, true);
+		me->ApplySpellImmune(0, IMMUNITY_MECHANIC, MECHANIC_FEAR, true);
+		SetCombatMovement(false);
+	    Canalizado = 500;
+		Channel = false;
+	    }
+
+		void UpdateAI(const uint32 diff)
+		{
+
+
+	if (Canalizado <= diff)
+		  {
+if (Creature* dimensius = me->FindNearestCreature(19554, 60.0f))
+{ 
+	if(!Channel)
+	{
+		me->CastSpell(dimensius, 37450, true);
+		Channel=true;
+	}
+}
+else
+ me->DespawnOrUnsummon();
+
+
+         Canalizado = 5000;
+	}else Canalizado -= diff;
+  }
+ };
+};
+
+
 void AddSC_netherstorm()
 {
     new go_manaforge_control_console();
@@ -1079,4 +1812,9 @@ void AddSC_netherstorm()
     new npc_bessy();
     new npc_maxx_a_million_escort();
     new go_captain_tyralius_prison();
+	new q_capitan_Saeed();
+	new q_Dimensius();
+	new q_Spawn_Dimensius();
+	new q_Defensores_Dimens();
+
 }
