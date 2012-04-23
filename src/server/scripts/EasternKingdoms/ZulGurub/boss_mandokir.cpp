@@ -104,6 +104,7 @@ class boss_mandokir : public CreatureScript
                 CombatStart = false;
 
                 DoCast(me, 23243);
+				 me->SummonCreature(11391, -12196.299f, -1948.369f, 130.36f, 0.541052f, TEMPSUMMON_MANUAL_DESPAWN);
             }
 
             void KilledUnit(Unit* victim)
@@ -338,9 +339,90 @@ class mob_ohgan : public CreatureScript
         }
 };
 
+#define SPELL_CLEAVE_T         15284
+#define SPELL_DEMORALIZING_SHOUT        15284
+#define SPELL_ENRAGE_T        8599
+
+class mob_Vilebranch_Speaker : public CreatureScript
+{
+    public:
+
+        mob_Vilebranch_Speaker()
+            : CreatureScript("mob_Vilebranch_Speaker")
+        {
+        }
+
+        struct mob_Vilebranch_SpeakerAI : public ScriptedAI
+        {
+            mob_Vilebranch_SpeakerAI(Creature* c) : ScriptedAI(c)
+            {
+                m_instance = c->GetInstanceScript();
+            }
+
+            uint32 Cleave;
+			uint32 Enrage;
+			uint32 Grito;
+            InstanceScript* m_instance;
+
+            void Reset()
+            {
+                Cleave = 2000;
+				Enrage = 10000;
+				Grito = 3500;
+            }
+
+            void EnterCombat(Unit* /*who*/) {}
+
+            void JustDied(Unit* killer)
+            {
+    if (Creature* mandokir = me->FindNearestCreature(11382, 90.0f))
+	{
+		mandokir->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC | UNIT_FLAG_NON_ATTACKABLE);
+	mandokir->CombatStart(killer);
+	mandokir->AddThreat(killer, 100.0f);
+	}
+   
+            }
+
+            void UpdateAI (const uint32 diff)
+            {
+
+                if (!UpdateVictim())
+                    return;
+
+
+                if (Cleave <= diff)
+                {
+                    DoCast(me->getVictim(), SPELL_CLEAVE_T);
+                    Cleave = urand(2000, 3000);
+                } else Cleave -= diff;
+
+				if (Enrage <= diff)
+                {
+                    DoCast(me, SPELL_ENRAGE_T);
+                    Enrage = urand(20000, 30000);
+                } else Enrage -= diff;
+
+				if (Grito <= diff)
+                {
+                    DoCast(me->getVictim(), SPELL_DEMORALIZING_SHOUT);
+                    Grito = urand(10000, 20000);
+                } else Grito -= diff;
+
+                DoMeleeAttackIfReady();
+            }
+        };
+
+        CreatureAI* GetAI(Creature* creature) const
+        {
+            return new mob_Vilebranch_SpeakerAI(creature);
+        }
+};
+
 void AddSC_boss_mandokir()
 {
     new boss_mandokir();
     new mob_ohgan();
+	new mob_Vilebranch_Speaker();
 }
 
