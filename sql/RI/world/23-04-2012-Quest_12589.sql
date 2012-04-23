@@ -9,3 +9,4 @@ insert into `creature` (`id`, `map`, `spawnMask`, `phaseMask`, `modelid`, `equip
 #Retirando Vehicle
 UPDATE creature_template SET VehicleId='0' where entry='28054';
 UPDATE creature_template SET InhabitType='4' where entry='28053';
+

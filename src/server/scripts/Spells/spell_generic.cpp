@@ -2617,6 +2617,51 @@ class spell_gen_wg_water : public SpellScriptLoader
             return new spell_gen_wg_water_SpellScript();
         }
 };
+/*
+RI - Barredor de Minas - SPELL
+*/
+class spell_gen_logro_barredor_minas : public SpellScriptLoader
+{
+    public:
+        spell_gen_logro_barredor_minas() : SpellScriptLoader("spell_gen_logro_barredor_minas") { }
+
+        class spell_gen_logro_barredor_minas_SpellScript : public SpellScript
+        {
+            PrepareSpellScript(spell_gen_logro_barredor_minas_SpellScript);
+
+            bool Validate(SpellInfo const* /*spell*/)
+            {
+                if (!sSpellMgr->GetSpellInfo(57099))
+                    return false;
+                return true;
+            }
+
+            void HandleScript(SpellEffIndex /*effIndex*/)
+            {
+                if (Player* target = GetHitPlayer())
+                {
+                    Aura const* aura = target->GetAura(GetSpellInfo()->Id);
+                    if (!(aura && aura->GetStackAmount() == 10))
+                        return;
+
+					AchievementEntry const* BarredorDeMinas = sAchievementStore.LookupEntry(1428);
+                    target->CompletedAchievement(BarredorDeMinas);  
+
+                   
+                }
+            }
+
+            void Register()
+            {
+                OnEffectHitTarget += SpellEffectFn(spell_gen_logro_barredor_minas_SpellScript::HandleScript, EFFECT_1, SPELL_EFFECT_APPLY_AURA);
+            }
+        };
+
+        SpellScript* GetSpellScript() const
+        {
+            return new spell_gen_logro_barredor_minas_SpellScript();
+        }
+};
 
 void AddSC_generic_spell_scripts()
 {
@@ -2669,4 +2714,5 @@ void AddSC_generic_spell_scripts()
     new spell_gen_chaos_blast();
 	new spell_gen_ds_flush_knockback();
     new spell_gen_wg_water();
+	new spell_gen_logro_barredor_minas();
 }
