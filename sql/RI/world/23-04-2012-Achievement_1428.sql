@@ -10,3 +10,4 @@ INSERT INTO `spell_script_names` (`spell_id`,`ScriptName`) VALUES
 insert into `spell_linked_spell` (`spell_trigger`, `spell_effect`, `type`, `comment`) values('54402','23462','0','Daño');
 insert into `spell_linked_spell` (`spell_trigger`, `spell_effect`, `type`, `comment`) values('54402','57099','0','Logro Barre-Minas');
 insert into `spell_linked_spell` (`spell_trigger`, `spell_effect`, `type`, `comment`) values('54402','64079','1','Visual');
+
