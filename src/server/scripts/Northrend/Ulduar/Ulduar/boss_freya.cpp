@@ -522,7 +522,7 @@ public:
             attunedToNature = me->GetAuraCount(SPELL_ATTUNED_TO_NATURE);
 
             EnterEvadeMode();
-            me->ForcedDespawn(7500);
+            me->DespawnOrUnsummon(7500);
 
             // achievements credit
             DoCast(me, SPELL_ACHIEVEMENT_CHECK, true);
@@ -532,7 +532,7 @@ public:
             {
                 Elder[n] = ObjectAccessor::GetCreature(*me, pInstance->GetData64(BOSS_BRIGHTLEAF + n));
                 if (Elder[n] && Elder[n]->isAlive())
-                    Elder[n]->ForcedDespawn(2000);
+                    Elder[n]->DespawnOrUnsummon(2000);
             }
         }
 
@@ -1250,7 +1250,7 @@ class mob_healthy_spore : public CreatureScript
                 if (_shrinkTimer <= diff)
                 {
                     me->RemoveAurasDueToSpell(SPELL_GROW);
-                    me->ForcedDespawn(2000);
+                    me->DespawnOrUnsummon(2000);
                     _shrinkTimer = 3000;
                 }
                 else
@@ -1613,7 +1613,7 @@ public:
             {
                 me->RemoveAurasDueToSpell(SPELL_GROW);
                 DoCast(RAID_MODE(SPELL_LIFEBINDERS_GIFT_10, SPELL_LIFEBINDERS_GIFT_25));
-                me->ForcedDespawn(2500);
+                me->DespawnOrUnsummon(2500);
                 Lifebinders_Gift_Timer = 6000;
             }
             else {Lifebinders_Gift_Timer -= diff;}
@@ -1638,17 +1638,17 @@ class mob_freya_sunbeam : public CreatureScript
                 me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE);
                 me->SetDisplayId(MODEL_INVISIBLE);
                 me->setFaction(16);
-                me->ForcedDespawn(12000);
+                me->DespawnOrUnsummon(12000);
                 DoCast(me, 62216, true); // visual
             }
 
             void UpdateAI(uint32 const diff)
             {
                 if (_unstableEnergyTimer <= diff)
-                {
+				{
                     DoCast(RAID_MODE(SPELL_FREYA_UNSTABLE_ENERGY_10, SPELL_FREYA_UNSTABLE_ENERGY_25));
                     _unstableEnergyTimer = 15000;
-                }
+               }
                 else
                     _unstableEnergyTimer -= diff;
             }
@@ -1692,7 +1692,7 @@ class mob_iron_roots : public CreatureScript
                         Roots->RemoveAura(RAID_MODE(SPELL_IRON_ROOTS_10, SPELL_IRON_ROOTS_25));
                     if (Roots->HasAura(RAID_MODE(SPELL_FREYA_IRON_ROOTS_10, SPELL_FREYA_IRON_ROOTS_25)))
                         Roots->RemoveAura(RAID_MODE(SPELL_FREYA_IRON_ROOTS_10, SPELL_FREYA_IRON_ROOTS_25));
-                }
+              }
 
                 me->DespawnOrUnsummon(2000);
             }
