@@ -1908,6 +1908,7 @@ public:
             for (std::list<Unit*>::const_iterator iter = targets.begin(); iter != targets.end(); ++iter)
                 if ((*iter)->GetAura(49206, ownerGuid))
                 {
+                    me->AddThreat((*iter), 100000.0f);
                     me->Attack((*iter), false);
                     break;
                 }
