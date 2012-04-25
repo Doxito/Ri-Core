@@ -797,11 +797,13 @@ class npc_mechanolift : public CreatureScript
                         z = me->GetMap()->GetHeight(x, y, MAX_HEIGHT);
 
                         liquid->SetCanFly(true);
+                        liquid->SendMovementFlagUpdate();
                         liquid->GetMotionMaster()->MovePoint(0, x, y, z);
                     }
 
                     me->SetVisible(false);
                     me->RemoveUnitMovementFlag(MOVEMENTFLAG_CAN_FLY | MOVEMENTFLAG_FLYING);
+					me->ForcedDespawn(200);
                 }
             }
         };

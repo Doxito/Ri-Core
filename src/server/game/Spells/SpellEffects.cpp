@@ -4524,20 +4524,17 @@ void Spell::EffectScriptEffect(SpellEffIndex effIndex)
                         m_caster->ToPlayer()->learnSpell(discoveredSpell, false);
                     return;
                 }
-                case 62482: // Grab Crate
+             case 62482: // Grab Crate
                 {
                     if (unitTarget)
-                    {
-                        if (Unit* seat = m_caster->GetVehicleBase())
-                        {
-                            if (Unit* parent = seat->GetVehicleBase())
-                            {
-                                // TODO: a hack, range = 11, should after some time cast, otherwise too far
-                                m_caster->CastSpell(parent, 62496, true);
-                                unitTarget->CastSpell(parent, m_spellInfo->Effects[EFFECT_0].CalcValue());
-                            }
-                        }
-                    }
+                        if (Vehicle* mechanicSeat = m_caster->GetVehicle())
+                            if (Vehicle* demolisher = mechanicSeat->GetBase()->GetVehicle())
+                                if (mechanicSeat->HasEmptySeat(1))
+                                {
+                                    //Reparación de objetivo
+                                    mechanicSeat->GetBase()->CastSpell(mechanicSeat->GetBase(), 62496, true);
+                                    unitTarget->CastSpell(mechanicSeat->GetBase(), m_spellInfo->Effects[EFFECT_0].CalcValue());
+                                }
                     return;
                 }
                 case 60123: // Lightwell
