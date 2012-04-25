@@ -2714,6 +2714,7 @@ public:
         {
             return GetCaster()->GetTypeId() == TYPEID_UNIT;
         }
+
         void HandleDummy(SpellEffIndex effIndex)
         {
             GetCaster()->ToCreature()->DespawnOrUnsummon();
