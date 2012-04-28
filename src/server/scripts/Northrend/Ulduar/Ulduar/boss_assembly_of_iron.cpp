@@ -447,7 +447,7 @@ class spell_steelbreaker_static_disruption : public SpellScriptLoader
             {
                 PreventHitDefaultEffect(effIndex);
                 Unit* caster = GetCaster();
-                Unit* target = GetTargetUnit();
+                Unit* target = GetExplTargetUnit();
                 if (caster && target)
                 {
                     uint32 id = uint32(caster->GetMap()->GetDifficulty() == RAID_DIFFICULTY_10MAN_NORMAL ? 61912 : 63494);

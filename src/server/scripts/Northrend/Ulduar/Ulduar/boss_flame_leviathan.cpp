@@ -2031,6 +2031,7 @@ class spell_shield_generator : public SpellScriptLoader
 
             void CalculateAmount(AuraEffect const* aurEff, int32 & amount, bool & /*canBeRecalculated*/)
             {
+
                 if (Unit* caster = GetCaster())
                     if (Unit* siege = caster->GetVehicleBase())
                         amount = int32(siege->CountPctFromMaxHealth(15));

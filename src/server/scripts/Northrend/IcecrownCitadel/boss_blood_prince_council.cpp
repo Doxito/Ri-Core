@@ -1497,11 +1497,11 @@ class spell_valanar_kinetic_bomb : public SpellScriptLoader
 
             void ChangeSummonPos(SpellEffIndex /*effIndex*/)
             {
-                WorldLocation summonPos = *GetTargetDest();
+                WorldLocation summonPos = *GetExplTargetDest();
                 Position offset = {0.0f, 0.0f, 20.0f, 0.0f};
                 summonPos.RelocateOffset(offset);
-                SetTargetDest(summonPos);
-				//GetHitDest()->RelocateOffset(offset);
+                SetExplTargetDest(summonPos);
+                GetHitDest()->RelocateOffset(offset);
             }
 
 

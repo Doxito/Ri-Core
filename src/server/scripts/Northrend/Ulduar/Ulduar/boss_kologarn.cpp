@@ -590,7 +590,7 @@ class spell_ulduar_stone_grip_cast_target : public SpellScriptLoader
                     return;
 
                 // Don't send m_originalCasterGUID param here or underlying AuraEffect::HandleAuraControlVehicle will fail on caster == target
-                player->CastSpell(GetTargetUnit(), GetSpellInfo()->Effects[i].TriggerSpell, true);
+                player->CastSpell(GetExplTargetUnit(), GetSpellInfo()->Effects[i].TriggerSpell, true);
                 PreventHitEffect(i);
             }
 
