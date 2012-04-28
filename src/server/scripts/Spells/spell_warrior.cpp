@@ -181,12 +181,12 @@ class spell_warr_deep_wounds : public SpellScriptLoader
                     if (Unit* caster = GetCaster())
                     {
                         // apply percent damage mods
-						if (damage > 70000 || damage < 0)
+
+						if (damage > 90000 || damage < 0)
                         return;
 						else
 						{
-                        damage = caster->SpellDamageBonus(target, GetSpellInfo(), damage, SPELL_DIRECT_DAMAGE);
-
+                        damage = caster->SpellDamageBonusDone(target, GetSpellInfo(), damage, SPELL_DIRECT_DAMAGE);
                         ApplyPctN(damage, 16 * sSpellMgr->GetSpellRank(GetSpellInfo()->Id));
 
                         SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(SPELL_DEEP_WOUNDS_RANK_PERIODIC);
@@ -197,10 +197,15 @@ class spell_warr_deep_wounds : public SpellScriptLoader
                             damage += aurEff->GetAmount() * (ticks - aurEff->GetTickNumber());
 
                         damage = damage / ticks;
-						if (damage > 70000 || damage < 0)
+
+						if (damage > 90000 || damage < 0)
                         return;
-						else
+						else{
+
+
+                        damage = target->SpellDamageBonusTaken(GetSpellInfo(), damage, SPELL_DIRECT_DAMAGE);
                         caster->CastCustomSpell(target, SPELL_DEEP_WOUNDS_RANK_PERIODIC, &damage, NULL, NULL, true);
+						}
                     }
 			}
             }
