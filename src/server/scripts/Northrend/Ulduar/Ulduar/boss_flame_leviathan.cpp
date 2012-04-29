@@ -803,7 +803,7 @@ class npc_mechanolift : public CreatureScript
 
                     me->SetVisible(false);
                     me->RemoveUnitMovementFlag(MOVEMENTFLAG_CAN_FLY | MOVEMENTFLAG_FLYING);
-					me->ForcedDespawn(200);
+					me->DespawnOrUnsummon(200);
                 }
             }
         };

@@ -724,7 +724,7 @@ class mob_lightning_elemental : public CreatureScript
                 if (me->IsWithinMeleeRange(me->getVictim()) && !_Casted)
                 {
                     me->CastSpell(me, RAID_MODE(SPELL_LIGHTNING_BLAST_10, SPELL_LIGHTNING_BLAST_25), true);
-                    me->ForcedDespawn(500);
+                    me->DespawnOrUnsummon(500);
                     _Casted = true;
                 }
             }
