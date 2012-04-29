@@ -1501,8 +1501,9 @@ class spell_valanar_kinetic_bomb : public SpellScriptLoader
                 Position offset = {0.0f, 0.0f, 20.0f, 0.0f};
                 summonPos.RelocateOffset(offset);
                 SetTargetDest(summonPos);
-                GetHitDest()->RelocateOffset(offset);
+				//GetHitDest()->RelocateOffset(offset);
             }
+
 
             void Register()
             {
