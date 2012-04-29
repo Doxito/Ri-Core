@@ -3315,11 +3315,7 @@ void SpellMgr::LoadDbcDataCorrections()
             case 64600: // Freya - Duración de las bombas
                 spellInfo->DurationIndex = 38; // 11 seconds
                 break;
-			case 62056: // Kologarn - Stone gryp: SPELL_ATTR1_IGNORE_IMMUNITY (NYI?)
-            case 63985:
-            case 64224:
-            case 64225:
-            case 62287: // Tar
+			case 62287: // Tar
                 spellInfo->Attributes |= SPELL_ATTR0_UNAFFECTED_BY_INVULNERABILITY;
                 break;
 			case 63716: // Kologarn - grito de piedra
