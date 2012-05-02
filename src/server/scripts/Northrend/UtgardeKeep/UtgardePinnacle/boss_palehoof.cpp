@@ -45,10 +45,10 @@ enum OrbSpells
 
 enum Yells
 {
-    SAY_AGGRO                                = -1575015,
-    SAY_SLAY_1                               = -1575016,
-    SAY_SLAY_2                               = -1575017,
-    SAY_DEATH                                = -1575018
+    SAY_AGGRO                                = -1575000,
+    SAY_SLAY_1                               = -1575001,
+    SAY_SLAY_2                               = -1575002,
+    SAY_DEATH                                = -1575002
 };
 
 enum Creatures
