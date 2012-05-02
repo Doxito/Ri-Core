@@ -430,8 +430,7 @@ public:
                 if (me->IsWithinMeleeRange(me->getVictim()) && me->HasUnitMovementFlag(MOVEMENTFLAG_DISABLE_GRAVITY))
                 {
                     me->SetCanFly(false);
-                    me->RemoveUnitMovementFlag(	);
-					me->SetDisableGravity(false);
+                    me->SetDisableGravity(false);
 					me->SetReactState(REACT_AGGRESSIVE);
 					
                     me->SendMovementFlagUpdate();

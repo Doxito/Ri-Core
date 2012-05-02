@@ -2965,6 +2965,106 @@ public:
     };
 };
 
+
+#define GOSSIP_EVSU1  "Necesito otro Silbato de hu""\xC3\xA9""rfano."
+
+// Evento Amor en el Aire - Quest: Una charla amistosa
+
+class npc_supervisoras_even : public CreatureScript
+{
+public:
+    npc_supervisoras_even() : CreatureScript("npc_supervisoras_even") { }
+
+ 
+	bool OnGossipHello(Player* player, Creature* creature)
+        { 
+			if (creature->isQuestGiver())
+            player->PrepareQuestMenu(creature->GetGUID());
+
+			// Supervisora de huérfanos Llantobatalla
+			if ( IsHolidayActive(HOLIDAY_CHILDRENS_WEEK) && creature->GetEntry() == 14451 && !player->HasItemCount(18597, 1))
+            {
+                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_EVSU1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+            }
+			
+			// Supervisora de huérfanos Ruiseñor
+			if ( IsHolidayActive(HOLIDAY_CHILDRENS_WEEK) && creature->GetEntry() == 14450 && !player->HasItemCount(18598, 1))
+            {
+                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_EVSU1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
+            }
+
+			// Supervisora de huérfanos Piedad -- ALIANZA
+			if ( IsHolidayActive(HOLIDAY_CHILDRENS_WEEK) && creature->GetEntry() == 22819 && player->GetTeam() == ALLIANCE && !player->HasItemCount(31881, 1))
+            {
+                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_EVSU1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
+            }
+
+			// Supervisora de huérfanos Piedad -- HORDA
+			if ( IsHolidayActive(HOLIDAY_CHILDRENS_WEEK) && creature->GetEntry() == 22819 && player->GetTeam() == HORDE && !player->HasItemCount(31880, 1))
+            {
+                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_EVSU1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 4);
+            }
+
+			// Supervisora de huérfanos Aria - wolvar
+			if ( IsHolidayActive(HOLIDAY_CHILDRENS_WEEK) && creature->GetEntry() == 34365 && !player->HasItemCount(46396, 1) && player->GetQuestStatus(13927) == QUEST_STATUS_COMPLETE)
+            {
+                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_EVSU1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 5);
+            }
+
+			// Supervisora de huérfanos Aria - oráculos
+			if ( IsHolidayActive(HOLIDAY_CHILDRENS_WEEK) && creature->GetEntry() == 34365 && !player->HasItemCount(46397, 1) && player->GetQuestStatus(13926) == QUEST_STATUS_COMPLETE)
+            {
+                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_EVSU1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 6);
+            }
+
+
+            player->SEND_GOSSIP_MENU(player->GetGossipTextId(creature), creature->GetGUID());
+            return true;
+        }
+
+        bool OnGossipSelect(Player* player, Creature* creature, uint32 /*sender*/, uint32 action)
+        {
+            player->PlayerTalkClass->ClearMenus();
+            
+
+            switch(action)
+            {
+                case GOSSIP_ACTION_INFO_DEF + 1: 
+                    player->CLOSE_GOSSIP_MENU();
+                    player->CastSpell(player, 23125, true);
+                    break;
+
+				case GOSSIP_ACTION_INFO_DEF + 2: 
+                    player->CLOSE_GOSSIP_MENU();
+                    player->CastSpell(player, 23124, true);
+                    break;
+
+				case GOSSIP_ACTION_INFO_DEF + 3: 
+                    player->CLOSE_GOSSIP_MENU();
+                    player->CastSpell(player, 39513, true);
+                    break;
+
+				case GOSSIP_ACTION_INFO_DEF + 4: 
+                    player->CLOSE_GOSSIP_MENU();
+                    player->CastSpell(player, 39512, true);
+                    break;
+                
+				case GOSSIP_ACTION_INFO_DEF + 5: 
+                    player->CLOSE_GOSSIP_MENU();
+                    player->CastSpell(player, 65360, true);
+                    break;
+
+			    case GOSSIP_ACTION_INFO_DEF + 6: 
+                    player->CLOSE_GOSSIP_MENU();
+                    player->CastSpell(player, 65359, true);
+                    break;
+            }
+            return true;
+        }
+
+
+};
+
 void AddSC_npcs_special()
 {
     new npc_air_force_bots;
@@ -2997,4 +3097,5 @@ void AddSC_npcs_special()
     new npc_earth_elemental;
     new npc_firework;
     new npc_spring_rabbit();
+	new npc_supervisoras_even();
 }
