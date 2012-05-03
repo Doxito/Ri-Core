@@ -756,6 +756,7 @@ OutdoorPvPWGCreType OutdoorPvPWG::GetCreatureType(uint32 entry) const
         case 32296:case 32294: // Quartermaster
         case 39173:case 39172: // Ros'slai && Marshal Magruder
         case 30870:case 30869: // Flight Masters
+				case 27852:
             return CREATURE_SPECIAL;
         default:
             return CREATURE_OTHER; // Revenants, Elementals, etc
