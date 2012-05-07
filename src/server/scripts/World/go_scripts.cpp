@@ -489,11 +489,10 @@ public:
 
 enum eDalaranCrystal
 {
-    QUEST_LEARN_LEAVE_RETURN    = 12790,
-    QUEST_TELE_CRYSTAL_FLAG     = 12845
+    QUEST_TELE_CRYSTAL_FLAG     = 12790
 };
 
-#define GO_TELE_TO_DALARAN_CRYSTAL_FAILED   "This teleport crystal cannot be used until the teleport crystal in Dalaran has been used at least once."
+#define GO_TELE_TO_DALARAN_CRYSTAL_FAILED   "Para poder teletransportarte a Dalaran necesitas completar la misi\xC3\xB3n Aprender a ir y a volver: la manera m\xC3\xA1gica."
 class go_tele_to_dalaran_crystal : public GameObjectScript
 {
 public:
@@ -501,7 +500,7 @@ public:
 
     bool OnGossipHello(Player* player, GameObject* /*pGO*/)
     {
-        if (player->GetQuestRewardStatus(QUEST_TELE_CRYSTAL_FLAG))
+        if (player->GetQuestRewardStatus(QUEST_TELE_CRYSTAL_FLAG) || player->GetQuestStatus(QUEST_TELE_CRYSTAL_FLAG) == QUEST_STATUS_INCOMPLETE)
         {
             return false;
         }
@@ -523,8 +522,11 @@ public:
 
     bool OnGossipHello(Player* player, GameObject* /*pGO*/)
     {
-        if (player->GetQuestRewardStatus(QUEST_LEARN_LEAVE_RETURN) || player->GetQuestStatus(QUEST_LEARN_LEAVE_RETURN) == QUEST_STATUS_INCOMPLETE)
+        if (player->GetQuestStatus(QUEST_TELE_CRYSTAL_FLAG) == QUEST_STATUS_INCOMPLETE)
             return false;
+			
+		 if (player->GetQuestRewardStatus(QUEST_TELE_CRYSTAL_FLAG))
+			player->TeleportTo(571, 5729.46f, 1021.49f, 174.48f, 5.02f);
 
         return true;
     }
@@ -1180,7 +1182,7 @@ class go_gjalerbron_cage : public GameObjectScript
                         player->KilledMonsterCredit(NPC_GJALERBRON_PRISONER, 0);
 
                     prisoner->AI()->Talk(SAY_FREE);
-                    prisoner->ForcedDespawn(6000);
+                    prisoner->DespawnOrUnsummon(6000);
                 }
             }
             return true;
@@ -1207,7 +1209,7 @@ class go_large_gjalerbron_cage : public GameObjectScript
                 {
                     go->UseDoorOrButton();
                     player->KilledMonsterCredit(NPC_GJALERBRON_PRISONER, (*itr)->GetGUID());
-                    (*itr)->ForcedDespawn(6000);
+                    (*itr)->DespawnOrUnsummon(6000);
                     (*itr)->AI()->Talk(SAY_FREE);
                 }
             }
@@ -1241,7 +1243,7 @@ class go_veil_skith_cage : public GameObjectScript
                {
                    go->UseDoorOrButton();
                    player->KilledMonsterCredit(NPC_CAPTIVE_CHILD, (*itr)->GetGUID());
-                   (*itr)->ForcedDespawn(5000);
+                   (*itr)->DespawnOrUnsummon(5000);
                    (*itr)->GetMotionMaster()->MovePoint(1, go->GetPositionX()+5, go->GetPositionY(), go->GetPositionZ());
                    (*itr)->AI()->Talk(SAY_FREE_0);
                    (*itr)->GetMotionMaster()->Clear();
