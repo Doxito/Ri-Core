@@ -1,10 +1,10 @@
 -- Spawn Disturbed Glacial Revenant
-DELETE FROM `creature` WHERE `guid`=201998;
+DELETE FROM `creature` WHERE `guid`=3007767;
 INSERT INTO `creature` (`guid`,`id`,`map`,`spawnMask`,`phaseMask`,`modelid`,`equipment_id`, `position_x`,`position_y`,`position_z`,`orientation`,`spawntimesecs`,`spawndist`,`currentwaypoint`,`curhealth`,`curmana`,`MovementType`,`npcflag`,`unit_flags`,`dynamicflags`) VALUES
-(201998,36874,658,2,1,0,0,1053.894,-93.05556,632.8575,4.223697,86400,0,0,1,0,0,0,0,0);
-DELETE FROM `creature_addon` WHERE `guid`=201998;
+(3007767,36874,658,2,1,0,0,1053.894,-93.05556,632.8575,4.223697,86400,0,0,1,0,0,0,0,0);
+DELETE FROM `creature_addon` WHERE `guid`=3007767;
 INSERT INTO `creature_addon` (`guid`,`bytes2`) VALUES
-(201998,1);
+(3007767,1);
 
 -- Disturbed Glacial Revenant SAI
 SET @ENTRY := 36874; -- NPC entry
