@@ -7781,17 +7781,6 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                     }
                 }
             }
-            // Item - Death Knight T10 Melee 4P Bonus
-            if (dummySpell->Id == 70656)
-            {
-                Player* player = ToPlayer();
-                if (!player)
-                    return false;
-
-                for (uint32 i = 0; i < MAX_RUNES; ++i)
-                    if (player->GetRuneCooldown(i) == 0)
-                        return false;
-            }
             break;
         }
         case SPELLFAMILY_POTION:
@@ -8718,6 +8707,16 @@ bool Unit::HandleProcTriggerSpell(Unit* victim, uint32 damage, AuraEffect* trigg
 
                     trigger_spell_id = 50475;
                     basepoints0 = CalculatePctN(int32(damage), triggerAmount);
+                }
+                // Item - Death Knight T10 Melee 4P Bonus
+                else if (auraSpellInfo->Id == 70656)
+                {
+                    if (GetTypeId() != TYPEID_PLAYER || getClass() != CLASS_DEATH_KNIGHT)
+                        return false;
+
+                    for (uint8 i = 0; i < MAX_RUNES; ++i)
+                        if (ToPlayer()->GetRuneCooldown(i) == 0)
+                            return false;
                 }
                 break;
             }
