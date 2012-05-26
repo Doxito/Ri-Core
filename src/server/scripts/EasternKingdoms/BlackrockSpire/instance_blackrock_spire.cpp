@@ -51,8 +51,17 @@ public:
         uint64 Gyth;
         uint64 TheBeast;
         uint64 GeneralDrakkisath;
+
 		
 		bool   m_bAchievManyWhelpsHandleIt;
+
+        uint64 go_emberseerin;
+        uint64 go_doors;
+        uint64 go_emberseerout;
+        uint64 go_roomrunes[MAX_DRAGONSPIRE_HALL_RUNES];
+        uint8 Runemaxprotectors[MAX_DRAGONSPIRE_HALL_RUNES];
+        uint8 Runeprotectorsdead[MAX_DRAGONSPIRE_HALL_RUNES];
+
 
         void Initialize()
         {
@@ -73,7 +82,13 @@ public:
             Gyth                    = 0;
             TheBeast                = 0;
             GeneralDrakkisath       = 0;
+
 			m_bAchievManyWhelpsHandleIt = false;
+
+            go_emberseerin          = 0;
+            go_doors                = 0;
+            go_emberseerout         = 0;
+
         }
 
         bool IsEncounterInProgress() const
@@ -132,7 +147,11 @@ public:
                 case NPC_GENERAL_DRAKKISATH:
                     GeneralDrakkisath = creature->GetGUID();
                     break;
-            }
+                case NPC_BLACKHAND_DREADWEAVER:
+                case NPC_BLACKHAND_SUMMONER:
+                case NPC_BLACKHAND_VETERAN:
+                    break;
+             }
          }
 
         void SetData(uint32 uiType, uint32 uiData)
@@ -162,6 +181,36 @@ public:
                         temp->SetInCombatWithZone();
                         ++m_uiManyWhelpsCounter;
                     }
+                    break;
+                case GO_EMBERSEER_IN:
+                    go_emberseerin = go->GetGUID();
+                    break;
+                case GO_DOORS:
+                    go_doors = go->GetGUID();
+                    break;
+                case GO_EMBERSEER_OUT:
+                    go_emberseerout = go->GetGUID();
+                    break;
+                case GO_ROOM_1_RUNE:
+                    go_roomrunes[0] = go->GetGUID();
+                    break;
+                case GO_ROOM_2_RUNE:
+                    go_roomrunes[1] = go->GetGUID();
+                    break;
+                case GO_ROOM_3_RUNE:
+                    go_roomrunes[2] = go->GetGUID();
+                    break;
+                case GO_ROOM_4_RUNE:
+                    go_roomrunes[3] = go->GetGUID();
+                    break;
+                case GO_ROOM_5_RUNE:
+                    go_roomrunes[4] = go->GetGUID();
+                    break;
+                case GO_ROOM_6_RUNE:
+                    go_roomrunes[5] = go->GetGUID();
+                    break;
+                case GO_ROOM_7_RUNE:
+                    go_roomrunes[6] = go->GetGUID();
                     break;
             }
         }
@@ -205,6 +254,18 @@ public:
              return true;
         }
 
+        void ProcessEvent(WorldObject* /*gameObject*/, uint32 eventId)
+        {
+            switch (eventId)
+            {
+                case EVENT_PYROGUARD_EMBERSEER:
+                    SetBossState(DATA_PYROGAURD_EMBERSEER,IN_PROGRESS);
+                    break;
+                default:
+                    break;
+            }
+        }
+
         uint64 GetData64(uint32 type)
         {
             switch (type)
@@ -237,6 +298,26 @@ public:
                     return TheBeast;
                 case DATA_GENERAL_DRAKKISATH:
                     return GeneralDrakkisath;
+                case GO_EMBERSEER_IN:
+                    return go_emberseerin;
+                case GO_DOORS:
+                    return go_doors;
+                case GO_EMBERSEER_OUT:
+                    return go_emberseerout;
+                case GO_ROOM_1_RUNE:
+                    return go_roomrunes[0];
+                case GO_ROOM_2_RUNE:
+                    return go_roomrunes[1];
+                case GO_ROOM_3_RUNE:
+                    return go_roomrunes[2];
+                case GO_ROOM_4_RUNE:
+                    return go_roomrunes[3];
+                case GO_ROOM_5_RUNE:
+                    return go_roomrunes[4];
+                case GO_ROOM_6_RUNE:
+                    return go_roomrunes[5];
+                case GO_ROOM_7_RUNE:
+                    return go_roomrunes[6];
             }
 
             return 0;
@@ -281,6 +362,7 @@ public:
 
             OUT_LOAD_INST_DATA_COMPLETE;
         }
+
 		
         bool CheckAchievementCriteriaMeet(uint32 criteria_id, Player const* /*source*/, Unit const* /*target*/ = NULL, uint32 /*miscvalue1*/ = 0)
         {
@@ -291,6 +373,7 @@ public:
             }
             return false;
         }
+
     };
 
 };
