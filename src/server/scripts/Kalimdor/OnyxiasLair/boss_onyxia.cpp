@@ -233,6 +233,7 @@ public:
         void JustSummoned(Creature* summoned)
         {
             summoned->SetInCombatWithZone();
+
             if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0))
                 summoned->AI()->AttackStart(target);
 
@@ -313,7 +314,7 @@ public:
                         break;
                     case 11:
                             me->SetCanFly(true);
-			    me->SetDisableGravity(true);
+			                me->SetDisableGravity(true);
                             me->SetByteFlag(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_ALWAYS_STAND | UNIT_BYTE1_FLAG_HOVER);
                         if (m_pPointData)
                             me->GetMotionMaster()->MovePoint(m_pPointData->uiLocId, m_pPointData->fX, m_pPointData->fY, m_pPointData->fZ);
