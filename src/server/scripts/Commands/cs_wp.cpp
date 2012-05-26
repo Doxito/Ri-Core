@@ -948,7 +948,7 @@ public:
                 if (target)
                 {
                     wpCreature->SetDisplayId(target->GetDisplayId());
-                    wpCreature->SetFloatValue(OBJECT_FIELD_SCALE_X, 0.5f);
+                    wpCreature->SetObjectScale(0.5f);
                     wpCreature->SetLevel(point > STRONG_MAX_LEVEL ? STRONG_MAX_LEVEL : point);
                 }
             }
@@ -1002,7 +1002,7 @@ public:
             if (target)
             {
                 creature->SetDisplayId(target->GetDisplayId());
-                creature->SetFloatValue(OBJECT_FIELD_SCALE_X, 0.5f);
+                creature->SetObjectScale(0.5f);
             }
 
             return true;
@@ -1051,7 +1051,7 @@ public:
             if (target)
             {
                 creature->SetDisplayId(target->GetDisplayId());
-                creature->SetFloatValue(OBJECT_FIELD_SCALE_X, 0.5f);
+                creature->SetObjectScale(0.5f);
             }
 
             return true;
