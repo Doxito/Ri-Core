@@ -1,5 +1,5 @@
-SET @GUID1 := 42158;
-SET @GUID2 := 42159;
+SET @GUID1 := 2927968;
+SET @GUID2 := 2927978;
 -- add creature
 DELETE FROM creature WHERE guid IN (@GUID1,@GUID2);
 INSERT INTO `creature`
