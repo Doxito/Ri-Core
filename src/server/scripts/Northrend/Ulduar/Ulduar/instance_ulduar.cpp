@@ -211,8 +211,8 @@ class instance_ulduar : public InstanceMapScript
                   }
                   return return_value;
             }	
-            void OnPlayerKilled(Player* /*player*/)
-            {
+//  void OnPlayerKilled(Player* /*player*/)
+  /*          {
                 for (uint8 i = 0; i < MAX_ENCOUNTER; ++i)
                 {
                     if (Encounter[i] == IN_PROGRESS)
@@ -224,8 +224,8 @@ class instance_ulduar : public InstanceMapScript
                     }
                 }
             }
+*/
 
-<<<<<<< HEAD
             bool CheckAchievementCriteriaMeet(uint32 criteria_id, Player const* /*source*/, Unit const* /*target = NULL*/, uint32 /*miscvalue1 = 0*/)
             {
                 switch (criteria_id)
@@ -273,7 +273,9 @@ class instance_ulduar : public InstanceMapScript
                     case ACHIEVEMENT_CRITERIA_KILL_WITHOUT_DEATHS_ALGALON_10:
                     case ACHIEVEMENT_CRITERIA_KILL_WITHOUT_DEATHS_ALGALON_25:
                         return !(AlgalonKillCount);
-               }
+					case CRITERIA_HERALD_OF_TITANS:
+                        return _maxArmorItemLevel <= MAX_HERALD_ARMOR_ITEMLEVEL && _maxWeaponItemLevel <= MAX_HERALD_WEAPON_ITEMLEVEL;
+				}
 
                 // Yogg-Saron
                 switch (criteria_id)
@@ -349,12 +351,12 @@ class instance_ulduar : public InstanceMapScript
 			}
 
 
-            void FillInitialWorldStates(WorldPacket& data)
+          /*  void FillInitialWorldStates(WorldPacket& data)
             {
                 data << uint32(WORLDSTATE_SHOW_TIMER)            << uint32(SignalTimerState == IN_PROGRESS);
                 data << uint32(WORLDSTATE_ALGALON_TIMER)         << uint32(SignalTimerMinutes ? SignalTimerMinutes : 60);
             }
-		
+		*/
             void OnCreatureCreate(Creature* creature)
             {
                 if (!TeamInInstance)
@@ -441,10 +443,10 @@ class instance_ulduar : public InstanceMapScript
                             creature->DespawnOrUnsummon();
                         creature->setActive(true);
                         break;
-                    case NPC_BRANN_ALGALON:
-                        AlgalonBrannGUID = creature->GetGUID();
-                        creature->setActive(true);
-                        break;
+                   // case NPC_BRANN_ALGALON:
+                    //    AlgalonBrannGUID = creature->GetGUID();
+                     //   creature->setActive(true);
+                    //    break;
 
                     // Mimiron
                     case NPC_MIMIRON:
@@ -880,7 +882,7 @@ class instance_ulduar : public InstanceMapScript
                         if (GameObject* obj = instance->GetGameObject(ThorimDoorGUID))
                             obj->SetGoState(state == IN_PROGRESS ? GO_STATE_READY : GO_STATE_ACTIVE);
                         break;
-                    case BOSS_ALGALON:
+                /*    case BOSS_ALGALON:
                         if (state == IN_PROGRESS)
                         {
                             HandleGameObject(AlgalonDoorGUID, false);     // Close Door
@@ -900,7 +902,7 @@ class instance_ulduar : public InstanceMapScript
                             HandleGameObject(AlgalonForceFieldGUID, true);
 
                         }
-                        break;
+                        break;*/
                     case BOSS_YOGGSARON:
                         if (state == IN_PROGRESS)
                             HandleGameObject(YoggSaronDoorGUID, false);
@@ -1015,7 +1017,7 @@ class instance_ulduar : public InstanceMapScript
                     case DATA_ADD_HELP_FLAG:
                         SupportKeeperFlag |= UlduarKeeperSupport(data);
                         break;
-                    case DATA_ALGALON_INTRO:
+                   /* case DATA_ALGALON_INTRO:
                         AlgalonIntroDone = data;
                         SaveToDB();
                         break;
@@ -1044,7 +1046,7 @@ class instance_ulduar : public InstanceMapScript
                             SaveToDB();
                         break;
                         }
-
+*/
                     case EVENT_DESPAWN_ALGALON:
                         DoUpdateWorldState(WORLD_STATE_ALGALON_TIMER_ENABLED, 1);
                         DoUpdateWorldState(WORLD_STATE_ALGALON_DESPAWN_TIMER, 60);
@@ -1122,10 +1124,10 @@ class instance_ulduar : public InstanceMapScript
                     //Algalon the Observer
                     case BOSS_ALGALON:
                         return AlgalonGUID;
-                    case GO_ALGALON_DOOR:
-                        return AlgalonDoorGUID;
-                    case NPC_BRANN_ALGALON:
-                        return AlgalonBrannGUID;
+                  //  case GO_ALGALON_DOOR:
+                     //   return AlgalonDoorGUID;
+                   // case NPC_BRANN_ALGALON:
+                    //    return AlgalonBrannGUID;
 
                     // Razorscale expedition commander
                     case DATA_EXPEDITION_COMMANDER:
@@ -1185,12 +1187,12 @@ class instance_ulduar : public InstanceMapScript
                         return HodirRareCacheData;
                     case DATA_UNBROKEN:
                         return uint32(Unbroken);
-                    case DATA_ALGALON_INTRO:
-                        return AlgalonIntroDone;
-                        break;
-                    case DATA_ALGALON_TIMER:
-                        return SignalTimerState;
-                        break;
+                   // case DATA_ALGALON_INTRO:
+                     //   return AlgalonIntroDone;
+                    //    break;
+                //    case DATA_ALGALON_TIMER:
+                      //  return SignalTimerState;
+                    //    break;
                     case DATA_KEEPER_SUPPORT_YOGG:
                         return SupportKeeperFlag;
                         break;
@@ -1199,17 +1201,6 @@ class instance_ulduar : public InstanceMapScript
                 }
 
                 return 0;
-            }
-
-            bool CheckAchievementCriteriaMeet(uint32 criteriaId, Player const* , Unit const* /* = NULL */, uint32 /* = 0 */)
-            {
-                switch (criteriaId)
-                {
-                    case CRITERIA_HERALD_OF_TITANS:
-                        return _maxArmorItemLevel <= MAX_HERALD_ARMOR_ITEMLEVEL && _maxWeaponItemLevel <= MAX_HERALD_WEAPON_ITEMLEVEL;
-                }
-
-                return false;
             }
 
             std::string GetSaveData()
@@ -1238,7 +1229,7 @@ class instance_ulduar : public InstanceMapScript
                 OUT_LOAD_INST_DATA(strIn);
 
                 char dataHead1, dataHead2;
-                uint32 data1,data2,data3;
+              
 
                 std::istringstream loadStream(strIn);
                 loadStream >> dataHead1 >> dataHead2;
@@ -1284,17 +1275,7 @@ class instance_ulduar : public InstanceMapScript
 
 					}
 
-                    loadStream >> data1;
-                    loadStream >> data2;
-                    loadStream >> data3;
-
-                    SetData(DATA_ALGALON_INTRO, data1);
-                    SignalTimerState = data2;
-                    SignalTimerMinutes = data3;
-                    uint32 tmpState, tmpState2;
-                    loadStream >> tmpState >> tmpState2;
-                    ColossusData = tmpState;
-                    PlayerDeathFlag = tmpState2;
+                 
 				}
 
                 OUT_LOAD_INST_DATA_COMPLETE;

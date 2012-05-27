@@ -1646,7 +1646,7 @@ class spell_anti_air_rocket : public SpellScriptLoader
             {
                 PreventHitDefaultEffect(effIndex);
 
-                if (const WorldLocation* pos = GetTargetDest())
+                if (const WorldLocation* pos = GetExplTargetDest())
                 {
                     if (Creature* temp = GetCaster()->SummonCreature(22515, *pos, TEMPSUMMON_TIMED_DESPAWN, 500))
                     {
@@ -1945,8 +1945,8 @@ class spell_freyas_ward_summon : public SpellScriptLoader
                     if (InstanceScript* instance = caster->GetInstanceScript())
                         if (Creature* leviathan = ObjectAccessor::GetCreature(*caster, instance->GetData64(BOSS_LEVIATHAN)))
                             for (uint8 i = 0; i < urand(3, 5); ++i)
-                                leviathan->SummonCreature(NPC_WRITHING_LASHER, GetTargetDest()->GetPositionX(), GetTargetDest()->GetPositionY(),
-                                GetTargetDest()->GetPositionZ(), 0.0f, TEMPSUMMON_CORPSE_DESPAWN, 3000);
+                                leviathan->SummonCreature(NPC_WRITHING_LASHER, GetExplTargetDest()->GetPositionX(), GetExplTargetDest()->GetPositionY(),
+                                GetExplTargetDest()->GetPositionZ(), 0.0f, TEMPSUMMON_CORPSE_DESPAWN, 3000);
             }
 
             void HandleSummon(SpellEffIndex effIndex)
@@ -1956,8 +1956,8 @@ class spell_freyas_ward_summon : public SpellScriptLoader
                 if (Unit* caster = GetCaster())
                     if (InstanceScript* instance = caster->GetInstanceScript())
                         if (Creature* leviathan = ObjectAccessor::GetCreature(*caster, instance->GetData64(BOSS_LEVIATHAN)))
-                            leviathan->SummonCreature(NPC_WARD_OF_LIFE, GetTargetDest()->GetPositionX(), GetTargetDest()->GetPositionY(),
-                            GetTargetDest()->GetPositionZ(), 0.0f, TEMPSUMMON_CORPSE_DESPAWN, 3000);
+                            leviathan->SummonCreature(NPC_WARD_OF_LIFE, GetExplTargetDest()->GetPositionX(), GetExplTargetDest()->GetPositionY(),
+                            GetExplTargetDest()->GetPositionZ(), 0.0f, TEMPSUMMON_CORPSE_DESPAWN, 3000);
 }
 
             void Register()

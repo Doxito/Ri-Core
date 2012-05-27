@@ -3329,10 +3329,6 @@ void SpellMgr::LoadDbcDataCorrections()
 			case 62470: // Trueno ensordecedor - Evade si speed > 0
                 spellInfo->speed = 0;
                 break;
-            case 62311: // Algalon - Machaque cósmico - Máximo 13 yardas
-            case 64596: // Algalon - Machaque cósmico - Máximo 13 yardas
-                spellInfo->rangeIndex = 13;
-                break;  
 			case 61915: // Remolino de relámpagos - interrupción (Brundir)
             case 63483: // Remolino de relámpagos - interrupción (Brundir)
                 spellInfo->InterruptFlags |= SPELL_INTERRUPT_FLAG_INTERRUPT;
