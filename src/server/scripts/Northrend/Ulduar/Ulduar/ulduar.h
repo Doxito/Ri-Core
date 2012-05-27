@@ -82,7 +82,7 @@ enum UlduarNPCs
     NPC_YOGGSARON                = 33288,
     NPC_SARA                     = 33134,
     NPC_ALGALON                  = 32871,
-    NPC_BRANN_ALGALON            = 34064,
+   // NPC_BRANN_ALGALON            = 34064,
 
     // Mimiron
     NPC_LEVIATHAN_MKII                      = 33432,
@@ -382,7 +382,7 @@ enum UlduarBossDeadFlags
     DEAD_MIMIRON                        = 0x0400,
     DEAD_VEZAX                          = 0x0800,
     DEAD_YOGGSARON                      = 0x1000
-
+};
 
 enum UlduarAchievementData
 {
