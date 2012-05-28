@@ -18,6 +18,13 @@
 #ifndef DEF_BLACKROCK_SPIRE_H
 #define DEF_BLACKROCK_SPIRE_H
 
+enum eInstanceData
+{
+    DATA_LEEROY,
+	
+	DATA_PHASE_LEEROY,
+};
+
 enum Data
 {
     DATA_OMOKK,
@@ -51,6 +58,7 @@ enum Npc
     NPC_GYTH                        = 10339,
     NPC_THE_BEAST                   = 10430,
     NPC_GENERAL_DRAKKISATH          = 10363,
+	NPC_WHELP                       = 10161,
 };
 
 enum AdditionalData
@@ -61,7 +69,12 @@ enum AdditionalData
 
 enum GameObjects
 {
-    GO_WHELP_SPAWNER                = 175622, //trap spawned by go id 175124
+    GO_WHELP_SPAWNER                = 176510, //trap spawned by go id 175124
+};
+
+enum eAchievementData
+{
+    ACHIEV_CRITERIA_LEEEEROY        = 2188, // Criteria for achievement 2188: ¡Leeeeeeeeeeeeeroy! Hatch 50 eggs in 15s
 };
 
 #endif
