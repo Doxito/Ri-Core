@@ -358,7 +358,7 @@ public:
             EncounterFinished = true;
             DoScriptText(SAY_DEATH, me);
             me->setFaction(35);
-            me->ForcedDespawn(7000);
+            me->DespawnOrUnsummon(7000);
             EnterEvadeMode();
 
             if (instance)

@@ -326,8 +326,8 @@ class mob_shadowmoon_channeler : public CreatureScript
 
             void JustDied(Unit* Killer)
             {
-               if (Creature* Kelidan = me->FindNearestCreature(ENTRY_KELIDAN, 100))
-                   CAST_AI(boss_kelidan_the_breaker::boss_kelidan_the_breakerAI, Kelidan->AI())->ChannelerDied(Killer);
+              // if (Creature* Kelidan = me->FindNearestCreature(ENTRY_KELIDAN, 100))
+               //    CAST_AI(boss_kelidan_the_breaker::boss_kelidan_the_breakerAI, Kelidan->AI())->ChannelerDied(Killer);
             }
 
             void UpdateAI(const uint32 diff)

@@ -154,7 +154,9 @@ class boss_xt002 : public CreatureScript
             {
                 _Reset();
                 me->SetStandState(UNIT_STAND_STATE_STAND);
-                me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_1 | UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_STUNNED | UNIT_FLAG_PACIFIED | UNIT_FLAG_DISABLE_MOVE);
+                me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_1 | UNIT_FLAG_NOT_SELECTABLE);
+				
+                me->SetReactState(REACT_AGGRESSIVE);
 				
                 me->ResetLootMode();
 
@@ -405,8 +407,11 @@ class boss_xt002 : public CreatureScript
                 // Remove if still active?
                 me->RemoveAurasDueToSpell(SPELL_TYMPANIC_TANTRUM);
 
+				me->AttackStop();
+                me->SetReactState(REACT_PASSIVE);
+
                 // Make untargetable
-                me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_1 | UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_STUNNED | UNIT_FLAG_PACIFIED | UNIT_FLAG_DISABLE_MOVE);
+                me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_1 | UNIT_FLAG_NOT_SELECTABLE);
 			
 
                 // Summon the heart npc
@@ -447,8 +452,10 @@ class boss_xt002 : public CreatureScript
                     me->ModifyHealth(-((int32)_transferHealth));
                     me->LowerPlayerDamageReq(_transferHealth);
                 }
+               
+                me->SetReactState(REACT_AGGRESSIVE);
 
-                me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_1 | UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_STUNNED | UNIT_FLAG_PACIFIED | UNIT_FLAG_DISABLE_MOVE);
+                me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_1 | UNIT_FLAG_NOT_SELECTABLE);
 			
                 _phase = 1;
             }
@@ -1055,10 +1062,18 @@ class spell_xt002_tympanic_tantrum : public SpellScriptLoader
                 unitList.remove_if(PlayerOrPetCheck());
             }
 
+           void RecalculateDamage()
+           {
+                SetHitDamage(GetHitUnit()->CountPctFromMaxHealth(GetHitDamage()));
+            }
+
+	
+
             void Register()
             {
                 OnUnitTargetSelect += SpellUnitTargetFn(spell_xt002_tympanic_tantrum_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ENEMY);
                 OnUnitTargetSelect += SpellUnitTargetFn(spell_xt002_tympanic_tantrum_SpellScript::FilterTargets, EFFECT_1, TARGET_UNIT_SRC_AREA_ENEMY);
+                OnHit += SpellHitFn(spell_xt002_tympanic_tantrum_SpellScript::RecalculateDamage);
             }
         };
 

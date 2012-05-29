@@ -1624,7 +1624,7 @@ void SpellMgr::LoadSpellGroups()
         uint32 group_id = fields[0].GetUInt32();
         if (group_id <= SPELL_GROUP_DB_RANGE_MIN && group_id >= SPELL_GROUP_CORE_RANGE_MAX)
         {
-            sLog->outErrorDb("SpellGroup id %u listed in `spell_groups` is in core range, but is not defined in core!", group_id);
+            sLog->outErrorDb("SpellGroup id %u listed in `spell_group` is in core range, but is not defined in core!", group_id);
             continue;
         }
         int32 spell_id = fields[1].GetInt32();
@@ -1640,7 +1640,7 @@ void SpellMgr::LoadSpellGroups()
         {
             if (groups.find(abs(itr->second)) == groups.end())
             {
-                sLog->outErrorDb("SpellGroup id %u listed in `spell_groups` does not exist", abs(itr->second));
+                sLog->outErrorDb("SpellGroup id %u listed in `spell_group` does not exist", abs(itr->second));
                 mSpellGroupSpell.erase(itr++);
             }
             else
@@ -2116,7 +2116,7 @@ void SpellMgr::LoadEnchantCustomAttr()
             continue;
 
         // TODO: find a better check
-        if (!(spellInfo->AttributesEx2 & SPELL_ATTR2_UNK13) || !(spellInfo->Attributes & SPELL_ATTR0_NOT_SHAPESHIFT))
+        if (!(spellInfo->AttributesEx2 & SPELL_ATTR2_PRESERVE_ENCHANT_IN_ARENA) || !(spellInfo->Attributes & SPELL_ATTR0_NOT_SHAPESHIFT))
             continue;
 
         for (uint32 j = 0; j < MAX_SPELL_EFFECTS; ++j)
@@ -3315,11 +3315,7 @@ void SpellMgr::LoadDbcDataCorrections()
             case 64600: // Freya - Duración de las bombas
                 spellInfo->DurationIndex = 38; // 11 seconds
                 break;
-			case 62056: // Kologarn - Stone gryp: SPELL_ATTR1_IGNORE_IMMUNITY (NYI?)
-            case 63985:
-            case 64224:
-            case 64225:
-            case 62287: // Tar
+			case 62287: // Tar
                 spellInfo->Attributes |= SPELL_ATTR0_UNAFFECTED_BY_INVULNERABILITY;
                 break;
 			case 63716: // Kologarn - grito de piedra
@@ -3333,10 +3329,6 @@ void SpellMgr::LoadDbcDataCorrections()
 			case 62470: // Trueno ensordecedor - Evade si speed > 0
                 spellInfo->speed = 0;
                 break;
-            case 62311: // Algalon - Machaque cósmico - Máximo 13 yardas
-            case 64596: // Algalon - Machaque cósmico - Máximo 13 yardas
-                spellInfo->rangeIndex = 13;
-                break;  
 			case 61915: // Remolino de relámpagos - interrupción (Brundir)
             case 63483: // Remolino de relámpagos - interrupción (Brundir)
                 spellInfo->InterruptFlags |= SPELL_INTERRUPT_FLAG_INTERRUPT;
@@ -3390,6 +3382,19 @@ void SpellMgr::LoadDbcDataCorrections()
                 spellInfo->EffectImplicitTargetB[1] = TARGET_UNIT_NEARBY_ENTRY;
                 spellInfo->EffectImplicitTargetB[2] = TARGET_UNIT_NEARBY_ENTRY;
                 break;
+            case 62301: // Cosmic Smash (Algalon the Observer)
+                spellInfo->MaxAffectedTargets = 1;
+                break;
+            case 64598: // Cosmic Smash (Algalon the Observer)
+                spellInfo->MaxAffectedTargets = 3;
+                break;
+            case 62293: // Cosmic Smash (Algalon the Observer)
+                spellInfo->EffectImplicitTargetB[0] = TARGET_DEST_CASTER;
+                break;
+            case 62311: // Cosmic Smash (Algalon the Observer)
+            case 64596: // Cosmic Smash (Algalon the Observer)
+                spellInfo->rangeIndex = 6;  // 100yd
+                break;
             // ENDOF ULDUAR SPELLS
             //
             // TRIAL OF THE CHAMPION SPELLS
@@ -3438,12 +3443,21 @@ void SpellMgr::LoadDbcDataCorrections()
             case 70835: // Bone Storm (Lord Marrowgar)
             case 70836: // Bone Storm (Lord Marrowgar)
             case 72864: // Death Plague (Rotting Frost Giant)
-            case 72378: // Blood Nova (Deathbringer Saurfang)
-            case 73058: // Blood Nova (Deathbringer Saurfang)
             case 71160: // Plague Stench (Stinky)
             case 71161: // Plague Stench (Stinky)
             case 71123: // Decimate (Stinky & Precious)
                 spellInfo->EffectRadiusIndex[0] = EFFECT_RADIUS_100_YARDS;   // 100yd
+                break;
+            case 72378: // Blood Nova (Deathbringer Saurfang)
+            case 73058: // Blood Nova (Deathbringer Saurfang)
+                spellInfo->EffectRadiusIndex[0] = EFFECT_RADIUS_200_YARDS;
+                spellInfo->EffectRadiusIndex[1] = EFFECT_RADIUS_200_YARDS;
+                break;
+            case 72769: // Scent of Blood (Deathbringer Saurfang)
+                spellInfo->EffectRadiusIndex[0] = EFFECT_RADIUS_200_YARDS;
+                // no break
+            case 72771: // Scent of Blood (Deathbringer Saurfang)
+                spellInfo->EffectRadiusIndex[1] = EFFECT_RADIUS_200_YARDS;
                 break;
             case 72723: // Resistant Skin (Deathbringer Saurfang adds)
                 // this spell initially granted Shadow damage immunity, however it was removed but the data was left in client
@@ -3452,9 +3466,9 @@ void SpellMgr::LoadDbcDataCorrections()
             case 70460: // Coldflame Jets (Traps after Saurfang)
                 spellInfo->DurationIndex = 1;   // 10 seconds
                 break;
-            case 71413: // Green Ooze Summon (Professor Putricide)
-            case 71414: // Orange Ooze Summon (Professor Putricide)
-                spellInfo->EffectImplicitTargetA[0] = TARGET_DEST_DEST;
+            case 71412: // Green Ooze Summon (Professor Putricide)
+            case 71415: // Orange Ooze Summon (Professor Putricide)
+                spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_TARGET_ANY;
                 break;
             case 71159: // Awaken Plagued Zombies
                 spellInfo->DurationIndex = 21;

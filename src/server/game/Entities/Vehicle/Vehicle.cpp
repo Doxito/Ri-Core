@@ -47,9 +47,14 @@ Vehicle::Vehicle(Unit* unit, VehicleEntry const* vehInfo, uint32 creatureEntry) 
 
 Vehicle::~Vehicle()
 {
-    for (SeatMap::const_iterator itr = Seats.begin(); itr != Seats.end(); ++itr)
+ for (SeatMap::const_iterator itr = Seats.begin(); itr != Seats.end(); ++itr)
+    {
+        if (itr->second.Passenger)
+            sLog->outError("Vehicle::~Vehicle() | passenger (%s), Base (%s), BaseEntry (%u), MapId (%u)", ObjectAccessor::GetUnit(*GetBase(), itr->second.Passenger) ? ObjectAccessor::GetUnit(*GetBase(), itr->second.Passenger)->GetName() : "n/a", GetBase()->GetName(), GetBase()->GetEntry(), GetBase()->GetMapId());
         ASSERT(!itr->second.Passenger);
-}
+    }
+
+ }
 
 void Vehicle::Install()
 {
@@ -285,9 +290,6 @@ void Vehicle::InstallAccessory(uint32 entry, int8 seatId, bool minion, uint8 typ
         //    return;         // Something went wrong in the spellsystem
         //}
 
-        // This is not good, we have to send update twice
-        accessory->SendMovementFlagUpdate();
-
         if (GetBase()->GetTypeId() == TYPEID_UNIT)
             sScriptMgr->OnInstallAccessory(this, accessory);
     }
@@ -352,6 +354,7 @@ bool Vehicle::AddPassenger(Unit* unit, int8 seatId)
     unit->m_movementInfo.t_pos.m_orientation = 0;
     unit->m_movementInfo.t_time = 0; // 1 for player
     unit->m_movementInfo.t_seat = seat->first;
+    unit->m_movementInfo.t_guid = _me->GetGUID();
 
     if (_me->GetTypeId() == TYPEID_UNIT
         && unit->GetTypeId() == TYPEID_PLAYER
@@ -441,6 +444,9 @@ void Vehicle::RelocatePassengers(float x, float y, float z, float ang)
         if (Unit* passenger = ObjectAccessor::GetUnit(*GetBase(), itr->second.Passenger))
         {
             ASSERT(passenger->IsInWorld());
+
+			 if (!passenger->IsOnVehicle(GetBase()))
+               sLog->outError("Vehicle::RelocatePassengers() | passenger (%s) Base (%s) BaseEntry (%u) MapId (%u)", passenger->GetName(), GetBase()->GetName(), GetBase()->GetEntry(), passenger->GetMapId());
 
             float px = x + passenger->m_movementInfo.t_pos.m_positionX;
             float py = y + passenger->m_movementInfo.t_pos.m_positionY;

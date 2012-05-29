@@ -447,7 +447,7 @@ class spell_steelbreaker_static_disruption : public SpellScriptLoader
             {
                 PreventHitDefaultEffect(effIndex);
                 Unit* caster = GetCaster();
-                Unit* target = GetTargetUnit();
+                Unit* target = GetExplTargetUnit();
                 if (caster && target)
                 {
                     uint32 id = uint32(caster->GetMap()->GetDifficulty() == RAID_DIFFICULTY_10MAN_NORMAL ? 61912 : 63494);
@@ -724,7 +724,7 @@ class mob_lightning_elemental : public CreatureScript
                 if (me->IsWithinMeleeRange(me->getVictim()) && !_Casted)
                 {
                     me->CastSpell(me, RAID_MODE(SPELL_LIGHTNING_BLAST_10, SPELL_LIGHTNING_BLAST_25), true);
-                    me->ForcedDespawn(500);
+                    me->DespawnOrUnsummon(500);
                     _Casted = true;
                 }
             }

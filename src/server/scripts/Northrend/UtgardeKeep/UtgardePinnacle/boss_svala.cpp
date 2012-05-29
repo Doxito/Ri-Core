@@ -165,6 +165,7 @@ public:
             {
                 me->SetCanFly(true);
                 me->AddUnitMovementFlag(MOVEMENTFLAG_DISABLE_GRAVITY);
+				me->SetDisableGravity(true);
             }
 
             if (Phase > NORMAL)
@@ -173,6 +174,8 @@ public:
             introTimer = 1 * IN_MILLISECONDS;
             introPhase = 0;
             arthasGUID = 0;
+			me->SetReactState(REACT_AGGRESSIVE);
+			
 
             if (instance)
             {
@@ -187,6 +190,8 @@ public:
             {
                 me->SetCanFly(false);
                 me->RemoveUnitMovementFlag(MOVEMENTFLAG_DISABLE_GRAVITY);
+				me->SetDisableGravity(false);
+				me->SetReactState(REACT_AGGRESSIVE);
                 me->SetOrientation(1.58f);
                 me->SendMovementFlagUpdate();
             }
@@ -253,9 +258,9 @@ public:
                 return;
             }
 
-            if (damage >= me->GetHealth())
+            if (damage >= me->GetHealth() && Phase == SACRIFICING)
             {
-                if (Phase == SACRIFICING)
+                
                     SetEquipmentSlots(false, EQUIP_UNEQUIP, EQUIP_NO_CHANGE, EQUIP_NO_CHANGE);
 
                 damage = 0;
@@ -330,7 +335,9 @@ public:
                         case 2:
                             arthas->CastSpell(me, SPELL_TRANSFORMING_CHANNEL, false);
                             me->SetCanFly(true);
+							
                             me->AddUnitMovementFlag(MOVEMENTFLAG_DISABLE_GRAVITY);
+							me->SetDisableGravity(true);
                             pos.Relocate(me);
                             pos.m_positionZ += 8.0f;
                             me->GetMotionMaster()->MoveTakeoff(0, pos, 3.30078125f);
@@ -388,6 +395,8 @@ public:
                         case 8:
                             me->SetCanFly(false);
                             me->RemoveUnitMovementFlag(MOVEMENTFLAG_DISABLE_GRAVITY);
+							
+							me->SetDisableGravity(false);
                             me->SendMovementFlagUpdate();
                             pos.Relocate(me);
                             pos.m_positionX = me->GetHomePosition().GetPositionX();
@@ -421,7 +430,9 @@ public:
                 if (me->IsWithinMeleeRange(me->getVictim()) && me->HasUnitMovementFlag(MOVEMENTFLAG_DISABLE_GRAVITY))
                 {
                     me->SetCanFly(false);
-                    me->RemoveUnitMovementFlag(MOVEMENTFLAG_DISABLE_GRAVITY);
+                    me->SetDisableGravity(false);
+					me->SetReactState(REACT_AGGRESSIVE);
+					
                     me->SendMovementFlagUpdate();
                 }
 
@@ -459,20 +470,25 @@ public:
                             SetCombatMovement(false);
                             me->SetCanFly(true);
                             me->AddUnitMovementFlag(MOVEMENTFLAG_DISABLE_GRAVITY);
+							me->SetDisableGravity(true);
 
                             Phase = SACRIFICING;
                             sacrePhase = 0;
                             sacrificeTimer = 1 * IN_MILLISECONDS;
 
                            // DoCast(me, SPELL_RITUAL_OF_THE_SWORD);
-							me->CastSpell(sacrificeTarget,SPELL_RITUAL_OF_THE_SWORD,true);
+							me->CastSpell(me,SPELL_RITUAL_OF_THE_SWORD,true);
+
+							me->SetReactState(REACT_PASSIVE);
+							
+
                             sacrificed = true;
                         }
                     }
                 }
 
                 DoMeleeAttackIfReady();
-            }
+			}
             else  //SACRIFICING
             {
                 if (sacrificeTimer <= diff)
@@ -488,15 +504,18 @@ public:
                                // DoCast(me, SPELL_RITUAL_CHANNELER_3, true);
 
 								
-								me->SummonCreature(CREATURE_RITUAL_CHANNELER, 296.55, -353.7, 90.95, 1.5956, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 5000);
-								me->SummonCreature(CREATURE_RITUAL_CHANNELER, 291.71, -351.08, 90.547, 0.6453, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 5000);
+							me->SummonCreature(CREATURE_RITUAL_CHANNELER, 296.55, -353.7, 90.95, 1.5956, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 5000);
+							    
+							me->SummonCreature(CREATURE_RITUAL_CHANNELER, 291.71, -351.08, 90.547, 0.6453, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 5000);
 								me->SummonCreature(CREATURE_RITUAL_CHANNELER, 301.576, -351.08, 90.547, 2.722, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 5000);
-
+                                   
+								 
 
                             }
                             ++sacrePhase;
                             sacrificeTimer = 2 * IN_MILLISECONDS;
                             break;
+
                         case 1:
                             me->StopMoving();
                             me->GetMotionMaster()->MoveIdle();
@@ -558,9 +577,9 @@ public:
             {
                 if (instance)
                     if (Unit* victim = me->GetUnit(*me, instance->GetData64(DATA_SACRIFICED_PLAYER)))
-                        DoCast(victim, SPELL_PARALYZE, false);
+                        me->CastSpell(victim, SPELL_PARALYZE, true);
 
-                paralyzeTimer = 200;
+                paralyzeTimer = 20000;
             }
             else
                 paralyzeTimer -= diff;

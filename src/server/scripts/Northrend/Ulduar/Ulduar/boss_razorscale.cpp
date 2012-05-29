@@ -347,8 +347,9 @@ class boss_razorscale : public CreatureScript
 				EntryCheckPredicate pred(MOLE_MACHINE_TRIGGER);
                 summons.DoAction(ACTION_DESPAWN_ADDS, pred);
                 _Reset();
-                me->SetCanFly(true);
-				me->SetDisableGravity(true);
+                        me->SetCanFly(true);
+                        me->SetDisableGravity(true);
+                        me->SetByteFlag(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_ALWAYS_STAND | UNIT_BYTE1_FLAG_HOVER);
                 me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                 me->SetReactState(REACT_PASSIVE);
                 PermaGround = false;
@@ -440,8 +441,9 @@ class boss_razorscale : public CreatureScript
                                 phase = PHASE_FLIGHT;
                                 events.SetPhase(PHASE_FLIGHT);
                                 me->SetCanFly(true);
-								me->SetDisableGravity(true);
-								me->SetSpeed(MOVE_FLIGHT, 3.0f, true);
+                        me->SetDisableGravity(true);
+                        me->SetByteFlag(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_ALWAYS_STAND | UNIT_BYTE1_FLAG_HOVER);
+								//me->SetSpeed(MOVE_FLIGHT, 3.0f, true);
                                 me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                                 me->RemoveAllAuras();
                                 me->SetReactState(REACT_PASSIVE);
@@ -453,9 +455,9 @@ class boss_razorscale : public CreatureScript
                                 ++FlyCount;
                                 return;
                             case EVENT_LAND:
-                                me->SetCanFly(false);
-								me->SetDisableGravity(false);
-								me->SetSpeed(MOVE_RUN, 1.5f, true);
+                                 me->SetCanFly(false);
+                        me->SetDisableGravity(false);
+                        me->RemoveByteFlag(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_ALWAYS_STAND | UNIT_BYTE1_FLAG_HOVER);
                                 me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                                 me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_STUNNED | UNIT_FLAG_PACIFIED);
                                 if (Creature* commander = ObjectAccessor::GetCreature(*me, instance ? instance->GetData64(DATA_EXPEDITION_COMMANDER) : 0))
@@ -548,12 +550,14 @@ class boss_razorscale : public CreatureScript
                 me->MonsterTextEmote(EMOTE_PERMA, 0, true);
                 phase = PHASE_PERMAGROUND;
                 events.SetPhase(PHASE_PERMAGROUND);
-                me->SetCanFly(false);
+              
                 me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_STUNNED | UNIT_FLAG_PACIFIED);
 
+				   me->SetCanFly(false);
+                        me->SetDisableGravity(false);
+                        me->RemoveByteFlag(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_ALWAYS_STAND | UNIT_BYTE1_FLAG_HOVER);
                 me->SetReactState(REACT_AGGRESSIVE);
                 me->RemoveAurasDueToSpell(SPELL_HARPOON_TRIGGER);
-                me->SetSpeed(MOVE_RUN, 1.0f, true);
                 PermaGround = true;
                 DoCastAOE(SPELL_FLAMEBREATH);
                 events.ScheduleEvent(EVENT_FLAME, 15000, 0, PHASE_PERMAGROUND);
@@ -1032,7 +1036,7 @@ class spell_razorscale_devouring_flame : public SpellScriptLoader
                 PreventHitDefaultEffect(effIndex);
                 Unit* caster = GetCaster();
                 uint32 entry = uint32(GetSpellInfo()->Effects[effIndex].MiscValue);
-                WorldLocation const* summonLocation = GetTargetDest();
+                WorldLocation const* summonLocation = GetExplTargetDest();
                 if (!caster || !summonLocation)
                     return;
 

@@ -229,7 +229,7 @@ class boss_mimiron : public CreatureScript
                     return;
 
                 for (std::list<Creature*>::iterator iter = creatures.begin(); iter != creatures.end(); ++iter)
-                    (*iter)->ForcedDespawn();
+                    (*iter)->DespawnOrUnsummon();
             }
 
             void Reset()
@@ -301,7 +301,7 @@ class boss_mimiron : public CreatureScript
                 }
 
                 EnterEvadeMode();
-                me->ForcedDespawn(5000);
+                me->DespawnOrUnsummon(5000);
             }
 
             void EnterCombat(Unit* /*who*/)
@@ -1052,7 +1052,7 @@ public:
             if (!Boom && me->IsWithinDistInMap(who, 0.5f) && who->ToPlayer() && !who->ToPlayer()->isGameMaster())
             {
                 DoCastAOE(SPELL_EXPLOSION);
-                me->ForcedDespawn(1000);
+                me->DespawnOrUnsummon(1000);
                 Boom = true;
             }
         }
@@ -1064,7 +1064,7 @@ public:
                 if (!Boom)
                 {
                     DoCastAOE(SPELL_EXPLOSION);
-                    me->ForcedDespawn(1000);
+                    me->DespawnOrUnsummon(1000);
                     Boom = true;
                 }
             }
@@ -1366,7 +1366,7 @@ public:
         npc_rocket_strikeAI(Creature* creature) : Scripted_NoMovementAI(creature)
         {
             me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_1 | UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_PACIFIED);
-            me->ForcedDespawn(10000);
+            me->DespawnOrUnsummon(10000);
             DoCast(me, SPELL_ROCKET_STRIKE_AURA);
         }
     };
@@ -1668,7 +1668,7 @@ class npc_magnetic_core : public CreatureScript
             {
                 DoCast(SPELL_MAGNETIC_CORE);
                 me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_PACIFIED);
-                me->ForcedDespawn(21000);
+                me->DespawnOrUnsummon(21000);
                 if (Creature* AerialUnit = me->FindNearestCreature(NPC_AERIAL_COMMAND_UNIT, 100.0f, true))
                 {
                     AerialUnit->AI()->DoAction(DO_DISABLE_AERIAL);
@@ -1814,7 +1814,7 @@ class npc_mimiron_bomb_bot : public CreatureScript
                 {
                     _despawn = true;
                     DoCast(me, SPELL_BOMB_BOT, true);
-                    me->ForcedDespawn(500);
+                    me->DespawnOrUnsummon(500);
                 }
             }
 
@@ -1882,7 +1882,7 @@ class npc_mimiron_flame_trigger : public CreatureScript
                     case SPELL_FROST_BOMB_EXPLOSION_25:
                     case SPELL_WATER_SPRAY:
                         _flameTimer = 1000;
-                        me->ForcedDespawn(500);
+                        me->DespawnOrUnsummon(500);
                         break;
                     default:
                         break;
@@ -1959,7 +1959,7 @@ class npc_mimiron_flame_spread : public CreatureScript
                     case SPELL_WATER_SPRAY:
                         if (Creature* mimiron = ObjectAccessor::GetCreature(*me, _instance ? _instance->GetData64(BOSS_MIMIRON) : 0))
                             mimiron->AI()->DoAction(DO_DECREASE_FLAME_COUNT);
-                        me->ForcedDespawn(500);
+                        me->DespawnOrUnsummon(500);
                         break;
                     default:
                         break;
@@ -1969,7 +1969,7 @@ class npc_mimiron_flame_spread : public CreatureScript
             void UpdateAI(uint32 const /*diff*/)
             {
                 if (_instance && _instance->GetBossState(BOSS_MIMIRON) != IN_PROGRESS)
-                    me->ForcedDespawn();
+                    me->DespawnOrUnsummon();
             }
 
         private:

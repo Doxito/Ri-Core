@@ -1,0 +1,2 @@
+#Spawn (30469) Rastreador Val'zij
+insert into `creature` (`id`, `map`, `spawnMask`, `phaseMask`, `modelid`, `equipment_id`, `position_x`, `position_y`, `position_z`, `orientation`, `spawntimesecs`, `spawndist`, `currentwaypoint`, `curhealth`, `curmana`, `MovementType`, `npcflag`, `unit_flags`, `dynamicflags`) values('30469','571','1','1','15574','1039','7620.87','-1609.47','969.114','0.552244','300','0','0','12600','0','0','0','0','0');

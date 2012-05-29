@@ -534,16 +534,16 @@ void BattlegroundSA::EventPlayerDamagedGO(Player* /*player*/, GameObject* go, ui
 
     if (eventType == go->GetGOInfo()->building.damagedEvent)
     {
-        uint32 i = GetGateIDFromDestroyEventID(eventType);
+        uint32 i = getGateIdFromDamagedOrDestroyEventId(eventType);
         GateStatus[i] = BG_SA_GATE_DAMAGED;
-        uint32 uws = GetWorldStateFromGateID(i);
+        uint32 uws = getWorldStateFromGateId(i);
         if (uws)
             UpdateWorldState(uws, GateStatus[i]);
     }
 
     if (eventType == go->GetGOInfo()->building.destroyedEvent)
     {
-        if (go->GetGOInfo()->building.destroyedEvent == 19837)
+        if (go->GetGOInfo()->building.destroyedEvent == BG_SA_EVENT_ANCIENT_GATE_DESTROYED)
             SendWarningToAll(LANG_BG_SA_CHAMBER_BREACHED);
         else
             SendWarningToAll(LANG_BG_SA_WAS_DESTROYED, go->GetGOInfo()->name.c_str());
@@ -603,7 +603,7 @@ void BattlegroundSA::DemolisherStartState(bool start)
 
 void BattlegroundSA::DestroyGate(Player* player, GameObject* go)
 {
-    uint32 i = GetGateIDFromDestroyEventID(go->GetGOInfo()->building.destroyedEvent);
+    uint32 i = getGateIdFromDamagedOrDestroyEventId(go->GetGOInfo()->building.destroyedEvent);
     if (!GateStatus[i])
         return;
 
@@ -612,7 +612,7 @@ void BattlegroundSA::DestroyGate(Player* player, GameObject* go)
         if (g->GetGOValue()->Building.Health == 0)
         {
             GateStatus[i] = BG_SA_GATE_DESTROYED;
-            uint32 uws = GetWorldStateFromGateID(i);
+            uint32 uws = getWorldStateFromGateId(i);
             if (uws)
                 UpdateWorldState(uws, GateStatus[i]);
             bool rewardHonor = true;
@@ -720,8 +720,13 @@ void BattlegroundSA::CaptureGraveyard(BG_SA_Graveyards i, Player* Source)
 
     DelCreature(BG_SA_MAXNPC + i);
     GraveyardStatus[i] = Source->GetTeamId();
-    WorldSafeLocsEntry const* sg = NULL;
-    sg = sWorldSafeLocsStore.LookupEntry(BG_SA_GYEntries[i]);
+    WorldSafeLocsEntry const* sg = sWorldSafeLocsStore.LookupEntry(BG_SA_GYEntries[i]);
+    if (!sg)
+    {
+        sLog->outError("BattlegroundSA::CaptureGraveyard: non-existant GY entry: %u", BG_SA_GYEntries[i]);
+        return;
+    }
+
     AddSpiritGuide(i + BG_SA_MAXNPC, sg->x, sg->y, sg->z, BG_SA_GYOrientation[i], (GraveyardStatus[i] == TEAM_ALLIANCE?  ALLIANCE : HORDE));
     uint32 npc = 0;
     uint32 flag = 0;
@@ -781,7 +786,7 @@ void BattlegroundSA::CaptureGraveyard(BG_SA_Graveyards i, Player* Source)
                 SendWarningToAll(LANG_BG_SA_H_GY_SOUTH);
             break;
         default:
-            ASSERT(0);
+            ASSERT(false);
             break;
     };
 }

@@ -797,11 +797,13 @@ class npc_mechanolift : public CreatureScript
                         z = me->GetMap()->GetHeight(x, y, MAX_HEIGHT);
 
                         liquid->SetCanFly(true);
+                        liquid->SendMovementFlagUpdate();
                         liquid->GetMotionMaster()->MovePoint(0, x, y, z);
                     }
 
                     me->SetVisible(false);
                     me->RemoveUnitMovementFlag(MOVEMENTFLAG_CAN_FLY | MOVEMENTFLAG_FLYING);
+					me->DespawnOrUnsummon(200);
                 }
             }
         };
@@ -1449,6 +1451,7 @@ class at_RX_214_repair_o_matic_station : public AreaTriggerScript
     public:
         at_RX_214_repair_o_matic_station() : AreaTriggerScript("at_RX_214_repair_o_matic_station") { }
 
+
         bool OnTrigger(Player* player, const AreaTriggerEntry* /*at*/)
         {
             InstanceScript* instance = player->GetInstanceScript();
@@ -1643,7 +1646,7 @@ class spell_anti_air_rocket : public SpellScriptLoader
             {
                 PreventHitDefaultEffect(effIndex);
 
-                if (const WorldLocation* pos = GetTargetDest())
+                if (const WorldLocation* pos = GetExplTargetDest())
                 {
                     if (Creature* temp = GetCaster()->SummonCreature(22515, *pos, TEMPSUMMON_TIMED_DESPAWN, 500))
                     {
@@ -1942,8 +1945,8 @@ class spell_freyas_ward_summon : public SpellScriptLoader
                     if (InstanceScript* instance = caster->GetInstanceScript())
                         if (Creature* leviathan = ObjectAccessor::GetCreature(*caster, instance->GetData64(BOSS_LEVIATHAN)))
                             for (uint8 i = 0; i < urand(3, 5); ++i)
-                                leviathan->SummonCreature(NPC_WRITHING_LASHER, GetTargetDest()->GetPositionX(), GetTargetDest()->GetPositionY(),
-                                GetTargetDest()->GetPositionZ(), 0.0f, TEMPSUMMON_CORPSE_DESPAWN, 3000);
+                                leviathan->SummonCreature(NPC_WRITHING_LASHER, GetExplTargetDest()->GetPositionX(), GetExplTargetDest()->GetPositionY(),
+                                GetExplTargetDest()->GetPositionZ(), 0.0f, TEMPSUMMON_CORPSE_DESPAWN, 3000);
             }
 
             void HandleSummon(SpellEffIndex effIndex)
@@ -1953,8 +1956,8 @@ class spell_freyas_ward_summon : public SpellScriptLoader
                 if (Unit* caster = GetCaster())
                     if (InstanceScript* instance = caster->GetInstanceScript())
                         if (Creature* leviathan = ObjectAccessor::GetCreature(*caster, instance->GetData64(BOSS_LEVIATHAN)))
-                            leviathan->SummonCreature(NPC_WARD_OF_LIFE, GetTargetDest()->GetPositionX(), GetTargetDest()->GetPositionY(),
-                            GetTargetDest()->GetPositionZ(), 0.0f, TEMPSUMMON_CORPSE_DESPAWN, 3000);
+                            leviathan->SummonCreature(NPC_WARD_OF_LIFE, GetExplTargetDest()->GetPositionX(), GetExplTargetDest()->GetPositionY(),
+                            GetExplTargetDest()->GetPositionZ(), 0.0f, TEMPSUMMON_CORPSE_DESPAWN, 3000);
 }
 
             void Register()
@@ -2028,6 +2031,7 @@ class spell_shield_generator : public SpellScriptLoader
 
             void CalculateAmount(AuraEffect const* aurEff, int32 & amount, bool & /*canBeRecalculated*/)
             {
+
                 if (Unit* caster = GetCaster())
                     if (Unit* siege = caster->GetVehicleBase())
                         amount = int32(siege->CountPctFromMaxHealth(15));

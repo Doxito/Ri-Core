@@ -454,7 +454,7 @@ public:
           {
               if (Say_Timer <= diff)
               {
-                  me->ForcedDespawn();
+                  me->DespawnOrUnsummon();
                   ReleasedFromCage = false;
               }
               else
@@ -696,9 +696,10 @@ class go_warmaul_prison : public GameObjectScript
                         player->KilledMonsterCredit(NPC_MAGHAR_PRISONER, 0);
 
                     prisoner->AI()->Talk(SAY_FREE, player->GetGUID());
-                    prisoner->ForcedDespawn(6000);
+                    prisoner->DespawnOrUnsummon(6000);
                 }
-            }
+
+        }
             return true;
         }
 };

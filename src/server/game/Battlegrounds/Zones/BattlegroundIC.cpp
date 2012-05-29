@@ -837,6 +837,7 @@ void BattlegroundIC::DestroyGate(Player* player, GameObject* go)
     {
         case GO_HORDE_GATE_1:
             lang_entry = LANG_BG_IC_NORTH_GATE_DESTROYED;
+            break;
         case GO_HORDE_GATE_2:
         case GO_ALLIANCE_GATE_1:
             lang_entry = LANG_BG_IC_WEST_GATE_DESTROYED;
@@ -930,7 +931,7 @@ Transport* BattlegroundIC::CreateTransport(uint32 goEntry, uint32 period)
     float o = 1;
 
     // creates the Gameobject
-    if (!t->Create(sObjectMgr->GenerateLowGuid(HIGHGUID_MO_TRANSPORT), goEntry, mapid, x, y, z, o, 100, 0))
+    if (!t->Create(sObjectMgr->GenerateLowGuid(HIGHGUID_MO_TRANSPORT), goEntry, mapid, x, y, z, o, 255, 0))
     {
         delete t;
         return NULL;

@@ -489,10 +489,11 @@ public:
 
 enum eDalaranCrystal
 {
-    QUEST_TELE_CRYSTAL_FLAG     = 12790
+    QUEST_LEARN_LEAVE_RETURN    = 12790,
+    QUEST_TELE_CRYSTAL_FLAG     = 12845
 };
 
-#define GO_TELE_TO_DALARAN_CRYSTAL_FAILED   "Para poder teletransportarte a Dalaran necesitas completar la misi\xC3\xB3n Aprender a ir y a volver: la manera m\xC3\xA1gica."
+#define GO_TELE_TO_DALARAN_CRYSTAL_FAILED   "This teleport crystal cannot be used until the teleport crystal in Dalaran has been used at least once."
 class go_tele_to_dalaran_crystal : public GameObjectScript
 {
 public:
@@ -500,7 +501,7 @@ public:
 
     bool OnGossipHello(Player* player, GameObject* /*pGO*/)
     {
-        if (player->GetQuestRewardStatus(QUEST_TELE_CRYSTAL_FLAG) || player->GetQuestStatus(QUEST_TELE_CRYSTAL_FLAG) == QUEST_STATUS_INCOMPLETE)
+        if (player->GetQuestRewardStatus(QUEST_TELE_CRYSTAL_FLAG))
         {
             return false;
         }
@@ -522,11 +523,8 @@ public:
 
     bool OnGossipHello(Player* player, GameObject* /*pGO*/)
     {
-        if (player->GetQuestStatus(QUEST_TELE_CRYSTAL_FLAG) == QUEST_STATUS_INCOMPLETE)
+        if (player->GetQuestRewardStatus(QUEST_LEARN_LEAVE_RETURN) || player->GetQuestStatus(QUEST_LEARN_LEAVE_RETURN) == QUEST_STATUS_INCOMPLETE)
             return false;
-			
-		 if (player->GetQuestRewardStatus(QUEST_TELE_CRYSTAL_FLAG))
-			player->TeleportTo(571, 5729.46f, 1021.49f, 174.48f, 5.02f);
 
         return true;
     }

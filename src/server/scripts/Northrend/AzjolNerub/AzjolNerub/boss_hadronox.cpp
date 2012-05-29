@@ -357,7 +357,7 @@ class npc_anubar_crusher : public CreatureScript
                 }
 
 			if(_instance->GetData(DATA_HADRONOX_EVENT) == DONE)
-						 me->ForcedDespawn();
+						 me->DespawnOrUnsummon();
 
                 DoMeleeAttackIfReady();
             }
@@ -442,7 +442,7 @@ class npc_hadronox_nerubian : public CreatureScript
                     }
 
 					 if(_instance->GetData(DATA_HADRONOX_EVENT) == DONE)
-						 me->ForcedDespawn();
+						 me->DespawnOrUnsummon();
 
                // if (!UpdateVictim())
                   //  return;
