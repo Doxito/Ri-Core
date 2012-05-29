@@ -28,6 +28,7 @@
 #define DATA_CHESTLOOTED    7
 #define TYPE_RAND_VENDOR_1  8
 #define TYPE_RAND_VENDOR_2  9
+#define DATA_STARTDOOR  	10
 
 #endif
 
