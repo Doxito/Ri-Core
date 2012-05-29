@@ -495,7 +495,7 @@ class harrison_jones : public CreatureScript
 				}
 				
 				if(attacktime <= uiDiff)
-					{attack = false; opendoor = true;}
+					{attack = false; opendoor = true; final = true;}
 				else attacktime -= uiDiff;
 				
 				if(timehit <= uiDiff)
@@ -518,13 +518,12 @@ class harrison_jones : public CreatureScript
 					timehit = 13000;
 					wait = 10000;
 					attack = true;
-					final = true;
 					}
 				}
 						
 			}
 			
-			if (opendoor  && final)
+			if (opendoor && final)
 				{
 				me->GetMotionMaster()->MovePoint(0, 120.58f, 1610.43f, 43.48f);
 				}
