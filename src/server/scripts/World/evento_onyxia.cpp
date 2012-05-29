@@ -4,6 +4,8 @@ Dibujos abstractos del mismo para enterarnos de todo:
 
 8======D   ( ) :   <--- Fast - se la come
 
+//teste -- Fast se la come x2
+
 
 Quests:
 A) Texto de quest
