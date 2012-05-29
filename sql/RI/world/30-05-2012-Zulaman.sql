@@ -1,0 +1,4 @@
+insert into `gameobject` (`guid`, `id`, `map`, `spawnMask`, `phaseMask`, `position_x`, `position_y`, `position_z`, `orientation`, `rotation0`, `rotation1`, `rotation2`, `rotation3`, `spawntimesecs`, `animprogress`, `state`) values('3427166','186304','568','1','1','124.000','917.227','33.9494','4.70402','0','0','0.710061','-0.70414','300','0','1');
+UPDATE gameobject_template SET flags = '0' WHERE entry = '187359';
+UPDATE creature_template SET ScriptName = 'harrison_jones' WHERE entry = '24358';
+DELETE FROM creature WHERE guid = '86360' || guid = '86355' || guid = '85642' || guid = '86356' || guid = '85612' || guid = '86353' || guid = '85083' || guid = '86358' || guid = '86354' || guid = '85674';
