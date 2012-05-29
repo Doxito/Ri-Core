@@ -150,8 +150,20 @@ public:
         bool checkStalaggAlive;
         bool checkFeugenAlive;
         bool polaritySwitch;
-        uint32 uiAddsTimer;
 
+        uint32 uiAddsTimer;
+		
+        void Reset()
+        {
+			_Reset();
+		
+			if (Creature* pStalagg = me->GetCreature(*me, instance->GetData64(DATA_STALAGG)))
+				pStalagg->Respawn();
+					
+			if (Creature* pFeugen = me->GetCreature(*me, instance->GetData64(DATA_FEUGEN)))
+				pFeugen->Respawn();
+		}
+		
         void KilledUnit(Unit* /*victim*/)
         {
             if (!(rand()%5))

@@ -34,6 +34,8 @@ public:
         instance_blackrock_spireMapScript(InstanceMap* map) : InstanceScript(map) {}
 
         uint32 encounter[MAX_ENCOUNTER];
+		uint32 m_uiManyWhelpsCounter;
+		uint32 m_uiOnyxiaLiftoffTimer;
         std::string m_strInstData;
         uint64 HighlordOmokk;
         uint64 ShadowHunterVoshgajin;
@@ -49,11 +51,15 @@ public:
         uint64 Gyth;
         uint64 TheBeast;
         uint64 GeneralDrakkisath;
+		
+		bool   m_bAchievManyWhelpsHandleIt;
 
         void Initialize()
         {
             SetBossNumber(MAX_ENCOUNTER);
+			uint32 m_uiOnyxiaLiftoffTimer = 0;
             HighlordOmokk           = 0;
+			m_uiManyWhelpsCounter   = 0;
             ShadowHunterVoshgajin   = 0;
             WarMasterVoone          = 0;
             MotherSmolderweb        = 0;
@@ -67,6 +73,7 @@ public:
             Gyth                    = 0;
             TheBeast                = 0;
             GeneralDrakkisath       = 0;
+			m_bAchievManyWhelpsHandleIt = false;
         }
 
         bool IsEncounterInProgress() const
@@ -128,14 +135,45 @@ public:
             }
          }
 
+        void SetData(uint32 uiType, uint32 uiData)
+        {
+            switch (uiType)
+            {
+					case DATA_PHASE_LEEROY:
+                        m_bAchievManyWhelpsHandleIt = false;
+                        m_uiManyWhelpsCounter = 0;
+                        m_uiOnyxiaLiftoffTimer = 15*IN_MILLISECONDS;
+					break;
+            }
+
+            if (uiType < MAX_ENCOUNTER && uiData == DONE)
+                SaveToDB();
+        }
+
         void OnGameObjectCreate(GameObject* go)
         {
             switch (go->GetEntry())
             {
                 case GO_WHELP_SPAWNER:
-                    go->CastSpell(NULL, SPELL_SUMMON_ROOKERY_WHELP);
+					Position goPos;
+                    go->GetPosition(&goPos);
+                    if (Creature* temp = go->SummonCreature(NPC_WHELP, goPos, TEMPSUMMON_CORPSE_DESPAWN))
+                    {
+                        temp->SetInCombatWithZone();
+                        ++m_uiManyWhelpsCounter;
+                    }
                     break;
             }
+        }
+		
+        void Update(uint32 uiDiff)
+        {
+                if (m_uiOnyxiaLiftoffTimer && m_uiOnyxiaLiftoffTimer <= uiDiff)
+                {
+                    m_uiOnyxiaLiftoffTimer = 0;
+                    if (m_uiManyWhelpsCounter >= 50)
+                        m_bAchievManyWhelpsHandleIt = true;
+                } else m_uiOnyxiaLiftoffTimer -= uiDiff;
         }
 
         bool SetBossState(uint32 type, EncounterState state)
@@ -243,34 +281,21 @@ public:
 
             OUT_LOAD_INST_DATA_COMPLETE;
         }
+		
+        bool CheckAchievementCriteriaMeet(uint32 criteria_id, Player const* /*source*/, Unit const* /*target*/ = NULL, uint32 /*miscvalue1*/ = 0)
+        {
+            switch (criteria_id)
+            {
+                case ACHIEV_CRITERIA_LEEEEROY: // Criteria for achievement 2188: ¡Leeeeeeeeeeeeeroy! Hatch 50 eggs in 15s
+                    return m_bAchievManyWhelpsHandleIt;
+            }
+            return false;
+        }
     };
 
-};
-
-uint8 ActivatedRunes = 0;
-
-class go_dragonspire_hall_rune : public GameObjectScript
-{
-public:
-    go_dragonspire_hall_rune() : GameObjectScript("go_dragonspire_hall_rune") { }
-
-    void OnGameObjectStateChanged(GameObject* go, uint32 state)
-    {
-        if (state == GO_STATE_READY)
-        {
-            if (++ActivatedRunes == MAX_DRAGONSPIRE_HALL_RUNES)
-            {
-                if (GameObject* door1 = GetClosestGameObjectWithEntry(go, GO_EMBERSEER_IN, 150.0f))
-                    door1->SetGoState(GO_STATE_ACTIVE);
-                if (GameObject* door2 = GetClosestGameObjectWithEntry(go, GO_DOORS, 150.0f))
-                    door2->SetGoState(GO_STATE_ACTIVE);
-            }
-        }
-    }
 };
 
 void AddSC_instance_blackrock_spire()
 {
     new instance_blackrock_spire();
-    new go_dragonspire_hall_rune;
 }
