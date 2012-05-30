@@ -1,0 +1,1 @@
+UPDATE creature SET position_z = '11.400' WHERE id = '29308';
