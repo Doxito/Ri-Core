@@ -583,7 +583,7 @@ class harrison_jones : public CreatureScript
             {
                 player->CLOSE_GOSSIP_MENU();
 				creature->GetMotionMaster()->MovePoint(0, 132.80f, 1641.21f, 42.02f);
-				me->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+				creature->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
             }
 
             return true;
