@@ -1500,10 +1500,16 @@ class Unit : public WorldObject
             return true;
         }
 
+		virtual float GetShieldBlockValuePctMod() const =0;
         virtual uint32 GetShieldBlockValue() const =0;
         uint32 GetShieldBlockValue(uint32 soft_cap, uint32 hard_cap) const
         {
             uint32 value = GetShieldBlockValue();
+            float pctMod = GetShieldBlockValuePctMod();
+
+            soft_cap *= pctMod;
+            hard_cap *= pctMod;
+			
             if (value >= hard_cap)
             {
                 value = (soft_cap + hard_cap) / 2;

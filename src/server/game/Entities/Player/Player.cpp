@@ -5860,9 +5860,14 @@ float Player::GetTotalBaseModValue(BaseModGroup modGroup) const
     return m_auraBaseMod[modGroup][FLAT_MOD] * m_auraBaseMod[modGroup][PCT_MOD];
 }
 
+	float Player::GetShieldBlockValuePctMod() const
+	{
+		return m_auraBaseMod[SHIELD_BLOCK_VALUE][PCT_MOD];
+	}
+
 uint32 Player::GetShieldBlockValue() const
 {
-    float value = (m_auraBaseMod[SHIELD_BLOCK_VALUE][FLAT_MOD] + GetStat(STAT_STRENGTH) * 0.5f - 10)*m_auraBaseMod[SHIELD_BLOCK_VALUE][PCT_MOD];
+    float value = (m_auraBaseMod[SHIELD_BLOCK_VALUE][FLAT_MOD] + GetStat(STAT_STRENGTH) * 0.5f - 10) * GetShieldBlockValuePctMod();
 
     value = (value < 0) ? 0 : value;
 

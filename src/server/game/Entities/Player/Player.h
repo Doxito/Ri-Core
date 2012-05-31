@@ -2099,6 +2099,7 @@ class Player : public Unit, public GridObject<Player>
         void UpdateCorpseReclaimDelay();
         void SendCorpseReclaimDelay(bool load = false);
 
+		float GetShieldBlockValuePctMod() const;           // overwrite Unit version (virtual)
         uint32 GetShieldBlockValue() const;                 // overwrite Unit version (virtual)
         bool CanParry() const { return m_canParry; }
         void SetCanParry(bool value);
