@@ -586,6 +586,7 @@ void AddSC_terokkar_forest();
 void AddSC_zangarmarsh();
 
 // battlegrounds
+void AddSC_island_boss();
 
 // outdoor pvp
 void AddSC_outdoorpvp_ep();
@@ -1229,6 +1230,7 @@ void AddOutdoorPvPScripts()
 void AddBattlegroundScripts()
 {
 #ifdef SCRIPTS
+	AddSC_island_boss();
 #endif
 }
 

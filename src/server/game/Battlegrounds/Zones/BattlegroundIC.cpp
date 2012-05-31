@@ -15,6 +15,14 @@
  * You should have received a copy of the GNU General Public License along
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+ 
+ /* 
+ http://www.reinosiberos.com
+ Código recreado por Reinos Iberos:
+ Añadida area de evasión por si sacan alguno de los doss bosses
+ Añadido script de habilidades a los dos bosses
+ Añadido ENRAGE si sacan a los bosses de sus salas
+ */
 
 #include "Player.h"
 #include "Battleground.h"
@@ -25,6 +33,7 @@
 #include "ObjectMgr.h"
 #include "Vehicle.h"
 #include "Transport.h"
+#include "ScriptPCH.h"
 
 BattlegroundIC::BattlegroundIC()
 {
@@ -945,3 +954,187 @@ Transport* BattlegroundIC::CreateTransport(uint32 goEntry, uint32 period)
 
     return t;
 }
+
+class OVERLORD_AGMAR : public CreatureScript
+{
+    public:
+
+        OVERLORD_AGMAR()
+            : CreatureScript("OVERLORD_AGMAR")
+        {
+        }
+
+		struct OVERLORD_AGMARAI : public ScriptedAI
+        {
+			OVERLORD_AGMARAI(Creature* c) : ScriptedAI(c) {}
+			
+			bool buff;
+			
+			uint32 leap;
+			uint32 dagger;
+			uint32 strike;
+			
+			void Reset()
+			{
+			buff = false;
+			leap = urand(25000, 30000);
+			dagger = urand(20000, 25000);
+			strike = 5000;
+			}
+		
+			void UpdateAI(const uint32 uiDiff)
+			{
+				if(me->GetPositionX() < 1282.00f || me->GetPositionX() > 1349.00f || me->GetPositionY() < -796.00f || me->GetPositionY() > -735.00f || me->GetPositionZ() < 49.00f || me->GetPositionZ() > 110.00f)
+				{
+					EnterEvadeMode();
+				}
+				
+				if(me->GetPositionZ() < 68.00f)
+				{
+					buff = true;
+				} else 
+				{
+					buff = false;
+				}
+				
+				if (buff)
+				{
+					DoCast(me, 66776);
+				} else
+				{
+					me->RemoveAura(66776);
+				}
+				
+                if (leap <= uiDiff)
+                {
+                    DoCast(me->getVictim(), 68507);
+                    leap = urand(25000, 30000);
+                }
+                else
+                    leap -= uiDiff;
+					
+                if (dagger <= uiDiff)
+                {
+                    DoCast(me->getVictim(), 67280);
+                    dagger = urand(20000, 25000);
+                }
+                else
+                    dagger -= uiDiff;
+					
+                if (strike <= uiDiff)
+                {
+                    DoCast(me->getVictim(), 58460);
+                    strike = 5000;
+                }
+                else
+                    strike -= uiDiff;
+				
+				if (!UpdateVictim())
+					return;
+				
+			DoMeleeAttackIfReady();
+			}
+		};
+	        
+	CreatureAI* GetAI(Creature* creature) const
+    {
+        return new OVERLORD_AGMARAI(creature);
+    }
+};
+
+class HALFORD_WYRMBANE : public CreatureScript
+{
+    public:
+
+        HALFORD_WYRMBANE()
+            : CreatureScript("HALFORD_WYRMBANE")
+        {
+        }
+
+		struct HALFORD_WYRMBANEAI : public ScriptedAI
+        {
+			HALFORD_WYRMBANEAI(Creature* c) : ScriptedAI(c) {}
+			
+			bool buff;
+			
+			uint32 leap;
+			uint32 dagger;
+			uint32 strike;
+			
+			void Reset()
+			{
+			buff = false;
+			leap = urand(25000, 30000);
+			dagger = urand(20000, 25000);
+			strike = 5000;
+			
+			
+			}
+		
+			void UpdateAI(const uint32 uiDiff)
+			{
+				if(me->GetPositionX() < 212.00f || me->GetPositionX() > 273.00f || me->GetPositionY() < -866.00f || me->GetPositionY() > -795.00f || me->GetPositionZ() < 49.00f || me->GetPositionZ() > 70.00f)
+				{	
+					EnterEvadeMode();
+				}
+				
+				if(me->GetPositionZ() < 57.00f || me->GetPositionY() < -850.00f || me->GetPositionY() > -812.00f)
+				{
+					buff = true;
+				} else 
+				{
+					buff = false;
+				}
+				
+				if (buff)
+				{
+					DoCast(me, 66776);
+				} else
+				{
+					me->RemoveAura(66776);
+				}
+				
+                if (leap <= uiDiff)
+                {
+                    DoCast(me->getVictim(), 68507);
+                    leap = urand(25000, 30000);
+                }
+                else
+                    leap -= uiDiff;
+					
+                if (dagger <= uiDiff)
+                {
+                    DoCast(me->getVictim(), 67280);
+                    dagger = urand(20000, 25000);
+                }
+                else
+                    dagger -= uiDiff;
+					
+                if (strike <= uiDiff)
+                {
+                    DoCast(me->getVictim(), 58460);
+                    strike = 5000;
+                }
+                else
+                    strike -= uiDiff;
+				
+				if (!UpdateVictim())
+					return;
+					
+			DoMeleeAttackIfReady();
+			}
+		};
+		
+	CreatureAI* GetAI(Creature* creature) const
+    {
+        return new HALFORD_WYRMBANEAI(creature);
+    }
+};
+
+void AddSC_island_boss()
+{
+	new OVERLORD_AGMAR();
+	new HALFORD_WYRMBANE();
+}
+
+
