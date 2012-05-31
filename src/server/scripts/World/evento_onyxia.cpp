@@ -713,7 +713,7 @@ struct onyxia_event_q4AI : public ScriptedAI
 				 
                Phase = 1;
                Tempor = 2000;
-			   FinEvento = 150000;
+			   FinEvento = 130000;
 			   FaseAER = true;
 
 			   }else me->GetMotionMaster()->MovePoint(0, 431.085f, -1513.804f, 129.187f);
@@ -726,7 +726,7 @@ struct onyxia_event_q4AI : public ScriptedAI
                
 			   Phase = 1;
 			   Tempor = 2000;
-			    FinEvento = 225000;
+			    FinEvento = 130000;
 			   FaseAER = true;
 			   }else me->GetMotionMaster()->MovePoint(0, -10585.33f, 1653.457f, 78.2451f);
 
@@ -815,13 +815,13 @@ if (SummonA <= diff) //Invocar Dragoncitos
                             break;
                     }
     ++SummonCountA;
- SummonA = 800;
+ SummonA = 600;
 
- if(SummonCountA >= 22)
+ if(SummonCountA >= 15)
  {
 
 SummonA = urand(29000,39000);
-SummonCountA = 0;
+SummonCountA = 300;
 
  }
       }else SummonA -= diff;
@@ -888,9 +888,9 @@ SummonCountA = 0;
                             break;
                     }
 ++SummonCountC;
-SummonC = 150;
+SummonC = 300;
 
-if(SummonCountC >= 35)
+if(SummonCountC >= 20)
  {
 if(Horda)
      me->SummonCreature(90023, 388.55f, -1558.72f, 91.8808f, 0.0f, TEMPSUMMON_CORPSE_DESPAWN);
