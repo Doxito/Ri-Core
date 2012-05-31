@@ -340,7 +340,7 @@ public:
 							me->SetDisableGravity(true);
                             pos.Relocate(me);
                             pos.m_positionZ += 8.0f;
-                            me->GetMotionMaster()->MoveTakeoff(0, pos, 3.30078125f);
+                            me->GetMotionMaster()->MoveTakeoff(0, pos);
                             // spectators flee event
                             if (instance)
                             {
@@ -402,7 +402,7 @@ public:
                             pos.m_positionX = me->GetHomePosition().GetPositionX();
                             pos.m_positionY = me->GetHomePosition().GetPositionY();
                             pos.m_positionZ = 90.6065f;
-                            me->GetMotionMaster()->MoveLand(0, pos, 6.247422f);
+                           me->GetMotionMaster()->MoveLand(0, pos);
                             ++introPhase;
                             introTimer = 3000;
                             break;
