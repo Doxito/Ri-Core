@@ -149,7 +149,7 @@ public:
 
         bool MovementActive;
         uint32 CountMovement;
-        bool CapOne;
+        uint32 CapOne;
         uint32 CoCTop;
 
         uint8 m_uiSummonWhelpCount;
@@ -185,7 +185,7 @@ public:
             SpCast = false;
             MovementActive = true;
           
-            CapOne = NULL;
+            CapOne = 0;
             CountMovement = 60000;
             
             Summons.DespawnAll();
@@ -301,7 +301,7 @@ public:
                         m_uiBellowingRoarTimer = 1000;
                         break;
                     case 10:
-                         if(CapOne)
+                         if(CapOne == 2)
                          {
                         me->GetMotionMaster()->MovePoint(11, Phase2Location.GetPositionX(), Phase2Location.GetPositionY(), Phase2Location.GetPositionZ()+25);
                         //me->SetSpeed(MOVE_FLIGHT, 1.0f);
@@ -388,12 +388,12 @@ public:
 if(me->GetPositionX() <= -108.0f || me->GetPositionZ() >= -20.0f)
    EnterEvadeMode();
 
-if(!CapOne && CoCTop <= uiDiff)
+if(CapOne == 1 && CoCTop <= uiDiff)
       {
         me->SetCanFly(true);
 	me->SetDisableGravity(true);
         me->SetByteFlag(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_ALWAYS_STAND | UNIT_BYTE1_FLAG_HOVER);
-        CapOne = true;
+        CapOne = 2;
        }else CoCTop -= uiDiff;
    
 	
@@ -524,7 +524,7 @@ if (me->FindCurrentSpellBySpellId(SPELL_BREATH_NORTH_TO_SOUTH))
                         me->ApplySpellImmune(0, IMMUNITY_EFFECT,SPELL_EFFECT_ATTACK_ME, true);
                         me->GetMotionMaster()->MovePoint(10, Phase2Location);
                         CoCTop = 12000;
-                        CapOne = false;
+                        CapOne = 1;
                         return;
                     }
 
