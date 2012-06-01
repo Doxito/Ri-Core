@@ -2895,6 +2895,11 @@ void SpellMgr::LoadSpellCustomAttr()
             case 69293: // Wing Buffet
             case 74439: // Machine Gun
             case 63278: // Mark of the Faceless (General Vezax)
+            case 5171:  // Slice and Dice
+            case 6774:  // Slice and Dice  Rank2
+            case 52610: // Savage Roar
+                spellInfo->AttributesEx3 |= SPELL_ATTR3_NO_INITIAL_AGGRO;
+                break;    
             case 62544: // Thrust (Argent Tournament)
             case 64588: // Thrust (Argent Tournament)
             case 66479: // Thrust (Argent Tournament)
