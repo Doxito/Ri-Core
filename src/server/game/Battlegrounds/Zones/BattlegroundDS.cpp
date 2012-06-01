@@ -212,6 +212,18 @@ bool BattlegroundDS::HandlePlayerUnderMap(Player* player)
     return true;
 }
 
+bool BattlegroundDS::IsPlayerUnderMap(Player* /*player*/, float /*x*/, float /*y*/, float z)
+{
+	if (z < 2)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 void BattlegroundDS::FillInitialWorldStates(WorldPacket &data)
 {
     data << uint32(3610) << uint32(1);                                              // 9 show

@@ -116,7 +116,8 @@ class BattlegroundRV : public Battleground
         bool SetupBattleground();
         void HandleKillPlayer(Player* player, Player* killer);
         bool HandlePlayerUnderMap(Player* player);
-
+		bool IsPlayerUnderMap(Player* player, float x, float y, float z);
+		
     private:
         uint32 Timer;
         uint32 State;
