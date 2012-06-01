@@ -152,44 +152,21 @@ public:
             switch (type)
             {
             case DATA_KRIKTHIR_THE_GATEWATCHER_EVENT:
-                // if encounter already done ignore event
-                if (auiEncounter[0] == DONE)
-                    break;
-
                 auiEncounter[0] = data;
-
-                if (data == NOT_STARTED)
-                    HandleWatcher(true);
-                else if (data == SPECIAL || data == IN_PROGRESS)
-                    HandleWatcher(false);
-                else if (data == DONE)
+                if (data == DONE)
                     HandleGameObject(uiKrikthirDoor, true);
                 break;
             case DATA_HADRONOX_EVENT:
-                // if encounter already done ignore event
-                if (auiEncounter[1] == DONE)
-                    break;
-
                 auiEncounter[1] = data;
-
-                if (data == NOT_STARTED)
-                    HandleHadronox(true);
-                else if (data == IN_PROGRESS)
-                    HandleHadronox(false);
                 break;
             case DATA_ANUBARAK_EVENT:
                 auiEncounter[2] = data;
                 if (data == IN_PROGRESS)
-                {
-                    bDoorSwitch = true;
-                    uiDoorTimer = 5*IN_MILLISECONDS;
-                }
+                    for (uint8 i = 0; i < 3; ++i)
+                        HandleGameObject(uiAnubarakDoor[i], false);
                 else if (data == NOT_STARTED || data == DONE)
-                {
-                    bDoorSwitch = false;
                     for (uint8 i = 0; i < 3; ++i)
                         HandleGameObject(uiAnubarakDoor[i], true);
-                }
                 break;
             }
 
