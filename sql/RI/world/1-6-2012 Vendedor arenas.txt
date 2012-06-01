@@ -1,4 +1,4 @@
-    DELETE FROM `npc_vendor` entry = "34091"
+    DELETE FROM `npc_vendor` where entry = "34091";
      
     insert into `npc_vendor` (`entry`, `slot`, `item`, `maxcount`, `incrtime`, `ExtendedCost`) values('34091','0','48444','0','0','2359');
     insert into `npc_vendor` (`entry`, `slot`, `item`, `maxcount`, `incrtime`, `ExtendedCost`) values('34091','0','48432','0','0','2359');
