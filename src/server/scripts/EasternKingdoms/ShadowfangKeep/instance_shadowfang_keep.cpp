@@ -116,9 +116,6 @@ public:
                 case NPC_ASH: uiAshGUID = creature->GetGUID(); break;
                 case NPC_ADA: uiAdaGUID = creature->GetGUID(); break;
                 case NPC_ARCHMAGE_ARUGAL: uiArchmageArugalGUID = creature->GetGUID(); break;
-                case NPC_FRYE: fryeGUID = creature->GetGUID(); break;
-                case NPC_HUMMEL: hummelGUID = creature->GetGUID(); break;
-                case NPC_BAXTER: baxterGUID = creature->GetGUID(); break;
             }
         }
 
