@@ -69,7 +69,6 @@ public:
 };
 
 /*######
-<<<<<<< HEAD
 ## npc_hourglass_of_eternity
 ######*/
 /*Support for 'Future you' is currently missing*/
