@@ -286,7 +286,6 @@ public:
             events.SetPhase(phase);
             _phase = phase;
 
-
             if (setEvents)
                 SetPhaseEvents();
         }
