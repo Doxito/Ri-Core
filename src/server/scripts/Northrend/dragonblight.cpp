@@ -1282,7 +1282,6 @@ void AddSC_dragonblight()
     new npc_7th_legion_siege_engineer();
     new vehicle_alliance_steamtank();
     new mob_woodlands_walker();
-    new npc_alexstrasza_wr_gate;
     new spell_q12096_q12092_dummy;
     new spell_q12096_q12092_bark;
 
